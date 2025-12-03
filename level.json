@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "meta": {
+    "grid_size": 50,
+    "snap_to_grid": true,
+    "edge_camera_movement": true
+  },
+  "rooms": [
+    {
+      "id": 1,
+      "vertices": [
+        [
+          -250,
+          -250
+        ],
+        [
+          150,
+          -250
+        ],
+        [
+          150,
+          100
+        ],
+        [
+          -250,
+          100
+        ]
+      ],
+      "connections": {},
+      "entities": [
+        {
+          "type": "Player",
+          "pos": [
+            -199.0,
+            -188.0
+          ]
+        },
+        {
+          "type": "Player",
+          "pos": [
+            -199.0,
+            -188.0
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            52.0,
+            -179.0
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            52.0,
+            -179.0
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            -140.0,
+            7.0
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            -140.0,
+            7.0
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            34.0,
+            -14.0
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            34.0,
+            -14.0
+          ]
+        }
+      ]
+    }
+  ]
+}

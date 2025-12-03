@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "meta": {
+    "grid_size": 50,
+    "snap_to_grid": true,
+    "edge_camera_movement": true
+  },
+  "rooms": [
+    {
+      "id": 1,
+      "vertices": [
+        [
+          -250,
+          -150
+        ],
+        [
+          200,
+          -200
+        ],
+        [
+          400,
+          100
+        ],
+        [
+          -300,
+          400
+        ],
+        [
+          -400,
+          0
+        ]
+      ],
+      "connections": {},
+      "entities": [
+        {
+          "type": "Player",
+          "pos": [
+            -276.0,
+            -35.2
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            77.0,
+            -126.2
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            223.0,
+            45.8
+          ]
+        },
+        {
+          "type": "Enemy",
+          "pos": [
+            -227.0,
+            214.8
+          ]
+        }
+      ]
+    }
+  ]
+}
