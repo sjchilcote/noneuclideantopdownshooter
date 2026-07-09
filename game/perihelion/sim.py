@@ -1205,11 +1205,15 @@ class GameSession:
                 t = kind[5:]
                 self.ammo[t] = self.ammo.get(t, 0) + PICKUPS[kind]["amount"]
                 self._snd("pickup_ammo", proom, (x, y))
+                self.fx.append(("pickup_text", proom, (x, y),
+                                f"+{PICKUPS[kind]['amount']} {t.upper()}"))
             elif kind == "medkit":
                 if self.hp > 70:
                     continue  # leave it for later — scarcity respects foresight
                 self.hp = min(PLAYER_HP, self.hp + PICKUPS[kind]["amount"])
                 self._snd("pickup_medkit", proom, (x, y))
+                self.fx.append(("pickup_text", proom, (x, y),
+                                f"+{PICKUPS[kind]['amount']} INTEGRITY"))
             elif kind.startswith("weapon_"):
                 w = kind[7:]
                 if w not in self.weapons:
@@ -1247,6 +1251,8 @@ class GameSession:
                 key = kind[4:]
                 self.keys.add(key)
                 self._snd("pickup_key", proom, (x, y))
+                self.fx.append(("pickup_text", proom, (x, y),
+                                f"{key.upper()} SEAL"))
                 self._maybe_radio(f"pickup:{key}")
                 self._unlock_doors(key)
             self.metrics["pickups"] += 1

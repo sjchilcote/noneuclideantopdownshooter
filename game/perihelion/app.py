@@ -133,6 +133,7 @@ class GameScene(menus.Scene):
         self.show_hints = False
         self.streamer = None  # WorldStreamer in seamless campaign mode
         self.loc_title: tuple[str, int] | None = None  # (name, ticks_left)
+        self.float_texts: list[list] = []  # [sx, sy, label, ticks_left]
         self.shakes: list[list[float]] = []  # [magnitude, ticks_left]
 
     def on_enter(self, app) -> None:
@@ -177,6 +178,17 @@ class GameScene(menus.Scene):
         self.renderer.draw(surf, debug=app.debug)
         mouse_internal = app.window_to_internal(pygame.mouse.get_pos())
         self.hud.draw(surf, self.session, mouse_internal)
+        for ft in self.float_texts:
+            sx, sy, label, ticks = ft
+            f = menus.get_font(10)
+            color = (150, 225, 150) if "INTEGRITY" in label else \
+                (210, 185, 125) if label.startswith("+") else (220, 210, 170)
+            img = f.render(label, True, color)
+            img.set_alpha(255 if ticks > 24 else max(0, int(255 * ticks / 24)))
+            rise = (66 - ticks) * 0.35
+            surf.blit(img, (int(sx - img.get_width() / 2), int(sy - 14 - rise)))
+            ft[3] -= 1
+        self.float_texts = [ft for ft in self.float_texts if ft[3] > 0]
         if self.loc_title:
             name, ticks = self.loc_title
             f = menus.get_font(26)
@@ -632,6 +644,10 @@ class App:
                         self.push(ConversationScene(conv, on_trust=self._add_trust))
                 else:
                     self.push(menus.TerminalOverlay(ev[1]))
+            elif ev[0] == "pickup_text":
+                import necore
+                sx, sy = necore.mat_apply(game.session.cam, *ev[2])
+                game.float_texts.append([sx, sy, ev[3], 66])
             elif ev[0] == "locname":
                 game.loc_title = (ev[1], 60 * 4)
             elif ev[0] == "ambience":
