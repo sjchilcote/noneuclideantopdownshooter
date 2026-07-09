@@ -1,0 +1,552 @@
+{
+ "version": 2,
+ "name": "THE LONG GALLERY",
+ "tier": 2,
+ "ambience": "amb_drone_mid",
+ "rooms": [
+  {
+   "verts": [
+    [
+     -160,
+     200
+    ],
+    [
+     -160,
+     310
+    ],
+    [
+     0,
+     310
+    ],
+    [
+     0,
+     200
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     0,
+     200
+    ],
+    [
+     0,
+     310
+    ],
+    [
+     280.0,
+     310.0
+    ],
+    [
+     480.0,
+     310.0
+    ],
+    [
+     760,
+     310
+    ],
+    [
+     760,
+     200
+    ],
+    [
+     690.0,
+     200.0
+    ],
+    [
+     620.0,
+     200.0
+    ],
+    [
+     510.0,
+     200.0
+    ],
+    [
+     440.0,
+     200.0
+    ],
+    [
+     330.0,
+     200.0
+    ],
+    [
+     260.0,
+     200.0
+    ],
+    [
+     150.0,
+     200.0
+    ],
+    [
+     80.0,
+     200.0
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      404.4749499931036,
+      275.61496599160614
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      359.38503400839386,
+      279.4749499931036
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      355.5250500068964,
+      234.3850340083939
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      400.61496599160614,
+      230.52505000689638
+     ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      105.0,
+      255.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     0,
+     -110
+    ],
+    [
+     0,
+     0
+    ],
+    [
+     260.0,
+     0.0
+    ],
+    [
+     330.0,
+     0.0
+    ],
+    [
+     440.0,
+     0.0
+    ],
+    [
+     510.0,
+     0.0
+    ],
+    [
+     620.0,
+     0.0
+    ],
+    [
+     690.0,
+     0.0
+    ],
+    [
+     760,
+     0
+    ],
+    [
+     760,
+     -110
+    ]
+   ],
+   "entities": [
+    {
+     "type": "spitter",
+     "pos": [
+      404.4749499931036,
+      -34.38503400839389
+     ]
+    },
+    {
+     "type": "spitter",
+     "pos": [
+      349.90944075656506,
+      -44.11155454542153
+     ]
+    },
+    {
+     "type": "brute",
+     "pos": [
+      385.6156092503313,
+      -86.50341144618457
+     ]
+    },
+    {
+     "type": "key_blue",
+     "pos": [
+      420,
+      -70
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      665.0,
+      -55.0
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      680.0,
+      -55.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     80,
+     0
+    ],
+    [
+     80,
+     200
+    ],
+    [
+     150,
+     200
+    ],
+    [
+     150,
+     0
+    ]
+   ],
+   "entities": [
+    {
+     "type": "ammo_shell",
+     "pos": [
+      100.0,
+      100.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      115.0,
+      100.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     260,
+     0
+    ],
+    [
+     260,
+     200
+    ],
+    [
+     330,
+     200
+    ],
+    [
+     330,
+     0
+    ]
+   ],
+   "entities": [
+    {
+     "type": "shrieker",
+     "pos": [
+      295.0,
+      100.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     440,
+     0
+    ],
+    [
+     440,
+     200
+    ],
+    [
+     510,
+     200
+    ],
+    [
+     510,
+     0
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      499.4749499931036,
+      120.61496599160611
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      444.90944075656506,
+      110.88844545457847
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      480.6156092503313,
+      68.49658855381543
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     620,
+     0
+    ],
+    [
+     620,
+     200
+    ],
+    [
+     690,
+     200
+    ],
+    [
+     690,
+     0
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     280,
+     310
+    ],
+    [
+     280,
+     460
+    ],
+    [
+     480,
+     460
+    ],
+    [
+     480,
+     310
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      404.4749499931036,
+      405.61496599160614
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      349.90944075656506,
+      395.88844545457846
+     ]
+    },
+    {
+     "type": "spitter",
+     "pos": [
+      385.6156092503313,
+      353.4965885538154
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     760,
+     310
+    ],
+    [
+     760,
+     460
+    ],
+    [
+     930,
+     460
+    ],
+    [
+     930,
+     310
+    ]
+   ],
+   "entities": [
+    {
+     "type": "implant_lightning",
+     "pos": [
+      830.0,
+      385.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      845.0,
+      385.0
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      860.0,
+      385.0
+     ]
+    }
+   ]
+  }
+ ],
+ "connects": [
+  [
+   0,
+   2,
+   1,
+   0
+  ],
+  [
+   1,
+   2,
+   7,
+   3
+  ],
+  [
+   1,
+   6,
+   6,
+   1
+  ],
+  [
+   1,
+   8,
+   5,
+   1
+  ],
+  [
+   1,
+   10,
+   4,
+   1
+  ],
+  [
+   1,
+   12,
+   3,
+   1
+  ],
+  [
+   2,
+   2,
+   4,
+   3
+  ],
+  [
+   2,
+   4,
+   5,
+   3
+  ],
+  [
+   2,
+   6,
+   6,
+   3
+  ]
+ ],
+ "connects_x": [],
+ "doors": [
+  {
+   "a": 1,
+   "ea": 4,
+   "b": 8,
+   "eb": 0,
+   "key": "blue"
+  }
+ ],
+ "player": {
+  "room": 0,
+  "pos": [
+   -80,
+   255
+  ]
+ },
+ "exit": {
+  "room": 8,
+  "pos": [
+   890,
+   385
+  ]
+ },
+ "lore": {
+  "intro": "The Long Gallery. Two service corridors,\nfour crossings. Everyone agrees on that.\nEveryone who walked it southside.",
+  "radio": [
+   {
+    "trigger": "start",
+    "text": "Ratio: Gallery run. South corridor to the far end, come back along the north."
+   },
+   {
+    "trigger": "enter_room:2",
+    "text": "Ratio: North side. Count the crossings for me, would you? I have four on file."
+   },
+   {
+    "trigger": "enter_room:3",
+    "text": "Ratio: Crossing one. Three left."
+   },
+   {
+    "trigger": "pickup:blue",
+    "text": "Ratio: Blue seal. The vault. Commando \u2014 the notes say what's in there isn't ours."
+   },
+   {
+    "trigger": "exit",
+    "text": "Ratio: Your arm. Is it\u2014 okay. We'll call it equipment. Equipment doesn't hum, but we'll call it that."
+   }
+  ],
+  "terminals": [
+   {
+    "room": 1,
+    "pos": [
+     700,
+     255
+    ],
+    "text": "GRAFFITI, scratched into the panel:\n4 GOING  3 BACK\n4 GOING  3 BACK\n4 GOING  3 BACK\nover and over, forty times."
+   },
+   {
+    "room": 7,
+    "pos": [
+     380,
+     430
+    ],
+    "text": "MEDICAL BAY (RELOCATED)\nPatient: unnamed, found in Gallery.\nImplant of unknown design fused to left arm.\nPatient states the implant 'came through the wall.'\nPatient discharged. Implant retained. Vault, blue seal."
+   }
+  ]
+ }
+}

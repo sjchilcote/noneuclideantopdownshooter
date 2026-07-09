@@ -1,0 +1,482 @@
+{
+ "version": 2,
+ "name": "DOCK 4 \u2014 SWEEP",
+ "tier": 1,
+ "ambience": "amb_drone_early",
+ "rooms": [
+  {
+   "verts": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     180
+    ],
+    [
+     220,
+     180
+    ],
+    [
+     220.0,
+     130.0
+    ],
+    [
+     220.0,
+     60.0
+    ],
+    [
+     220,
+     0
+    ]
+   ],
+   "entities": [
+    {
+     "type": "medkit",
+     "pos": [
+      180,
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     220,
+     60
+    ],
+    [
+     220,
+     130
+    ],
+    [
+     560,
+     130
+    ],
+    [
+     560,
+     60
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     560,
+     20
+    ],
+    [
+     560.0,
+     60.0
+    ],
+    [
+     560.0,
+     130.0
+    ],
+    [
+     560,
+     160
+    ],
+    [
+     700,
+     160
+    ],
+    [
+     700,
+     20
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     420,
+     -120
+    ],
+    [
+     420,
+     20
+    ],
+    [
+     560,
+     20
+    ],
+    [
+     560,
+     -120
+    ]
+   ],
+   "entities": [
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      475.0,
+      -50.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     560,
+     -120
+    ],
+    [
+     560,
+     20
+    ],
+    [
+     700,
+     20
+    ],
+    [
+     700,
+     -120
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      630.0,
+      -50.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     700,
+     -120
+    ],
+    [
+     700,
+     20
+    ],
+    [
+     840,
+     20
+    ],
+    [
+     840,
+     -120
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     700,
+     20
+    ],
+    [
+     700,
+     160
+    ],
+    [
+     840,
+     160
+    ],
+    [
+     840,
+     20
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     700,
+     160
+    ],
+    [
+     700,
+     300
+    ],
+    [
+     840,
+     300
+    ],
+    [
+     840,
+     160
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      770.0,
+      230.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     560,
+     160
+    ],
+    [
+     560,
+     300
+    ],
+    [
+     700,
+     300
+    ],
+    [
+     700,
+     160
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      630.0,
+      230.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     420,
+     160
+    ],
+    [
+     420,
+     300
+    ],
+    [
+     560,
+     300
+    ],
+    [
+     560,
+     160
+    ]
+   ],
+   "entities": [
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      475.0,
+      230.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     420,
+     20
+    ],
+    [
+     420,
+     160
+    ],
+    [
+     560,
+     160
+    ],
+    [
+     560,
+     20
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      490.0,
+      90.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     960,
+     -420
+    ],
+    [
+     960,
+     -280
+    ],
+    [
+     1100,
+     -280
+    ],
+    [
+     1100,
+     -420
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      1054.4749499931036,
+      -329.38503400839386
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      1005.5250500068963,
+      -370.61496599160614
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      1015.0,
+      -350.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      1030.0,
+      -350.0
+     ]
+    }
+   ]
+  }
+ ],
+ "connects": [
+  [
+   3,
+   2,
+   11,
+   0
+  ],
+  [
+   11,
+   2,
+   4,
+   0
+  ],
+  [
+   0,
+   3,
+   1,
+   0
+  ],
+  [
+   1,
+   2,
+   2,
+   1
+  ],
+  [
+   2,
+   5,
+   4,
+   1
+  ],
+  [
+   3,
+   1,
+   10,
+   3
+  ],
+  [
+   4,
+   2,
+   5,
+   0
+  ],
+  [
+   5,
+   1,
+   6,
+   3
+  ],
+  [
+   6,
+   1,
+   7,
+   3
+  ],
+  [
+   7,
+   0,
+   8,
+   2
+  ],
+  [
+   8,
+   0,
+   9,
+   2
+  ],
+  [
+   9,
+   3,
+   10,
+   1
+  ]
+ ],
+ "connects_x": [],
+ "doors": [],
+ "player": {
+  "room": 0,
+  "pos": [
+   80,
+   90
+  ]
+ },
+ "exit": {
+  "room": 7,
+  "pos": [
+   770,
+   230
+  ]
+ },
+ "lore": {
+  "intro": "Deck 4 dock. Three days from perihelion.\nSomething tripped the motion grid in storage.\nProbably a loose cart. Probably.",
+  "radio": [
+   {
+    "trigger": "start",
+    "text": "Ratio: Comms check. It's a maintenance sweep, Commando. The scariest thing down there is the paperwork."
+   },
+   {
+    "trigger": "enter_room:2",
+    "text": "Ratio: Storage ring ahead. Eight segments, one loop. In and out."
+   },
+   {
+    "trigger": "enter_room:11",
+    "text": "Ratio: ...huh. Your beacon just jumped clean off the deck plan. Bad relay. Has to be."
+   },
+   {
+    "trigger": "exit",
+    "text": "Ratio: Sweep logged. See? Paperwork."
+   }
+  ],
+  "terminals": [
+   {
+    "room": 2,
+    "pos": [
+     630,
+     130
+    ],
+    "text": "WORK ORDER 7731\nGrid fault, storage ring north.\nTech note: ring walk takes 41s. Spec says 33s.\nRe-timed twice. Logged as clock drift."
+   }
+  ]
+ }
+}

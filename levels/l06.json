@@ -1,0 +1,331 @@
+{
+ "version": 2,
+ "name": "MIRROR WARD",
+ "tier": 3,
+ "ambience": "amb_drone_late",
+ "rooms": [
+  {
+   "verts": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     140
+    ],
+    [
+     140,
+     140
+    ],
+    [
+     140.0,
+     120.0
+    ],
+    [
+     140.0,
+     20.0
+    ],
+    [
+     140,
+     0
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     140,
+     20
+    ],
+    [
+     140,
+     120
+    ],
+    [
+     560,
+     120
+    ],
+    [
+     560,
+     20
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      374.4749499931036,
+      90.61496599160611
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      329.38503400839386,
+      94.47494999310362
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      325.5250500068964,
+      49.38503400839389
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      370.61496599160614,
+      45.52505000689637
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      215.0,
+      70.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     560,
+     20
+    ],
+    [
+     560,
+     120
+    ],
+    [
+     800,
+     120
+    ],
+    [
+     800,
+     20
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      704.4749499931037,
+      90.61496599160611
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      659.3850340083939,
+      94.47494999310362
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      655.5250500068963,
+      49.38503400839389
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      700.6149659916061,
+      45.52505000689637
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     560,
+     -120
+    ],
+    [
+     560,
+     20
+    ],
+    [
+     800,
+     20
+    ],
+    [
+     800,
+     -120
+    ]
+   ],
+   "entities": [
+    {
+     "type": "spitter",
+     "pos": [
+      680.0,
+      -50.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      665.0,
+      -50.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      680.0,
+      -50.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     800,
+     20
+    ],
+    [
+     800,
+     120
+    ],
+    [
+     980,
+     120
+    ],
+    [
+     980,
+     20
+    ]
+   ],
+   "entities": [
+    {
+     "type": "brute",
+     "pos": [
+      914.4749499931037,
+      90.61496599160611
+     ]
+    },
+    {
+     "type": "shrieker",
+     "pos": [
+      865.5250500068963,
+      49.38503400839389
+     ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      875.0,
+      70.0
+     ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      890.0,
+      70.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      905.0,
+      70.0
+     ]
+    }
+   ]
+  }
+ ],
+ "connects": [
+  [
+   2,
+   1,
+   2,
+   1
+  ],
+  [
+   0,
+   3,
+   1,
+   0
+  ],
+  [
+   1,
+   2,
+   2,
+   0
+  ],
+  [
+   2,
+   2,
+   4,
+   0
+  ],
+  [
+   2,
+   3,
+   3,
+   1
+  ]
+ ],
+ "connects_x": [],
+ "doors": [],
+ "player": {
+  "room": 0,
+  "pos": [
+   70,
+   70
+  ]
+ },
+ "exit": {
+  "room": 4,
+  "pos": [
+   930,
+   70
+  ]
+ },
+ "lore": {
+  "intro": "Medical isolation. The ward was sealed\nfrom the inside. The seal is intact.\nThe ward is not empty.",
+  "radio": [
+   {
+    "trigger": "start",
+    "text": "Ratio: Isolation ward. Camera shows movement. It also shows you, which is odd, because you're with me."
+   },
+   {
+    "trigger": "enter_room:2",
+    "text": "Ratio: There you are on the ward camera. Twice. Commando, wave. ...Both of you waved."
+   },
+   {
+    "trigger": "kills:10",
+    "text": "Ratio: The ones coming out of that wall \u2014 their wounds are on the wrong side. You're shooting the same things twice."
+   },
+   {
+    "trigger": "exit",
+    "text": "Ratio: Theory. The station's connected to somewhere that folds back on itself. Corollary: somewhere can see us."
+   }
+  ],
+  "terminals": [
+   {
+    "room": 3,
+    "pos": [
+     680,
+     -50
+    ],
+    "text": "ISOLATION LOG\nDay 1: patient stares at south wall.\nDay 2: patient talks to south wall.\nDay 3: patient answers.\nDay 4: two voices. One patient.\nDay 5: [no further entries]"
+   },
+   {
+    "room": 4,
+    "pos": [
+     890,
+     70
+    ],
+    "text": "PATHOLOGY\nSubject recovered from ward.\nAll organs mirrored. Situs inversus totalis.\nSubject's ID chip reads valid.\nIt is the chip of a crewman standing\nguard outside."
+   }
+  ]
+ }
+}

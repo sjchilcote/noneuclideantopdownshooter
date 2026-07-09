@@ -10,6 +10,7 @@ runtime (a locked door is genuinely a wall — you cannot see through it).
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -66,6 +67,16 @@ class Level:
     ambience: str
 
 
+def _shoelace(verts) -> float:
+    n = len(verts)
+    a = 0.0
+    for i in range(n):
+        x0, y0 = verts[i]
+        x1, y1 = verts[(i + 1) % n]
+        a += x0 * y1 - x1 * y0
+    return a * 0.5
+
+
 def _centroid(verts: list[tuple[float, float]]) -> tuple[float, float]:
     # Area-weighted centroid, matching engine add_room re-centering.
     n = len(verts)
@@ -99,6 +110,12 @@ def level_from_dict(data: dict) -> Level:
 
     for ri, room in enumerate(data["rooms"]):
         verts = [tuple(v) for v in room["verts"]]
+        if _shoelace(verts) > 0:
+            # The engine would silently rewind and renumber the edges,
+            # breaking every authored connection index. Fail loudly instead.
+            raise ValueError(
+                f"room {ri}: vertices wind the wrong way (positive shoelace); "
+                "author y-down visual-CCW")
         c = _centroid(verts)
         room_centroids.append(c)
         room_verts.append([(x - c[0], y - c[1]) for x, y in verts])
@@ -196,11 +213,173 @@ class LevelBuilder:
     def ngon(self, cx, cy, r, n, phase=0.0, seed=None) -> int:
         import math
 
+        # Angle DECREASES so the shoelace area is negative: engine-canonical
+        # winding, so authored edge indices survive add_room unchanged.
+        # Edge i runs from vertex i to i+1.
         verts = []
         for i in range(n):
-            a = phase + i * 2.0 * math.pi / n
+            a = phase - i * 2.0 * math.pi / n
             verts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
         return self.room(verts, seed)
+
+    def poly(self, verts, seed=None) -> int:
+        """Room from explicit verts; rewinds to canonical if needed (edge
+        indices then follow the REWOUND order — prefer authoring canonical)."""
+        if _shoelace(verts) > 0:
+            verts = list(reversed(verts))
+        return self.room(verts, seed)
+
+    def connect_pts(self, ra: int, pa, rb: int, pb):
+        """Connection resolved by edge MIDPOINT at build time (safe across
+        the doorway-splitting pass, which renumbers edges)."""
+        self.data.setdefault("connects_pts", []).append(
+            [ra, list(pa), rb, list(pb)])
+
+    def door_pts(self, ra: int, pa, rb: int, pb, key: str):
+        self.data.setdefault("doors_pts", []).append(
+            dict(a=ra, pa=list(pa), b=rb, pb=list(pb), key=key))
+
+    def no_connect(self, ra: int, rb: int):
+        """Forbid the splitter/autoconnect from opening a doorway between
+        these two rooms (their shared wall stays a wall)."""
+        self.data.setdefault("no_auto", []).append([ra, rb])
+
+    # -- build pipeline -------------------------------------------------
+
+    def resolve(self, tol: float = 0.5) -> dict:
+        """Produce the final level dict: (1) doorway-split pass — where a
+        short edge lies collinear inside a longer wall, insert vertices into
+        the wall so an exactly-matching sub-edge exists; (2) autoconnect all
+        exactly-coincident edge pairs; (3) resolve point-authored connects
+        and doors to edge indices. Explicit index-based connects/doors are
+        passed through and must reference rooms the splitter never touches."""
+        import copy
+
+        data = copy.deepcopy(self.data)
+        rooms = data["rooms"]
+        no_auto = {tuple(sorted(p)) for p in data.pop("no_auto", [])}
+
+        def edges_of(ri):
+            vs = rooms[ri]["verts"]
+            n = len(vs)
+            return [(ei, tuple(vs[ei]), tuple(vs[(ei + 1) % n])) for ei in range(n)]
+
+        # (1) split walls that contain smaller opposite-facing edges
+        changed = True
+        guard = 0
+        while changed and guard < 200:
+            changed = False
+            guard += 1
+            for ri in range(len(rooms)):
+                for rj in range(len(rooms)):
+                    if ri == rj or tuple(sorted((ri, rj))) in no_auto:
+                        continue
+                    for ei, a0, a1 in edges_of(ri):
+                        ax, ay = a1[0] - a0[0], a1[1] - a0[1]
+                        alen = math.hypot(ax, ay)
+                        if alen < tol:
+                            continue
+                        ux, uy = ax / alen, ay / alen
+                        for ej, b0, b1 in edges_of(rj):
+                            bx, by = b1[0] - b0[0], b1[1] - b0[1]
+                            if bx * ux + by * uy > -tol:  # need opposite dir
+                                continue
+                            # both endpoints on A's line?
+                            d0 = abs((b0[0] - a0[0]) * uy - (b0[1] - a0[1]) * ux)
+                            d1 = abs((b1[0] - a0[0]) * uy - (b1[1] - a0[1]) * ux)
+                            if d0 > tol or d1 > tol:
+                                continue
+                            t0 = (b0[0] - a0[0]) * ux + (b0[1] - a0[1]) * uy
+                            t1 = (b1[0] - a0[0]) * ux + (b1[1] - a0[1]) * uy
+                            lo, hi = min(t0, t1), max(t0, t1)
+                            if lo < -tol or hi > alen + tol:
+                                continue  # not contained in A's edge
+                            inserts = sorted(
+                                t for t in (t0, t1) if tol < t < alen - tol)
+                            if not inserts:
+                                continue  # exact match already
+                            vs = rooms[ri]["verts"]
+                            pos = vs.index(list(a0)) if list(a0) in vs else None
+                            if pos is None:
+                                continue
+                            for k, t in enumerate(inserts):
+                                vs.insert(pos + 1 + k,
+                                          [a0[0] + ux * t, a0[1] + uy * t])
+                            changed = True
+                            break
+                        if changed:
+                            break
+                    if changed:
+                        break
+                if changed:
+                    break
+
+        # (2) autoconnect exactly-coincident edges
+        used: set[tuple[int, int]] = set()
+        for a, ea, b, eb in data["connects"]:
+            used.add((a, ea))
+            used.add((b, eb))
+        for a, ea, b, eb, _ in data["connects_x"]:
+            used.add((a, ea))
+            used.add((b, eb))
+        for d in data["doors"]:
+            used.add((d["a"], d["ea"]))
+            used.add((d["b"], d["eb"]))
+
+        def nearest_edge(ri, px, py):
+            best, bd = -1, 1e18
+            for ei, p0, p1 in edges_of(ri):
+                mx, my = (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2
+                d = (mx - px) ** 2 + (my - py) ** 2
+                if d < bd:
+                    best, bd = ei, d
+            return best
+
+        # resolve point-authored doors FIRST so autoconnect can't steal them
+        for d in data.pop("doors_pts", []):
+            ea = nearest_edge(d["a"], *d["pa"])
+            eb = nearest_edge(d["b"], *d["pb"])
+            data["doors"].append(dict(a=d["a"], ea=ea, b=d["b"], eb=eb,
+                                      key=d["key"]))
+            used.add((d["a"], ea))
+            used.add((d["b"], eb))
+        for c in data.pop("connects_pts", []):
+            ea = nearest_edge(c[0], *c[1])
+            eb = nearest_edge(c[2], *c[3])
+            if (c[0], ea) in used or (
+                    (c[2], eb) != (c[0], ea) and (c[2], eb) in used):
+                raise ValueError(
+                    f"connect_pts resolves to an already-used edge: "
+                    f"room {c[0]} edge {ea} / room {c[2]} edge {eb}")
+            data["connects"].append([c[0], ea, c[2], eb])
+            used.add((c[0], ea))
+            used.add((c[2], eb))
+
+        all_edges = []
+        for ri in range(len(rooms)):
+            for ei, p0, p1 in edges_of(ri):
+                all_edges.append((ri, ei, p0, p1))
+        for i in range(len(all_edges)):
+            ri, ei, a0, a1 = all_edges[i]
+            if (ri, ei) in used:
+                continue
+            for j in range(i + 1, len(all_edges)):
+                rj, ej, b0, b1 = all_edges[j]
+                if rj == ri or (rj, ej) in used \
+                        or tuple(sorted((ri, rj))) in no_auto:
+                    continue
+                if (abs(a0[0] - b1[0]) < tol and abs(a0[1] - b1[1]) < tol
+                        and abs(a1[0] - b0[0]) < tol and abs(a1[1] - b0[1]) < tol):
+                    data["connects"].append([ri, ei, rj, ej])
+                    used.add((ri, ei))
+                    used.add((rj, ej))
+                    break
+        return data
+
+    def autoconnect(self, tol: float = 0.5):
+        """Deprecated shim: splitting/matching now happens in resolve()."""
+        # kept so older call sites are harmless; resolve() does the work
+        return None
 
     def connect(self, a, ea, b, eb):
         self.data["connects"].append([a, ea, b, eb])
@@ -237,7 +416,8 @@ class LevelBuilder:
     def build(self) -> Level:
         if self.data["player"] is None:
             raise ValueError("level has no player spawn")
-        return level_from_dict(self.data)
+        return level_from_dict(self.resolve())
 
     def to_dict(self) -> dict:
-        return self.data
+        """Final, resolved level dict (what save_level should write)."""
+        return self.resolve()

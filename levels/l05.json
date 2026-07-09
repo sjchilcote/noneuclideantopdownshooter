@@ -1,0 +1,482 @@
+{
+ "version": 2,
+ "name": "TWO WINGS",
+ "tier": 3,
+ "ambience": "amb_drone_mid",
+ "rooms": [
+  {
+   "verts": [
+    [
+     0,
+     0
+    ],
+    [
+     0.0,
+     10.0
+    ],
+    [
+     0.0,
+     170.0
+    ],
+    [
+     0,
+     180
+    ],
+    [
+     220,
+     180
+    ],
+    [
+     220,
+     0
+    ]
+   ],
+   "entities": []
+  },
+  {
+   "verts": [
+    [
+     -180,
+     10
+    ],
+    [
+     -180,
+     170
+    ],
+    [
+     0,
+     170
+    ],
+    [
+     0,
+     10
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      -65.52505000689636,
+      110.61496599160611
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      -114.47494999310362,
+      69.38503400839389
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     -360,
+     10
+    ],
+    [
+     -360,
+     170
+    ],
+    [
+     -180,
+     170
+    ],
+    [
+     -180,
+     10
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      -245.52505000689638,
+      110.61496599160611
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      -290.61496599160614,
+      114.47494999310362
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      -294.4749499931036,
+      69.38503400839389
+     ]
+    },
+    {
+     "type": "mite",
+     "pos": [
+      -249.3850340083939,
+      65.52505000689638
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      -285.0,
+      90.0
+     ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      -270.0,
+      90.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     -540,
+     10
+    ],
+    [
+     -540,
+     170
+    ],
+    [
+     -360,
+     170
+    ],
+    [
+     -360,
+     10
+    ]
+   ],
+   "entities": [
+    {
+     "type": "brute",
+     "pos": [
+      -450.0,
+      90.0
+     ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      -465.0,
+      90.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     1180,
+     10
+    ],
+    [
+     1180,
+     170
+    ],
+    [
+     1360,
+     170
+    ],
+    [
+     1360,
+     10
+    ]
+   ],
+   "entities": [
+    {
+     "type": "spitter",
+     "pos": [
+      1294.4749499931036,
+      110.61496599160611
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      1245.5250500068964,
+      69.38503400839389
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     1000,
+     10
+    ],
+    [
+     1000,
+     170
+    ],
+    [
+     1180,
+     170
+    ],
+    [
+     1180,
+     10
+    ]
+   ],
+   "entities": [
+    {
+     "type": "husk",
+     "pos": [
+      1114.4749499931036,
+      110.61496599160611
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      1059.9094407565651,
+      100.88844545457847
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      1095.6156092503313,
+      58.49658855381543
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      1075.0,
+      90.0
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      1090.0,
+      90.0
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     820,
+     10
+    ],
+    [
+     820,
+     170
+    ],
+    [
+     1000,
+     170
+    ],
+    [
+     1000,
+     10
+    ]
+   ],
+   "entities": [
+    {
+     "type": "spitter",
+     "pos": [
+      934.4749499931037,
+      110.61496599160611
+     ]
+    },
+    {
+     "type": "brute",
+     "pos": [
+      885.5250500068963,
+      69.38503400839389
+     ]
+    }
+   ]
+  },
+  {
+   "verts": [
+    [
+     -540,
+     300
+    ],
+    [
+     -540,
+     460
+    ],
+    [
+     -320,
+     460
+    ],
+    [
+     -320,
+     300
+    ]
+   ],
+   "entities": [
+    {
+     "type": "shrieker",
+     "pos": [
+      -405.5250500068964,
+      400.61496599160614
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      -460.09055924343494,
+      390.88844545457846
+     ]
+    },
+    {
+     "type": "husk",
+     "pos": [
+      -424.3843907496687,
+      348.4965885538154
+     ]
+    },
+    {
+     "type": "weapon_rail",
+     "pos": [
+      -445.0,
+      380.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      -430.0,
+      380.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      -415.0,
+      380.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      -445.0,
+      395.0
+     ]
+    }
+   ]
+  }
+ ],
+ "connects": [
+  [
+   0,
+   4,
+   4,
+   2
+  ],
+  [
+   3,
+   1,
+   7,
+   3
+  ],
+  [
+   6,
+   0,
+   7,
+   2
+  ],
+  [
+   0,
+   1,
+   1,
+   2
+  ],
+  [
+   1,
+   0,
+   2,
+   2
+  ],
+  [
+   2,
+   0,
+   3,
+   2
+  ],
+  [
+   4,
+   0,
+   5,
+   2
+  ],
+  [
+   5,
+   0,
+   6,
+   2
+  ]
+ ],
+ "connects_x": [],
+ "doors": [],
+ "player": {
+  "room": 0,
+  "pos": [
+   110,
+   90
+  ]
+ },
+ "exit": {
+  "room": 7,
+  "pos": [
+   -430,
+   420
+  ]
+ },
+ "lore": {
+  "intro": "Crew quarters. West wing and east wing.\nThe station schematic shows one wing.\nIt is drawn twice, in two colors.",
+  "radio": [
+   {
+    "trigger": "start",
+    "text": "Ratio: Quarters sweep. West wing, then east. They mirror each other; you'll be done fast."
+   },
+   {
+    "trigger": "enter_room:2",
+    "text": "Ratio: West two. Your beacon overlaps the east-two marker. Interference."
+   },
+   {
+    "trigger": "enter_room:5",
+    "text": "Ratio: East two. Same interference. Exactly the same. To the meter."
+   },
+   {
+    "trigger": "enter_room:7",
+    "text": "Ratio: Both wings end at one room. One room, two doors that cannot share a wall. I've stopped calling this noise."
+   },
+   {
+    "trigger": "exit",
+    "text": "Ratio: I overlaid the wings. They occupy the same cubic meters. Both are real. I checked nine times. The math is fine. The station is not."
+   }
+  ],
+  "terminals": [
+   {
+    "room": 1,
+    "pos": [
+     -90,
+     90
+    ],
+    "text": "BUNK 12-W\nDear M \u2014 the man in 12-E snores. I hear him\nthrough the wall. 12-E is on the other side of\nthe station. \u2014 R"
+   },
+   {
+    "room": 4,
+    "pos": [
+     1270,
+     90
+    ],
+    "text": "BUNK 12-E\nDear R \u2014 I do not snore. And I hear your\nradio through the wall. Fix your wall. \u2014 M"
+   }
+  ]
+ }
+}
