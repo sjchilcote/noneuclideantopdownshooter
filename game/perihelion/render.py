@@ -26,7 +26,7 @@ from .sim import DT
 
 INTERNAL_W, INTERNAL_H = 480, 270
 
-FLOOR_BASE = (22, 22, 28)          # 0x16161c — dark grey-blue, visibly above black
+FLOOR_BASE = (26, 26, 33)          # ~0x1a1a21 dark grey-blue — reads clearly against the void
 WALL_COLOR = (184, 196, 204)       # 0xb8c4cc
 WALL_MIN = (74, 80, 88)            # 0x4a5058 — walls never dim below this (readability skeleton)
 DOOR_COLOR = (208, 128, 24)        # 0xd08018
@@ -117,8 +117,11 @@ def _shade(base, dim, tint=(0, 0, 0)):
 
 
 def _room_tint(room: int):
+    # Upward-biased (0..+20 per channel): rooms vary noticeably so adjacent
+    # spaces read as different through portals, but no room ever falls
+    # below the #16161c readability base.
     h = hash(room)
-    return (((h) % 25) - 12, ((h >> 8) % 25) - 12, ((h >> 16) % 25) - 12)
+    return ((h) % 21, (h >> 8) % 21, (h >> 16) % 21)
 
 
 def _point_in_poly(x: float, y: float, poly) -> bool:
@@ -229,8 +232,8 @@ class Renderer:
         cx, cy = w / 2.0, h / 2.0
         dist = np.sqrt(((xx - cx) / (w / 2.0)) ** 2 + ((yy - cy) / (h / 2.0)) ** 2)
 
-        a = np.clip((dist - 0.55) / 0.6, 0.0, 1.0)
-        alpha = (a * 150).astype(np.uint8)
+        a = np.clip((dist - 0.62) / 0.6, 0.0, 1.0)
+        alpha = (a * 110).astype(np.uint8)
         surf = pygame.Surface((w, h), pygame.SRCALPHA)
         arr = pygame.surfarray.pixels_alpha(surf)
         arr[:, :] = alpha.T
@@ -253,7 +256,7 @@ class Renderer:
     def _bake_overlays(self):
         w, h = INTERNAL_W, INTERNAL_H
         hurt = pygame.Surface((w, h), pygame.SRCALPHA)
-        hurt.fill((200, 20, 20, 255))
+        hurt.fill((190, 26, 26, 255))
         self._hurt_overlay = hurt
         death = pygame.Surface((w, h), pygame.SRCALPHA)
         death.fill((0, 0, 0, 255))

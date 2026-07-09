@@ -52,16 +52,20 @@ def get_font(size: int) -> "pygame.font.Font":
 
 def _wrap(text: str, width: int) -> list[str]:
     lines: list[str] = []
-    cur = ""
-    for word in text.split(" "):
-        candidate = (cur + " " + word).strip()
-        if len(candidate) > width and cur:
+    for para in text.split("\n"):
+        if not para.strip():
+            lines.append("")
+            continue
+        cur = ""
+        for word in para.split(" "):
+            candidate = (cur + " " + word).strip()
+            if len(candidate) > width and cur:
+                lines.append(cur)
+                cur = word
+            else:
+                cur = candidate
+        if cur:
             lines.append(cur)
-            cur = word
-        else:
-            cur = candidate
-    if cur:
-        lines.append(cur)
     return lines or [""]
 
 
@@ -298,18 +302,18 @@ class PauseScene(Scene):
 
 # The cheapest characterization channel in the game: one line of the
 # Commando's log per death, in his own register.
-PALMER_LOGS = [
-    "PALMER LOG: Stripped the old frame for parts. Prayed the De Profundis "
+COMMANDO_LOGS = [
+    "LOG: Stripped the old frame for parts. Prayed the De Profundis "
     "over it first. It is not a body, whatever it feels like. It is not a body.",
-    "PALMER LOG: Death count rising. The rite does not say how often a man "
+    "LOG: Death count rising. The rite does not say how often a man "
     "may be buried. I have started abbreviating.",
-    "PALMER LOG: I no longer look at the old frames' faces. This is either "
+    "LOG: I no longer look at the old frames' faces. This is either "
     "mercy or discipline. The hours continue on schedule.",
-    "PALMER LOG: Lauds, on the internal clock. The clock does not know what "
+    "LOG: Lauds, on the internal clock. The clock does not know what "
     "deck I died on. Neither, anymore, do I.",
-    "PALMER LOG: The seed prints the frames faster now. It has learned my "
+    "LOG: The seed prints the frames faster now. It has learned my "
     "sizes. I try not to think about what else it is learning.",
-    "PALMER LOG: Ratio asked if dying hurts. I said the rules require me "
+    "LOG: Ratio asked if dying hurts. I said the rules require me "
     "not to check. She did not laugh. Neither did I.",
 ]
 
@@ -352,8 +356,8 @@ class DeathScene(Scene):
         surf.blit(img2, (w // 2 - img2.get_width() // 2, 140))
         img3 = mf.render("R: retry level    ESC: title", True, (170, 130, 130))
         surf.blit(img3, (w // 2 - img3.get_width() // 2, 160))
-        log = PALMER_LOGS[min(self.deaths - 1, len(PALMER_LOGS) - 1)] \
-            if self.deaths >= 1 else PALMER_LOGS[0]
+        log = COMMANDO_LOGS[min(self.deaths - 1, len(COMMANDO_LOGS) - 1)] \
+            if self.deaths >= 1 else COMMANDO_LOGS[0]
         y = 196
         words = log.split()
         line = ""

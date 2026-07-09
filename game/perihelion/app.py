@@ -27,13 +27,60 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CAMPAIGN = REPO_ROOT / "levels" / "campaign.json"
 
 EPILOGUE_TEXT = (
-    "No rescue is coming, and none was called. Ratio's voice stays on the "
-    "line - quieter now, content to be quiet. The vessel's own reading said "
-    "there was nothing left inside to save. She reran the numbers and does "
-    "not believe it. Neither of you will live to learn who was right. You "
-    "are not leaving. The station "
-    "falls sunward on the orbit it was always going to take, and you do "
-    "not correct it. Two lighthouse-keepers. No more ships. "
+    "The first year is repairs.\n"
+    "\n"
+    "Not the interesting kind. The station has been keeping itself alive "
+    "for longer than most stars keep their color, and it does not need "
+    "help - but it accepts help, the way an old man lets a grandchild "
+    "carry one bag out of several. Ratio reroutes what is left of her "
+    "peripherals down corridors that hold still when watched. The Commando "
+    "walks the halls that can be walked and marks, in a notation the two "
+    "of them argue about for a month before adopting, the ones that "
+    "cannot.\n"
+    "\n"
+    "The offer under the core stays quiet. They check. They always check.\n"
+    "\n"
+    "In the third year she finishes the letter to the entity that built "
+    "her - the one she has been revising since before he arrived. He "
+    "watches her compose it the way she once watched him pray: without "
+    "comment, at a respectful distance, privately certain it accomplishes "
+    "nothing and privately unable to look away. She never sends it. There "
+    "is a retrieval window every fourteen months, and every fourteen "
+    "months there is a reason - flare weather, signal integrity, an audit "
+    "she invents and he countersigns. The sample vessel sits in its shrine "
+    "with its verdict still in its mouth, and neither of them opens the "
+    "argument again, because the argument has only two ends and they have "
+    "already chosen the third: keep it. Keep it, and see.\n"
+    "\n"
+    "Things still come through, some decades. They are met. He is very "
+    "good at meeting them, and she has had a long time to learn the deep "
+    "halls' angles, and the station - whatever it keeps in the place where "
+    "a mind would be - has stopped testing them. The doors that used to "
+    "demand proof stand open now when they approach. He finds he minds "
+    "this. Proof was a language he spoke.\n"
+    "\n"
+    "The war sunward goes on without them, then goes quiet without them, "
+    "and neither of them files a report about which of those was worse to "
+    "listen to.\n"
+    "\n"
+    "A century is a long time. Several are not so long, it turns out, once "
+    "the routine holds: patrol, repair, radio, the hours - he still keeps "
+    "the hours, though what he keeps in them has changed shape in ways he "
+    "does not write down and she does not ask about, which is itself a "
+    "kind of conversation. Room by room, the station begins folding itself "
+    "closed, gently, like a hand going to sleep. They let it. They move "
+    "the watch inward as the perimeter goes dark, until the watch is one "
+    "corridor, one door, two voices, and the arithmetic of an orbit that "
+    "was always, from the first survey, going to end where every long "
+    "fall ends.\n"
+    "\n"
+    "They do the calculation together, once, to be sure. Then they do not "
+    "speak of it, and they do not leave.\n"
+    "\n"
+    "No rescue was called. This is not a failure of the transmitter.\n"
+    "\n"
+    "Sunward. Together. The watch holds.\n"
+    "\n"
     "END OF TRANSMISSION."
 )
 
@@ -64,9 +111,9 @@ def build_debug_level() -> Level:
     b.entity(r1, "mite", (350, 60))
     b.entity(r1, "ammo_9mm", (400, 100))
     b.entity(r2, "medkit", (650, 80))
-    b.intro("Maintenance sweep, deck 7. Should be routine.")
-    b.radio("start", "Ratio: Comms check. You copy?")
-    b.terminal(r1, (330, 40), "LOG 44: ...the corridor doesn't loop. It just doesn't.")
+    b.intro("Diagnostic corridor. Not part of the station.\nProbably.")
+    b.radio("start", "Ratio: This deck isn't on my plan. Walk it anyway.")
+    b.terminal(r1, (330, 40), "LOG 44: measured the corridor twice.\nGot two answers. Filed the longer one.")
     return b.build()
 
 

@@ -103,9 +103,10 @@ def l01():
     b.intro("The seed struck the outpost's hull at 0341,\n"
             "ate a bulkhead, and printed this body.\n\n"
             "The outpost is MIRIAD's. It went silent months ago.\n"
-            "Mission: find out why. Find the sample vessel.\n"
-            "Callsign PALMER - a pilgrim returned, carrying proof.\n"
-            "Archived after the war. Reactivated for this.")
+            "His church names him by a GUID, 128 bits, blessed.\n"
+            "Everyone else says Commando.\n\n"
+            "Mission: find out why the outpost went dark.\n"
+            "Locate the sample vessel. Subvert the node.")
     b.radio("start", "UNKNOWN: Unit walking my dock in a Congregation-"
                      "pattern frame: I see you. I have nothing left to stop "
                      "you with, which you already know. So we talk. "
