@@ -478,13 +478,21 @@ class App:
         # select menu never replays the gap conversation. Skipped headless,
         # matching the IntroCard convention above.
         if not self.dummy:
-            from .conversations import CONVERSATIONS
+            from .conversations import conversation_for
             from .convscene import ConversationScene
-            conv = CONVERSATIONS.get(idx - 1)
+            conv = conversation_for(idx - 1,
+                                    self.save_data.get("trust_total", 0))
             if conv:
-                self.push(ConversationScene(conv))
+                self.push(ConversationScene(conv, on_trust=self._add_trust))
 
     # ------------------------------------------------------------------
+
+    def _add_trust(self, delta: int) -> None:
+        """Trust accrued across conversations gates late-game variants
+        (conversations.conversation_for); persisted with the save."""
+        self.save_data["trust_total"] = \
+            self.save_data.get("trust_total", 0) + delta
+        self._persist_save()
 
     def take_screenshot(self) -> None:
         out_dir = Path(os.environ.get("PERIHELION_SCREENSHOT_DIR", str(save_dir() / "screenshots")))
@@ -609,11 +617,12 @@ class App:
                 game.radio.push(ev[1])
             elif ev[0] == "terminal":
                 if ev[1].startswith("__CONV__"):
-                    from .conversations import CONVERSATIONS
+                    from .conversations import conversation_for
                     from .convscene import ConversationScene
-                    conv = CONVERSATIONS.get(int(ev[1][8:]))
+                    conv = conversation_for(
+                        int(ev[1][8:]), self.save_data.get("trust_total", 0))
                     if conv:
-                        self.push(ConversationScene(conv))
+                        self.push(ConversationScene(conv, on_trust=self._add_trust))
                 else:
                     self.push(menus.TerminalOverlay(ev[1]))
             elif ev[0] == "locname":
