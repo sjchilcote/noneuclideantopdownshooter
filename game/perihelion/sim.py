@@ -758,7 +758,11 @@ class GameSession:
                     e["state"] = "hunt"
                 continue
 
-            # hunting
+            # hunting: audible before visible — the dread channel
+            e["groan_cd"] = e.get("groan_cd", self.rng.randrange(60, 200)) - 1
+            if e["groan_cd"] <= 0:
+                e["groan_cd"] = self.rng.randrange(140, 260)
+                self._snd(d["alert_snd"], room, (ex, ey), 0.35)
             accel = d["accel"] * (1.25 if e.get("buff", 0) > 0 else 1.0)
             if kind == "shrieker":
                 self._shrieker_ai(eid, e, room, proom, ex, ey, accel)
