@@ -123,17 +123,29 @@ def encode(rec: Path, fps: int, scale: int, mix_wav: Path, out: Path) -> None:
     subprocess.run(cmd, check=True)
 
 
-def cut_segments(full: Path, segments: str, out: Path) -> None:
-    """Cut `a-b,c-d` (seconds) from the encoded mp4 and concatenate."""
+FONT = Path(__file__).resolve().parents[2] / "game" / "assets" / "fonts" / "FSEX300.ttf"
+
+
+def cut_segments(full: Path, segments: str, out: Path,
+                 labels: list[str] | None = None) -> None:
+    """Cut `a-b,c-d` (seconds) from the encoded mp4 and concatenate.
+    Optional per-segment labels burn in for the first 3 s of each cut."""
     tmp = Path(tempfile.mkdtemp(prefix="mkvideo_seg_"))
     parts = []
     for i, span in enumerate(segments.split(",")):
         a, b = (float(x) for x in span.split("-"))
         part = tmp / f"part_{i}.mp4"
-        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", str(a),
-                        "-to", str(b), "-i", str(full),
-                        "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-                        "-c:a", "aac", "-b:a", "160k", str(part)], check=True)
+        cmd = ["ffmpeg", "-y", "-v", "error", "-ss", str(a),
+               "-to", str(b), "-i", str(full)]
+        if labels and i < len(labels) and labels[i]:
+            text = labels[i].replace("'", r"\'").replace(":", r"\:")
+            cmd += ["-vf",
+                    f"drawtext=fontfile={FONT}:text='{text}':fontsize=32:"
+                    f"fontcolor=white:borderw=3:bordercolor=black:"
+                    f"x=(w-text_w)/2:y=28:enable='lt(t,3)'"]
+        cmd += ["-c:v", "libx264", "-preset", "medium", "-crf", "20",
+                "-c:a", "aac", "-b:a", "160k", str(part)]
+        subprocess.run(cmd, check=True)
         parts.append(part)
     lst = tmp / "list.txt"
     lst.write_text("".join(f"file '{p}'\n" for p in parts))
@@ -152,6 +164,8 @@ def main(argv=None) -> int:
     p.add_argument("--scale", type=int, default=2)
     p.add_argument("--segments", default=None,
                    help='"a-b,c-d" spans in seconds to cut and join')
+    p.add_argument("--labels", default=None,
+                   help="comma-separated per-segment labels (burned in 3s)")
     args = p.parse_args(argv)
 
     rec = Path(args.rec)
@@ -167,7 +181,8 @@ def main(argv=None) -> int:
     if args.segments:
         full = rec / "full.mp4"
         encode(rec, args.fps, args.scale, mix_wav, full)
-        cut_segments(full, args.segments, out)
+        labels = args.labels.split(",") if args.labels else None
+        cut_segments(full, args.segments, out, labels)
     else:
         encode(rec, args.fps, args.scale, mix_wav, out)
     print(f"[mkvideo] wrote {out} ({duration:.0f}s source)")
