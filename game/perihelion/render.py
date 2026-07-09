@@ -132,11 +132,12 @@ def _shade(base, dim, tint=(0, 0, 0)):
 
 
 def _room_tint(room: int):
-    # Upward-biased (0..+20 per channel): rooms vary noticeably so adjacent
-    # spaces read as different through portals, but no room ever falls
-    # below the #16161c readability base.
-    h = hash(room)
-    return ((h) % 21, (h >> 8) % 21, (h >> 16) % 21)
+    # Constitution: one continuous space — floor color must never step at a
+    # portal. Per-room hash tints (up to +20/channel on a 26 base, a 1.8x
+    # visible seam) predate the room-kind prop language, which now carries
+    # all the "this room is different" signal. Rooms therefore share one
+    # base; variation comes from props, decals, and the darkness field.
+    return (0, 0, 0)
 
 
 def _point_in_poly(x: float, y: float, poly) -> bool:
