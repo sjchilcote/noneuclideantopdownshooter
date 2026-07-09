@@ -245,3 +245,22 @@ room, hypercube, Cayley graph, de Bruijn).
 < 8 ms at 480×270; step < 2 ms at 100 live entities. Measured, not vibed —
 `tools/playtest/perf.py` runs the worst-case scenes (hub center, mirror room,
 infinite corridor) every session.
+
+## 6. Addenda (built during the rewrite day)
+
+- **Runtime wall-splitting** (`split_edge`): inserts collinear vertices into
+  a solid wall at parametric (t0, t1), remapping every portal in the world
+  that references shifted edges. This is the portable hole's substrate:
+  dynamic graph modification as a player verb. Same-room double splits
+  cross-shift each other's indices — sim.py handles the bookkeeping.
+- **Fit rule**: portal transfer requires 2*radius <= opening * 1.05. Player-
+  width hole corridors exclude brutes by physics, not by AI special cases;
+  mites leak through, which is a feature.
+- **Tau cannon**: bouncing rounds via rest_wall=1.0 engine reflection with a
+  Python-side bounce budget; hold-to-charge on alt with overcharge bite.
+- **Boss tethering**: `tether` entity prop — arena guardians never pursue
+  beyond their room. Chosen engagements, no cross-map warden rushes.
+- **alert_hops** per level: gunshot alert radius in room-hops (default 2);
+  dense graphs (the Fold, the Core) use 1 — the fold eats sound.
+- **Between-sortie conversations**: nine tight-beam exchanges between levels
+  (conversations.py), the campaign's relationship arc.

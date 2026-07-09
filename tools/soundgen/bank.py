@@ -613,31 +613,28 @@ def gen_enemy_alert_mite() -> np.ndarray:
     # clearly separated chitter clicks in an accelerating gallop, drifting
     # down in pitch; each click = dark noise snap + damped body 'thock'
     t = 0.01
-    i = 0
     while t < dur - 0.05:
         cdur = rng.uniform(0.006, 0.012)
-        drift = 1.0 - 0.35 * (t / dur)
+        drift = 1.0 - 0.3 * (t / dur)
         grain = sy.white_noise(cdur, seed=int(rng.integers(0, 1 << 30)))
-        grain = sy.bandpass(grain, rng.uniform(1400, 2600) * drift, q=1.6)
+        grain = sy.bandpass(grain, rng.uniform(2000, 3800) * drift, q=1.6)
         grain = sy.apply_env(grain, sy.env_exp_decay(cdur, tau=cdur / 2.5))
-        thock = sy.sine(rng.uniform(480, 720) * drift, 0.025)
+        thock = sy.sine(rng.uniform(500, 750) * drift, 0.022)
         thock = sy.soft_clip(thock, 2.0)
-        thock = sy.apply_env(thock, sy.env_exp_decay(0.025, tau=0.007))
-        # AM warble on each click pair for organic modulation
-        g = rng.uniform(0.6, 1.0)
+        thock = sy.apply_env(thock, sy.env_exp_decay(0.022, tau=0.006))
+        g = rng.uniform(0.65, 1.0)
         events.append((t, grain, g))
-        events.append((t + 0.002, thock, g * 0.55))
-        gap = 0.05 - 0.028 * (t / dur)  # gallop accelerates
+        events.append((t + 0.002, thock, g * 0.4))
+        gap = 0.034 - 0.016 * (t / dur)  # gallop accelerates
         t += gap * rng.uniform(0.8, 1.2)
-        i += 1
-    # low body presence under the clicks
+    # faint body presence under the clicks (kept low -- clicks must dominate)
     bed = sy.brown_noise(dur, seed=seed + 1)
-    bed = sy.bandpass(bed, 260, q=0.9)
+    bed = sy.bandpass(bed, 300, q=0.9)
     bed = sy.apply_env(bed, sy.env_adsr(dur, 0.04, 0.05, 0.5, 0.1))
-    events.append((0.0, bed, 0.4))
+    events.append((0.0, bed, 0.15))
     x = place(dur, *events)
-    x = sy.soft_clip(x, 1.8)
-    x = sy.lowpass(x, 3200)
+    x = sy.soft_clip(x, 1.6)
+    x = sy.lowpass(x, 5500)
     return finish(x, fade_s=0.04, pad_s=0.03)
 
 
@@ -646,7 +643,7 @@ def gen_spitter_shoot() -> np.ndarray:
     dur = 0.28
     # deep wet gurgle: brown noise amplitude-modulated by a fast random LFO
     gurgle = sy.brown_noise(dur, seed=seed)
-    gurgle = sy.lowpass(gurgle, 650)
+    gurgle = sy.lowpass(gurgle, 900)
     lfo = sy.one_pole_lowpass(sy.white_noise(dur, seed=seed + 1), 28).astype(np.float64)
     lfo = 0.4 + 0.6 * np.abs(lfo) / (np.max(np.abs(lfo)) + 1e-9)
     gurgle = (gurgle.astype(np.float64) * lfo).astype(np.float32)
@@ -654,17 +651,20 @@ def gen_spitter_shoot() -> np.ndarray:
     # bloop: pitched-down sine, wet
     bloop = gun_thump(f0=380, f1=95, pitch_s=0.08, dur_s=0.16, drive=2.0)
     knock = body_knock(0.1, 210, seed=seed + 5)
-    grains = squelch_grains(dur, 9, 250, 850, grain_s=0.009, spread=0.85,
-                            seed=seed + 2, gain=0.8)
+    grains = squelch_grains(dur, 11, 350, 1300, grain_s=0.01, spread=0.85,
+                            seed=seed + 2, gain=1.3)
+    drips = squelch_grains(0.08, 2, 500, 1100, grain_s=0.012, spread=0.9,
+                           seed=seed + 6, gain=0.7)
     x = place(dur,
               (0.0, hot_transient(0.004, seed=seed + 3, gain=0.25, lp_hz=1800), 0.6),
               (0.0, gurgle, 1.1),
               (0.005, bloop, 0.9),
               (0.005, knock, 0.6),
-              (0.0, grains, 1.0))
+              (0.0, grains, 1.0),
+              (0.18, drips, 1.0))
     x = sy.soft_clip(x, 2.0)
-    x = sy.lowpass(x, 2200)
-    return finish(x, fade_s=0.035, pad_s=0.03)
+    x = sy.lowpass(x, 3200)
+    return finish(x, fade_s=0.04, pad_s=0.03)
 
 
 def gen_shrieker_scream() -> np.ndarray:
@@ -734,22 +734,26 @@ def gen_player_die() -> np.ndarray:
     debris = squelch_grains(0.5, 6, 400, 1100, grain_s=0.012, spread=0.9,
                             seed=seed + 6, gain=0.4)
     knock = body_knock(0.18, 150, seed=seed + 7)
-    # fading ear-ring: dark detuned pair, long decay, clearly audible
+    # fading ear-ring: detuned pair blended with narrow ringing noise so it
+    # reads as ringing ears, not a clean synth sine
     ringdur = 1.0
-    ring = sy.mix_layers([sy.sine(1050, ringdur), sy.sine(1063, ringdur)], [0.6, 0.5])
+    rnoise = sy.white_noise(ringdur, seed=seed + 8)
+    rnoise = sy.bandpass(rnoise, 1050, q=14.0)
+    ring = sy.mix_layers([sy.sine(1050, ringdur), sy.sine(1063, ringdur), rnoise],
+                         [0.45, 0.35, 0.8])
     ring = sy.apply_env(ring, sy.env_exp_decay(ringdur, tau=0.38, end=0.001))
     ring = sy.lowpass(ring, 2600)
     x = place(dur,
-              (0.0, voice, 0.7),
-              (0.28, body_fall, 1.2),
-              (0.28, knock, 0.9),
-              (0.52, second, 0.8),
-              (0.5, debris, 1.0),
-              (0.42, ring, 0.3))
+              (0.0, voice, 0.6),
+              (0.28, body_fall, 1.4),
+              (0.28, knock, 1.0),
+              (0.52, second, 0.9),
+              (0.5, debris, 1.3),
+              (0.42, ring, 0.28))
     x = sy.soft_clip(x, 1.7)
     x = sy.reverb(x, room_size=0.5, damping=0.5, mix=0.15, tail_s=0.2)
-    x = sy.fade_out(x, 0.25)
-    return finish(x, fade_s=0.08)
+    x = sy.fade_out(x, 0.35)
+    return finish(x, fade_s=0.1)
 
 
 def gen_heartbeat() -> np.ndarray:

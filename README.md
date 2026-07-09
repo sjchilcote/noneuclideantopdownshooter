@@ -20,8 +20,11 @@ uv run python -m perihelion            # campaign
 uv run python -m perihelion --level levels/l06.json   # single level
 ```
 
-Controls: WASD move, mouse aim, LMB fire, RMB lightning implant (when found),
-E interact/read, 1-6 or wheel to switch weapons, ESC pause.
+Controls: WASD move, mouse aim, LMB fire, E interact/read, 1-8 or wheel to
+switch weapons, ESC pause. RMB fires the lightning implant (when found) —
+or, with the tau cannon in hand, holds a charge: release to discharge,
+hold too long at your peril. The portable hole (slot 8) marks a wall per
+click; two marks fold a corridor between them. Mind what fits through.
 
 ## Level editor
 

@@ -67,7 +67,19 @@ class HUD:
             surf.blit(label, (w - 16 - label.get_width() - 16, h - 34))
         else:
             ammo_t = AMMO_LABEL.get(name)
-            count = "∞" if ammo_t is None else str(session.ammo.get(ammo_t, 0))
+            if name == "hole":
+                count = str(getattr(session, "holes", 0))
+                if session.hole_mark is not None:
+                    count += "*"  # one wall marked
+            elif name == "lightning":
+                ready = session.lightning_charge >= LIGHTNING_RECHARGE_TICKS
+                count = "RDY" if ready else                     f"{int(100 * session.lightning_charge / LIGHTNING_RECHARGE_TICKS)}%"
+            elif ammo_t is None:
+                count = "∞"
+            else:
+                count = str(session.ammo.get(ammo_t, 0))
+                if name == "tau" and session.tau_charge > 0:
+                    count += f" [{min(100, int(100 * session.tau_charge / 80))}%]"
             label = f.render(f"{name.upper()}  {count}", True, (230, 230, 230))
             surf.blit(label, (w - label.get_width() - 8, h - 16))
 
