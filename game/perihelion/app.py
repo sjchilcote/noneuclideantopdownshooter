@@ -544,6 +544,13 @@ class App:
                             pygame.KEYDOWN, key=pygame.K_SPACE, unicode=" "))
                         if self.scenes and self.scenes[-1] is top and \
                                 not isinstance(top, GameScene):
+                            # a conversation waiting on a dialogue choice:
+                            # pick option 1 rather than ESC-skipping the scene
+                            top.handle_event(self, pygame.event.Event(
+                                pygame.KEYDOWN, key=pygame.K_1, unicode="1"))
+                        if self.scenes and self.scenes[-1] is top and \
+                                not isinstance(top, GameScene) and \
+                                type(top).__name__ != "ConversationScene":
                             top.handle_event(self, pygame.event.Event(
                                 pygame.KEYDOWN, key=pygame.K_ESCAPE))
 
