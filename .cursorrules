@@ -1,0 +1,1 @@
+Don't add unnecessary comments. Be careful of "bad splices" - make sure your code matches the code surrounding it, it shouldn't be obvious that there's been a change and the code wasn't always like that. Always check if new functionality should be commonized.
