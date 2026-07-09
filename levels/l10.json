@@ -395,6 +395,13 @@
       1135.0,
       360.0
      ]
+    },
+    {
+     "type": "key_void",
+     "pos": [
+      1120.0,
+      300.0
+     ]
     }
    ],
    "detail_seed": 2005
@@ -595,6 +602,10 @@
    {
     "trigger": "enter_room:4",
     "text": "Ratio: The seal answers the void key. Last door, Commando."
+   },
+   {
+    "trigger": "pickup:void",
+    "text": "Ratio: The void seal. It was waiting in the far coset. It WANTS to be found, Commando. Remember that at the door."
    },
    {
     "trigger": "kills:20",

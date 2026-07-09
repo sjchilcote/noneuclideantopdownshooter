@@ -432,11 +432,9 @@ def l07():
     cache(b, stack, "ammo_9mm ammo_shell", off=(60, 30))
     cache(b, closet, "medkit ammo_cell")
     cache(b, deep, "medkit ammo_cell ammo_shell")
-    b.entity(deep, "key_gold", (760, -260))
-    b.entity(deep, "key_void", (840, -260))
-    b.radio("pickup:gold", "Ratio: Gold seal. Core approach. That's where "
-                           "the Container is. That's where it's always been "
-                           "— even before we built it.")
+    b.radio("kills:9", "Ratio: The incident files check out. Core approach "
+                       "is next. That's where the Container is. That's "
+                       "where it's always been — even before we built it.")
     b.exit(deep, (860, -230))
     b.radio("exit", "Ratio: You walked out of a room that has no end. "
                     "Remember that, next time something chases you.")
@@ -610,6 +608,11 @@ def l10():
     cache(b, hexes[2], "ammo_cell ammo_shell medkit")
     cache(b, hexes[4], "ammo_9mm ammo_9mm ammo_shell")
     cache(b, hexes[5], "medkit medkit ammo_cell")
+    b.entity(hexes[5], "key_void",
+             (center(b, hexes[5])[0], center(b, hexes[5])[1] - 60))
+    b.radio("pickup:void", "Ratio: The void seal. It was waiting in the far "
+                           "coset. It WANTS to be found, Commando. "
+                           "Remember that at the door.")
     cache(b, sanctum, "medkit ammo_cell ammo_shell")
     b.exit(sanctum, (1600, 180))
     b.radio("kills:20", "Ratio: The Warden is the door's idea of a guard. "
