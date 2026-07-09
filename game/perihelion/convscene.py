@@ -25,7 +25,7 @@ WRAP_WIDTH = 52          # chars; Fixedsys at 16px is ~8px/glyph on a 480 panel
 LINE_STEP = 16           # px; keeps the bitmap font on its pixel grid
 MARGIN = 26
 HEADER_H = 30
-FOOTER_H = 26
+FOOTER_H = 34
 
 SPEAKER_COLORS = {"RATIO": PHOSPHOR_GREEN, "COMMANDO": COMMANDO_BONE}
 
@@ -131,4 +131,4 @@ class ConversationScene(Scene):
 
         hint = "SPACE: next    ESC: skip"
         img = get_font(9).render(hint, True, DIM_GREEN)
-        surf.blit(img, (w - img.get_width() - 20, h - FOOTER_H + 6))
+        surf.blit(img, (w - img.get_width() - 20, h - 28))

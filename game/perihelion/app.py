@@ -343,6 +343,17 @@ class App:
         self._persist_save()
         self.current_level_index = idx
         self._load_and_play(idx, carried_state=carried_state)
+        # Between-sortie conversation (bible: "the frame is in transit; the
+        # minds talk"), pushed above the IntroCard so it plays first. Only
+        # campaign advancement lands here -- starting a level from the
+        # select menu never replays the gap conversation. Skipped headless,
+        # matching the IntroCard convention above.
+        if not self.dummy:
+            from .conversations import CONVERSATIONS
+            from .convscene import ConversationScene
+            conv = CONVERSATIONS.get(idx - 1)
+            if conv:
+                self.push(ConversationScene(conv))
 
     # ------------------------------------------------------------------
 
