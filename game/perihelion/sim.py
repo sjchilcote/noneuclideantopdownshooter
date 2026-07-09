@@ -1239,17 +1239,29 @@ class GameSession:
         escapees to the room centroid and say so loudly -- this is
         damage control for an engine bug, not normal flow."""
         verts_all = self.level.room_verts
+        streaks = getattr(self, "_outside_streaks", None)
+        if streaks is None:
+            streaks = self._outside_streaks = {}
         for eid in (self.pid, *list(self.enemies)):
             if not self.sim.exists(eid):
+                streaks.pop(eid, None)
                 continue
             room, x, y, *_ = self.sim.get(eid)
             if room >= len(verts_all):
                 continue
-            # threshold sits above transient shove depth (a warden brawl
-            # can press a center ~10u past a wall and physics recovers it);
-            # a real escape drifts far beyond this within a second or two
             off = self._outside_by(x, y, verts_all[room])
-            if off > 25.0:
+            if off <= 25.0:
+                streaks.pop(eid, None)
+                continue
+            # persistence gate: a door-crush can press entities 25-50u out
+            # and physics reclaims them when the crowd shifts — recovering
+            # those mid-fight destabilizes the finale (soak2: 54/985 runs
+            # wedged by recovery churn vs 1/1894 baseline). A true escape
+            # (bad transfer from an out-of-polygon position) stays outside
+            # every sweep forever; only that persistent signature recovers.
+            streaks[eid] = streaks.get(eid, 0) + 1
+            if streaks[eid] >= 6:  # 6 sweeps = 3 seconds continuously out
+                streaks.pop(eid, None)
                 # recovery target MUST come from the same frame as the
                 # verts: level.room_centroids is authored-frame bookkeeping
                 # and teleporting there re-corrupts (that bug ate this

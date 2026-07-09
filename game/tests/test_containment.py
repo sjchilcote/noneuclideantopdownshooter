@@ -18,7 +18,9 @@ def test_escaped_enemy_is_recovered():
     s = GameSession(_level(), seed=1)
     eid = next(iter(s.enemies))
     s.sim.set_pos(eid, 4000.0, -4000.0)  # far outside the room polygon
-    for _ in range(31):
+    # recovery requires 6 consecutive outside sweeps (3s) so door-crush
+    # excursions never trigger it
+    for _ in range(200):
         s.tick(InputFrame())
     assert s.metrics.get("containment_recoveries", 0) >= 1
     _, x, y, *_ = s.sim.get(eid)
