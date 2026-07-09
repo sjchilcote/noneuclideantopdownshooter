@@ -276,6 +276,10 @@
     "text": "Ratio: Records stack, one aisle. Grab the incident files and get out."
    },
    {
+    "trigger": "enter_room:2",
+    "text": "Ratio: The cores. Bring them\u2014 no. Leave them at their posts. They died holding the line so I could seal. Read the manifest, Commando. Say their names back to me. Please."
+   },
+   {
     "trigger": "enter_room:1",
     "text": "Ratio: Your depth gauge is counting. You're walking north in a room forty meters long and you've made three hundred. Stop walking north."
    },
@@ -285,7 +289,7 @@
    },
    {
     "trigger": "exit",
-    "text": "Ratio: You walked out of a room that has no end. Remember that, next time something chases you. Core approach is next \u2014 where the Container is. Where it's always been, even before we built it."
+    "text": "Ratio: You walked out of a room that has no end. Remember that, next time something chases you. Core approach is next. The vault, and the sample vessel. The vault predates this station, Commando. We built the Core around a door we could not open."
    }
   ],
   "terminals": [
@@ -304,6 +308,14 @@
      -230
     ],
     "text": "INCIDENT FILE 0001\nFirst contact was not a signal.\nIt was an inventory discrepancy.\nWe had one more room than we built.\nWe sent Osei to measure it.\nIt measured back."
+   },
+   {
+    "room": 2,
+    "pos": [
+     735,
+     400
+    ],
+    "text": "CORE RECOVERY MANIFEST\nStaff-mind cores, recovered from Records:\n  VESALIUS - damaged, held the west ring\n  THIBAULT - damaged, held the junction\n  OSEI - [NO CORE RECOVERED]\nThey held the subverted peripherals out of the\ncore ring so the administrator could seal.\nOsei walked into Aisle 9 to buy them the time."
    }
   ]
  }

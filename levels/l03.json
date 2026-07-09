@@ -459,6 +459,14 @@
      150
     ],
     "text": "INVENTORY\n2x fertilizer drum \u2014 MISSING.\nFound both drums in the room I was standing in.\nBehind me. I had checked behind me."
+   },
+   {
+    "room": 1,
+    "pos": [
+     176.7766952966369,
+     -176.77669529663686
+    ],
+    "text": "DIRECTIVE 0007 \u2014 MIRIAD PRIME\nRE: survey of gravitational anomaly, Site One\n\nRETRIEVAL SUPERSEDES SURVEY.\n\n[appended, local, unsigned]\nFour months of careful science, inverted overnight\nby three words. We cut the aperture Tuesday.\nGod help whoever reads this log in order."
    }
   ]
  }

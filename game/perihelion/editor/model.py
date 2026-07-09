@@ -263,6 +263,11 @@ class EditorModel:
         self.last_errors = []
         return []
 
+    def _write_out(self, path) -> None:
+        out = dict(self.data)
+        out["version"] = LEVEL_VERSION
+        Path(path).write_text(json.dumps(out, indent=1))
+
     def save(self, path=None) -> list:
         """Validation-gated save. Returns the (non-empty) error list and
         refuses to write if invalid."""
@@ -272,11 +277,19 @@ class EditorModel:
         target = Path(path) if path is not None else self.path
         if target is None:
             return ["no file path to save to"]
-        out = dict(self.data)
-        out["version"] = LEVEL_VERSION
-        target.write_text(json.dumps(out, indent=1))
+        self._write_out(target)
         self.path = target
         self._saved_snapshot = copy.deepcopy(self.data)
+        return []
+
+    def export(self, path) -> list:
+        """Validation-gated write to an arbitrary path that does NOT touch
+        self.path or the dirty/saved-snapshot bookkeeping -- used by the F5
+        test-play export so it never hijacks "the file Ctrl+S writes to"."""
+        errs = self.validate()
+        if errs:
+            return errs
+        self._write_out(path)
         return []
 
     # -- validation -----------------------------------------------------
@@ -654,6 +667,23 @@ class EditorModel:
             del lst[idx]
 
     # -- picking / selection -----------------------------------------------------
+
+    def nearest_edge(self, x: float, y: float, tol: float):
+        """Nearest raw polygon edge (any room), for connect-mode picking --
+        distinct from nearest_connection, which finds existing connection
+        arcs rather than unclaimed edges."""
+        best = None
+        bd = tol * tol
+        for ri, room in enumerate(self.data.get("rooms", [])):
+            verts = room.get("verts", [])
+            n = len(verts)
+            for ei in range(n):
+                a, b = verts[ei], verts[(ei + 1) % n]
+                d = _point_seg_dist2(x, y, a[0], a[1], b[0], b[1])
+                if d <= bd:
+                    bd = d
+                    best = (ri, ei)
+        return best
 
     def nearest_room(self, x: float, y: float):
         hit = None

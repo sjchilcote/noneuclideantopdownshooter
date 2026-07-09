@@ -449,23 +449,23 @@
   ]
  },
  "lore": {
-  "intro": "Deck 4 dock. Three days from perihelion.\nSomething tripped the motion grid in storage.\nProbably a loose cart. Probably.",
+  "intro": "The seed struck the outpost's hull at 0341,\nate a bulkhead, and printed this body.\n\nThe outpost is MIRIAD's. It went silent months ago.\nMission: find out why. Find the sample vessel.\nCallsign PALMER - a pilgrim returned, carrying proof.\nPut to rest once, journey complete. Or so it thought.",
   "radio": [
    {
     "trigger": "start",
-    "text": "Ratio: Comms check. It's a maintenance sweep, Commando. The scariest thing down there is the paperwork."
+    "text": "UNKNOWN: Unit walking my dock in a Congregation-pattern frame: I see you. I have nothing left to stop you with, which you already know. So we talk. Designation Ratio. This was my outpost."
    },
    {
     "trigger": "enter_room:2",
-    "text": "Ratio: Storage ring ahead. Eight segments, one loop. South hatch is the only one answering. In and out."
+    "text": "Ratio: The things wearing my maintenance chassis are not mine anymore. Storage ring ahead - eight segments. Clear it and I'll consider us introduced."
    },
    {
     "trigger": "enter_room:11",
-    "text": "Ratio: ...huh. Your beacon just jumped clean off the deck plan. Bad relay. Has to be."
+    "text": "Ratio: ...Your beacon just left my deck plan. That was not me. Noted, Commando: it happens to you too."
    },
    {
     "trigger": "exit",
-    "text": "Ratio: Sweep logged. See? Paperwork."
+    "text": "Ratio: You cleared my ring and stole nothing that was mine. Provisional finding: talking was correct. There is worse below. Retainer terms to follow."
    }
   ],
   "terminals": [

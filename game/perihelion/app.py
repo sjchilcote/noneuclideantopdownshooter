@@ -27,12 +27,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CAMPAIGN = REPO_ROOT / "levels" / "campaign.json"
 
 EPILOGUE_TEXT = (
-    "The station is behind you now, and still falling. Ratio's voice went "
-    "quiet somewhere around the last hull breach, but the silence that "
-    "replaced it does not feel empty. You do not remember every room you "
-    "walked through. Some of them, you suspect, you walked through twice, "
-    "from two different directions, at once. The sun gets closer. So does "
-    "whatever answered when you called for help. END OF TRANSMISSION."
+    "No rescue is coming, and none was called. Ratio's voice stays on the "
+    "line - quieter now, content to be quiet. The vessel's own reading said "
+    "there was nothing left inside to save; she ran the numbers nine more "
+    "times and called the reading a coward's arithmetic. Neither of you "
+    "will live to learn who was right. You are not leaving. The station "
+    "falls sunward on the orbit it was always going to take, and you do "
+    "not correct it. Two lighthouse-keepers. No more ships. "
+    "END OF TRANSMISSION."
 )
 
 

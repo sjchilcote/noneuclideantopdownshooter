@@ -793,6 +793,14 @@
      500.0
     ],
     "text": "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\nflip one bit at a time.\n\u2014 O."
+   },
+   {
+    "room": 7,
+    "pos": [
+     1240.0,
+     500.0
+    ],
+    "text": "[TRANSLATION CONFIDENCE 41%]\nwelcome / student / stranger.\nthis room is a lesson.\nthe lesson: >>four<< is a direction.\ndo not fear the direction.\nwe feared it. fear did not help."
    }
   ]
  }

@@ -467,7 +467,7 @@
   "radio": [
    {
     "trigger": "start",
-    "text": "Ratio: Pressure's uneven in the row. If a line pops, don't stand in front of it."
+    "text": "Ratio: Terms: you clear my decks, I open my doors, and we both pretend that's all this is. Pressure's uneven in the row. Don't stand in front of a line when it pops."
    },
    {
     "trigger": "enter_room:3",
@@ -479,7 +479,7 @@
    },
    {
     "trigger": "enter_room:2",
-    "text": "Ratio: If you're sweeping the pump bays, the crews left supplies in two."
+    "text": "Ratio: If you're going to loot my pump bays anyway, bay two holds sealed supplies. Consider it a retainer. I want to know what you see down there."
    },
    {
     "trigger": "exit",

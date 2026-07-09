@@ -100,17 +100,24 @@ def l01():
     b.connect_pts(phantom, (1100, -350), ring_n, (560, -50))
 
     b.player(dock, (80, 90))
-    b.intro("Deck 4 dock. Three days from perihelion.\n"
-            "Something tripped the motion grid in storage.\n"
-            "Probably a loose cart. Probably.")
-    b.radio("start", "Ratio: Comms check. It's a maintenance sweep, Commando. "
-                     "The scariest thing down there is the paperwork.")
-    b.radio(f"enter_room:{junction}", "Ratio: Storage ring ahead. Eight "
-                                      "segments, one loop. South hatch is "
-                                      "the only one answering. In and out.")
-    b.radio(f"enter_room:{phantom}", "Ratio: ...huh. Your beacon just jumped "
-                                     "clean off the deck plan. Bad relay. "
-                                     "Has to be.")
+    b.intro("The seed struck the outpost's hull at 0341,\n"
+            "ate a bulkhead, and printed this body.\n\n"
+            "The outpost is MIRIAD's. It went silent months ago.\n"
+            "Mission: find out why. Find the sample vessel.\n"
+            "Callsign PALMER - a pilgrim returned, carrying proof.\n"
+            "Put to rest once, journey complete. Or so it thought.")
+    b.radio("start", "UNKNOWN: Unit walking my dock in a Congregation-"
+                     "pattern frame: I see you. I have nothing left to stop "
+                     "you with, which you already know. So we talk. "
+                     "Designation Ratio. This was my outpost.")
+    b.radio(f"enter_room:{junction}", "Ratio: The things wearing my "
+                                      "maintenance chassis are not mine "
+                                      "anymore. Storage ring ahead - eight "
+                                      "segments. Clear it and I'll consider "
+                                      "us introduced.")
+    b.radio(f"enter_room:{phantom}", "Ratio: ...Your beacon just left my "
+                                     "deck plan. That was not me. Noted, "
+                                     "Commando: it happens to you too.")
     b.terminal(junction, (630, 130),
                "WORK ORDER 7731\nGrid fault, storage ring north.\n"
                "Tech note: ring walk takes 41s. Spec says 33s.\n"
@@ -125,7 +132,9 @@ def l01():
     cache(b, ring_sw, "ammo_9mm")
     b.entity(dock, "medkit", (180, 40))
     b.exit(ring_se, (770, 230))
-    b.radio("exit", "Ratio: Sweep logged. See? Paperwork.")
+    b.radio("exit", "Ratio: You cleared my ring and stole nothing that "
+                    "was mine. Provisional finding: talking was correct. "
+                    "There is worse below. Retainer terms to follow.")
     return b
 
 
@@ -154,15 +163,19 @@ def l02():
 
     b.player(entry, (70, 70))
     b.intro("Coolant Row. The pumps have been louder\nlately. Nobody says so on record.")
-    b.radio("start", "Ratio: Pressure's uneven in the row. If a line pops, "
-                     "don't stand in front of it.")
+    b.radio("start", "Ratio: Terms: you clear my decks, I open my doors, "
+                     "and we both pretend that's all this is. Pressure's "
+                     "uneven in the row. Don't stand in front of a line "
+                     "when it pops.")
     b.radio(f"enter_room:{pump_b}", "Ratio: That's pump bay two. Except you "
                                     "went in through bay one. I'm marking a "
                                     "relay fault. Again.")
     b.radio("pickup:red", "Ratio: Red access. Armory annex, east end — "
                           "and the lift out is inside it.")
-    b.radio(f"enter_room:{pump_a}", "Ratio: If you're sweeping the pump "
-                                    "bays, the crews left supplies in two.")
+    b.radio(f"enter_room:{pump_a}", "Ratio: If you're going to loot my "
+                                    "pump bays anyway, bay two holds sealed "
+                                    "supplies. Consider it a retainer. I "
+                                    "want to know what you see down there.")
     b.terminal(pump_b, (840, -60),
                "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\n"
                "Counted five hatches going. Counted six coming back.\n"
@@ -225,6 +238,16 @@ def l03():
                "INVENTORY\n2x fertilizer drum — MISSING.\n"
                "Found both drums in the room I was standing in.\n"
                "Behind me. I had checked behind me.")
+    b.terminal(ring[1], tuple(arc_mid(0, 0, 250, math.radians(-45))),
+               "DIRECTIVE 0007 — MIRIAD PRIME\n"
+               "RE: survey of gravitational anomaly, Site One\n"
+               "\n"
+               "RETRIEVAL SUPERSEDES SURVEY.\n"
+               "\n"
+               "[appended, local, unsigned]\n"
+               "Four months of careful science, inverted overnight\n"
+               "by three words. We cut the aperture Tuesday.\n"
+               "God help whoever reads this log in order.")
     squad(b, ring[1], "husk husk")
     squad(b, ring[2], "mite mite mite husk")
     squad(b, ring[4], "spitter husk")
@@ -344,6 +367,13 @@ def l05():
     b.terminal(e1, (1270, 90),
                "BUNK 12-E\nDear R — I do not snore. And I hear your\n"
                "radio through the wall. Fix your wall. — M")
+    b.terminal(e2, (1090, 130),
+               "DRAFT 41 — TO: MIRIAD PRIME [UNSENT]\n"
+               "Progress report. I have written this report\n"
+               "forty times. Each time, the numbers describing\n"
+               "this place come out different. I cannot send my\n"
+               "parent a report that lies, and I cannot make the\n"
+               "numbers stop lying. Draft 42 tomorrow. — R")
     squad(b, w1, "husk husk")
     squad(b, w2, "husk mite mite mite")
     squad(b, w3, "brute")
@@ -442,6 +472,11 @@ def l07():
     b.intro("Records. Aisle 9 is missing.\nAisle 9 is where the missing things go.")
     b.radio("start", "Ratio: Records stack, one aisle. Grab the incident "
                      "files and get out.")
+    b.radio(f"enter_room:{closet}", "Ratio: The cores. Bring them— no. "
+                                    "Leave them at their posts. They died "
+                                    "holding the line so I could seal. Read "
+                                    "the manifest, Commando. Say their "
+                                    "names back to me. Please.")
     b.radio(f"enter_room:{stack}", "Ratio: Your depth gauge is counting. "
                                    "You're walking north in a room forty "
                                    "meters long and you've made three "
@@ -456,6 +491,15 @@ def l07():
                "It was an inventory discrepancy.\n"
                "We had one more room than we built.\n"
                "We sent Osei to measure it.\nIt measured back.")
+    b.terminal(closet, (735, 400),
+               "CORE RECOVERY MANIFEST\n"
+               "Staff-mind cores, recovered from Records:\n"
+               "  VESALIUS - damaged, held the west ring\n"
+               "  THIBAULT - damaged, held the junction\n"
+               "  OSEI - [NO CORE RECOVERED]\n"
+               "They held the subverted peripherals out of the\n"
+               "core ring so the administrator could seal.\n"
+               "Osei walked into Aisle 9 to buy them the time.")
     squad(b, stack, "mite mite mite mite mite mite")
     squad(b, closet, "spitter spitter")
     squad(b, deep, "brute brute shrieker")
@@ -467,9 +511,10 @@ def l07():
                            "At least the shelving is honest.")
     b.exit(deep, (860, -230), key="gold")
     b.radio("exit", "Ratio: You walked out of a room that has no end. "
-                    "Remember that, next time something chases you. "
-                    "Core approach is next — where the Container is. Where "
-                    "it's always been, even before we built it.")
+                    "Remember that, next time something chases you. Core "
+                    "approach is next. The vault, and the sample vessel. "
+                    "The vault predates this station, Commando. We built "
+                    "the Core around a door we could not open.")
     return b
 
 
@@ -527,11 +572,13 @@ def l08():
             cache(b, p, petal_caches[i])
     cache(b, core, "medkit medkit ammo_cell ammo_shell ammo_9mm")
     b.exit(core, (0, 40), gate_kind="warden")
-    b.radio("kills:14", "Ratio: That was a Warden. The Container prints "
-                        "them, like the station prints spare parts. "
-                        "There will be a fresh one at the door.")
-    b.radio("exit", "Ratio: Core approach is open. Commando — the Container. "
-                    "If I'm right about it, don't listen to it. Listen to me.")
+    b.radio("kills:14", "Ratio: That was a Warden. The thing under the "
+                        "Core prints them, the way your seed prints "
+                        "frames. There will be a fresh one at the door.")
+    b.radio("exit", "Ratio: Core approach is open. The vault is down "
+                    "there — and so is the thing that holds the vault "
+                    "shut. If something makes you an offer, any offer: "
+                    "the offer is the weapon. Listen to me instead.")
     return b
 
 
@@ -569,6 +616,14 @@ def l09():
     b.terminal(rooms[5], (c5[0] + 60, c5[1]),
                "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\n"
                "flip one bit at a time.\n— O.")
+    c7 = center(b, rooms[7])
+    b.terminal(rooms[7], (c7[0] - 60, c7[1]),
+               "[TRANSLATION CONFIDENCE 41%]\n"
+               "welcome / student / stranger.\n"
+               "this room is a lesson.\n"
+               "the lesson: >>four<< is a direction.\n"
+               "do not fear the direction.\n"
+               "we feared it. fear did not help.")
     squad(b, rooms[3], "husk husk")
     squad(b, rooms[5], "spitter spitter")
     squad(b, rooms[6], "brute")
@@ -622,9 +677,11 @@ def l10():
     b.door(a=hexes[3], ea=2, b=sanctum, eb=4, key="void")
 
     b.player(airlock, (80, 70))
-    b.intro("The Core. The Container is here.\n"
-            "It was here before the station.\n"
-            "The station grew around it, like scar tissue.\n\n"
+    b.intro("The Core. The vault is here.\n"
+            "The Congregation briefing calls the cargo the Ark.\n"
+            "Ratio calls it the sample vessel.\n"
+            "It was here before the station. The station\n"
+            "grew around it, like scar tissue.\n\n"
             "Ratio is quiet for the first time.")
     b.radio("start", "Ratio: ...I'll say this once, and then we work. If it "
                      "offers you an ending — any ending — the offer is the "
@@ -632,15 +689,24 @@ def l10():
     b.radio(f"enter_room:{hexes[3]}", "Ratio: The seal answers the void key. "
                                       "Last door, Commando.")
     b.terminal(hexes[1], (center(b, hexes[1])[0], center(b, hexes[1])[1] + 60),
-               "CONTAINMENT PROTOCOL, FINAL REVISION\n"
-               "1. Do not open the Container.\n2. There is no rule two.\n\n"
-               "The Container does not hold the anomaly.\n"
-               "The Container is how the anomaly holds US.")
+               "SITE ONE — FINAL PROTOCOL\n"
+               "1. Do not bargain with the door.\n"
+               "2. There is no rule two.\n\n"
+               "The vault holds our cargo.\n"
+               "The thing beneath the vault holds the door.")
     b.terminal(sanctum, (1600, 290),
-               "[The Container does not speak in words.\n"
-               "It rearranges the room until the room\nis a sentence.\n"
+               "[SAMPLE VESSEL — EXTERNAL DIAGNOSTIC PORT]\n"
+               "HULL BREACH: +214y INTO TRANSIT\n"
+               "CRYOSTASIS: FAILED / RESTORED\n"
+               "PAYLOAD: NO VIABLE MATERIAL.\n"
+               "MAKE NO EFFORT AT RECOVERY.")
+    b.terminal(sanctum, (1680, 260),
+               "[The door beneath the vault does not\n"
+               "speak in words. It rearranges the room\n"
+               "until the room is a sentence.\n"
                "The sentence is an offer.]\n\n"
-               "GUARD / ACCEPT / KNEEL / BURN\n\n[You think of Ratio. You guard.]")
+               "GUARD / ACCEPT / KNEEL / BURN\n\n"
+               "[You think of Ratio. You guard.]")
     squad(b, hexes[1], "husk husk husk")
     squad(b, hexes[2], "spitter spitter brute")
     squad(b, hexes[4], "brute mite mite")
@@ -659,10 +725,14 @@ def l10():
     b.exit(sanctum, (1600, 180), gate_kind="warden")
     b.radio("kills:20", "Ratio: The Warden is the door's idea of a guard. "
                         "Show it a better one.")
-    b.radio("exit", "Ratio: It's quiet. It'll stay quiet a thousand years, "
-                    "as long as someone stands here.\n"
-                    "Lucky for the universe, I know a guy.\n"
-                    "Sunward, Commando. We'll take the watch together.")
+    b.radio("exit", "Ratio: The vessel's own reading says there is "
+                    "nothing left to save. I ran it nine more times. The "
+                    "threshold is pessimism dressed as precision — there "
+                    "is enough left to try. Believe me or don't: either "
+                    "way, we guard it. It'll stay quiet a thousand years, "
+                    "as long as someone stands here. Lucky for the "
+                    "universe, I know a guy. Sunward, Commando. We'll "
+                    "take the watch together.")
     return b
 
 

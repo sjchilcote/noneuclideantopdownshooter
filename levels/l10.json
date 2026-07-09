@@ -552,7 +552,7 @@
   "gate_kind": "warden"
  },
  "lore": {
-  "intro": "The Core. The Container is here.\nIt was here before the station.\nThe station grew around it, like scar tissue.\n\nRatio is quiet for the first time.",
+  "intro": "The Core. The vault is here.\nThe Congregation briefing calls the cargo the Ark.\nRatio calls it the sample vessel.\nIt was here before the station. The station\ngrew around it, like scar tissue.\n\nRatio is quiet for the first time.",
   "radio": [
    {
     "trigger": "start",
@@ -572,7 +572,7 @@
    },
    {
     "trigger": "exit",
-    "text": "Ratio: It's quiet. It'll stay quiet a thousand years, as long as someone stands here.\nLucky for the universe, I know a guy.\nSunward, Commando. We'll take the watch together."
+    "text": "Ratio: The vessel's own reading says there is nothing left to save. I ran it nine more times. The threshold is pessimism dressed as precision \u2014 there is enough left to try. Believe me or don't: either way, we guard it. It'll stay quiet a thousand years, as long as someone stands here. Lucky for the universe, I know a guy. Sunward, Commando. We'll take the watch together."
    }
   ],
   "terminals": [
@@ -582,7 +582,7 @@
      760.0,
      59.99999999999999
     ],
-    "text": "CONTAINMENT PROTOCOL, FINAL REVISION\n1. Do not open the Container.\n2. There is no rule two.\n\nThe Container does not hold the anomaly.\nThe Container is how the anomaly holds US."
+    "text": "SITE ONE \u2014 FINAL PROTOCOL\n1. Do not bargain with the door.\n2. There is no rule two.\n\nThe vault holds our cargo.\nThe thing beneath the vault holds the door."
    },
    {
     "room": 7,
@@ -590,7 +590,15 @@
      1600,
      290
     ],
-    "text": "[The Container does not speak in words.\nIt rearranges the room until the room\nis a sentence.\nThe sentence is an offer.]\n\nGUARD / ACCEPT / KNEEL / BURN\n\n[You think of Ratio. You guard.]"
+    "text": "[SAMPLE VESSEL \u2014 EXTERNAL DIAGNOSTIC PORT]\nHULL BREACH: +214y INTO TRANSIT\nCRYOSTASIS: FAILED / RESTORED\nPAYLOAD: NO VIABLE MATERIAL.\nMAKE NO EFFORT AT RECOVERY."
+   },
+   {
+    "room": 7,
+    "pos": [
+     1680,
+     260
+    ],
+    "text": "[The door beneath the vault does not\nspeak in words. It rearranges the room\nuntil the room is a sentence.\nThe sentence is an offer.]\n\nGUARD / ACCEPT / KNEEL / BURN\n\n[You think of Ratio. You guard.]"
    }
   ]
  },

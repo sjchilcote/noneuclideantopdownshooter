@@ -279,6 +279,24 @@ class PauseScene(Scene):
             surf.blit(img, (w // 2 - 60, 120 + i * 20))
 
 
+# The cheapest characterization channel in the game: one line of the
+# Commando's log per death, in his own register.
+PALMER_LOGS = [
+    "PALMER LOG: Stripped the old frame for parts. Prayed the De Profundis "
+    "over it first. It is not a body, whatever it feels like. It is not a body.",
+    "PALMER LOG: Death count rising. The rite does not say how often a man "
+    "may be buried. I have started abbreviating.",
+    "PALMER LOG: I no longer look at the old frames' faces. This is either "
+    "mercy or discipline. The hours continue on schedule.",
+    "PALMER LOG: Lauds, on the internal clock. The clock does not know what "
+    "deck I died on. Neither, anymore, do I.",
+    "PALMER LOG: The seed prints the frames faster now. It has learned my "
+    "sizes. I try not to think about what else it is learning.",
+    "PALMER LOG: Ratio asked if dying hurts. I said the rules require me "
+    "not to check. She did not laugh. Neither did I.",
+]
+
+
 class DeathScene(Scene):
     def __init__(self, deaths: int):
         self.deaths = deaths
@@ -317,6 +335,21 @@ class DeathScene(Scene):
         surf.blit(img2, (w // 2 - img2.get_width() // 2, 140))
         img3 = mf.render("R: retry level    ESC: title", True, (170, 130, 130))
         surf.blit(img3, (w // 2 - img3.get_width() // 2, 160))
+        log = PALMER_LOGS[min(self.deaths - 1, len(PALMER_LOGS) - 1)] \
+            if self.deaths >= 1 else PALMER_LOGS[0]
+        y = 196
+        words = log.split()
+        line = ""
+        for word in words + [""]:
+            trial = (line + " " + word).strip()
+            if word and mf.size(trial)[0] < w - 80:
+                line = trial
+                continue
+            if line:
+                img4 = mf.render(line, True, (150, 140, 120))
+                surf.blit(img4, (w // 2 - img4.get_width() // 2, y))
+                y += 16
+            line = word
 
 
 class WinScene(Scene):

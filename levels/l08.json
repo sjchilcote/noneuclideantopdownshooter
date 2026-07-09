@@ -500,11 +500,11 @@
    },
    {
     "trigger": "kills:14",
-    "text": "Ratio: That was a Warden. The Container prints them, like the station prints spare parts. There will be a fresh one at the door."
+    "text": "Ratio: That was a Warden. The thing under the Core prints them, the way your seed prints frames. There will be a fresh one at the door."
    },
    {
     "trigger": "exit",
-    "text": "Ratio: Core approach is open. Commando \u2014 the Container. If I'm right about it, don't listen to it. Listen to me."
+    "text": "Ratio: Core approach is open. The vault is down there \u2014 and so is the thing that holds the vault shut. If something makes you an offer, any offer: the offer is the weapon. Listen to me instead."
    }
   ],
   "terminals": [
