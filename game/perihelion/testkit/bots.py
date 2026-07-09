@@ -166,6 +166,8 @@ class _CombatMixin:
     def _init_combat(self) -> None:
         self._aim_jitter = 0.0
         self._strafe_sign = 1
+        self._weapon_want = 0
+        self._weapon_want_ticks = 0
 
     def _combat_input(self, session: GameSession, snapshot: dict,
                        enemies_in_room: list[dict], mobile: bool) -> InputFrame:
@@ -190,7 +192,16 @@ class _CombatMixin:
             if session.sim.exists(nearest["id"]) else 8.0
         allowed = max(math.radians(3.0), math.atan2(target_r * 0.9, dist))
         inp.fire = abs(self._aim_jitter) < max(allowed, AIM_ERR_FIRE * 0.4)
-        inp.weapon = choose_weapon(snapshot, dist, len(enemies_in_room))
+        # switch hysteresis: choose_weapon is stateless, and a fight near a
+        # range threshold re-picks every tick — the equipped weapon flaps
+        # (and the HUD flickers). Only switch after the same pick holds.
+        want = choose_weapon(snapshot, dist, len(enemies_in_room))
+        cur = WEAPON_ORDER.index(snapshot["weapon"]) + 1 \
+            if snapshot["weapon"] in WEAPON_ORDER else 0
+        self._weapon_want_ticks = self._weapon_want_ticks + 1 \
+            if want == self._weapon_want else 0
+        self._weapon_want = want
+        inp.weapon = want if (want == cur or self._weapon_want_ticks >= 12) else 0
         inp.alt = (len(enemies_in_room) >= 3 and snapshot["lightning_ready"]
                    and "lightning" in snapshot["weapons"])
 
