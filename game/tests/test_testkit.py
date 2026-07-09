@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import os
 import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -190,6 +191,25 @@ def test_assert_playable_smoke_level_has_no_issues():
     level, _ = build_smoke_level()
     issues = assert_playable(level, seed=3, max_ticks=SMOKE_MAX_TICKS)
     assert issues == []
+
+
+def test_capture_is_best_effort_and_never_fails_the_run():
+    """Frame capture must never take down a run: if `perihelion.render`
+    is missing, mismatched, or erroring, `capture_skipped` records that and
+    the run still completes normally. This intentionally does not assert
+    that capture *succeeds* — `render.py` belongs to another slice of this
+    codebase and is out of scope here — only that our side of the contract
+    (never fail the run) holds, and that a successful capture leaves real
+    PNG bytes behind."""
+    level, _ = build_smoke_level()
+    with tempfile.TemporaryDirectory() as d:
+        res = run_bot(level, AggroBot(3), 3, max_ticks=60 * 10,
+                       capture_every=6, capture_dir=d)
+        assert res.outcome in ("complete", "died", "timeout")
+        if not res.capture_skipped:
+            frames = sorted(Path(d).glob("frame_*.png"))
+            assert frames, "capture reported success but wrote no frames"
+            assert frames[0].stat().st_size > 0
 
 
 # ---------------------------------------------------------------------------

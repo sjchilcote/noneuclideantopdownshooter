@@ -39,23 +39,36 @@ class Result:
     bot: str = ""
 
 
-def _capture_frame(renderer_mod, session: GameSession, capture_dir: str | Path,
-                    frame_idx: int) -> bool:
-    """Best-effort single-frame PNG capture via an SDL dummy-safe Surface.
-    Returns False (never raises) on any failure — `render.py` doesn't exist
-    yet in this tree, so this path is exercised once it lands; until then
-    every capture attempt safely no-ops via the except below."""
+def _start_capture(renderer_cls, session: GameSession, capture_dir: str | Path | None):
+    """Best-effort renderer/surface setup for frame capture. Returns
+    `(renderer, surface)`, or `(None, None)` on any failure — e.g.
+    `perihelion.render` not being importable, pygame erroring under
+    SDL_VIDEODRIVER=dummy, or a caller-supplied `renderer_cls` not matching
+    `Renderer`'s `(session)` / `consume_fx(fx)` / `draw(surf)` contract.
+    Never raises."""
     try:
         os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
         os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
         import pygame
 
         pygame.init()
-        surf = pygame.Surface((session.screen_w, session.screen_h))
-        # Assumed contract for perihelion.render: a function that draws the
-        # current session state onto a given Surface. See report gap notes.
-        renderer_mod.render_to_surface(session, surf)
-        Path(capture_dir).mkdir(parents=True, exist_ok=True)
+        if renderer_cls is None:
+            from perihelion.render import Renderer as renderer_cls
+        from perihelion.render import INTERNAL_H, INTERNAL_W
+
+        renderer = renderer_cls(session)
+        surf = pygame.Surface((INTERNAL_W, INTERNAL_H))
+        if capture_dir is not None:
+            Path(capture_dir).mkdir(parents=True, exist_ok=True)
+        return renderer, surf
+    except Exception:
+        return None, None
+
+
+def _save_frame(surf, capture_dir: str | Path, frame_idx: int) -> bool:
+    try:
+        import pygame
+
         pygame.image.save(surf, str(Path(capture_dir) / f"frame_{frame_idx:06d}.png"))
         return True
     except Exception:
@@ -65,6 +78,16 @@ def _capture_frame(renderer_mod, session: GameSession, capture_dir: str | Path,
 def run_bot(level: Level, bot: Bot, seed: int, max_ticks: int = DEFAULT_MAX_TICKS,
             capture_every: int = 0, capture_dir: str | Path | None = None,
             renderer=None) -> Result:
+    """Drive `bot` over `level` for up to `max_ticks` (or until death/
+    completion), returning a `Result`.
+
+    `renderer`, if given, is a `perihelion.render.Renderer`-shaped class
+    (constructor `(session)`, `consume_fx(fx_list)`, `draw(surf)`) used
+    instead of the default lazily-imported `perihelion.render.Renderer`
+    when `capture_every > 0`. Frame capture is always best-effort: any
+    import/construction/draw failure sets `Result.capture_skipped = True`
+    and the run continues untouched.
+    """
     session = GameSession(level, seed=seed)
 
     events: list[dict] = []
@@ -76,11 +99,10 @@ def run_bot(level: Level, bot: Bot, seed: int, max_ticks: int = DEFAULT_MAX_TICK
     prev_dmg_taken = 0.0
 
     capture_skipped = False
-    renderer_mod = renderer
-    if capture_every > 0 and renderer_mod is None:
-        try:
-            import perihelion.render as renderer_mod  # lazy; module may not exist yet
-        except Exception:
+    capture_renderer = capture_surf = None
+    if capture_every > 0:
+        capture_renderer, capture_surf = _start_capture(renderer, session, capture_dir)
+        if capture_renderer is None:
             capture_skipped = True
     frame_idx = 0
 
@@ -94,6 +116,20 @@ def run_bot(level: Level, bot: Bot, seed: int, max_ticks: int = DEFAULT_MAX_TICK
         inp = bot.step(snap, session)
         session.tick(inp)
         i += 1
+
+        if capture_renderer is not None and not capture_skipped:
+            try:
+                # Effect pools decay once per sim tick by contract, so this
+                # must run every tick regardless of the capture cadence —
+                # only draw()+save is throttled to capture_every.
+                capture_renderer.consume_fx(session.fx)
+                if capture_dir is not None and session.tick_count % capture_every == 0:
+                    capture_renderer.draw(capture_surf)
+                    if not _save_frame(capture_surf, capture_dir, frame_idx):
+                        capture_skipped = True
+                    frame_idx += 1
+            except Exception:
+                capture_skipped = True
 
         m = session.metrics
         if m["kills"] > prev_kills:
@@ -115,13 +151,6 @@ def run_bot(level: Level, bot: Bot, seed: int, max_ticks: int = DEFAULT_MAX_TICK
         if session.tick_count % 60 == 0:
             ammo_timeline.append((session.tick_count, total_ammo))
             hp_timeline.append((session.tick_count, session.hp))
-
-        if (capture_every > 0 and not capture_skipped and capture_dir is not None
-                and session.tick_count % capture_every == 0):
-            ok = _capture_frame(renderer_mod, session, capture_dir, frame_idx)
-            frame_idx += 1
-            if not ok:
-                capture_skipped = True
 
     outcome = "complete" if session.complete else ("died" if session.dead else "timeout")
     return Result(

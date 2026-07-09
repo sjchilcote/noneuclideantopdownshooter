@@ -82,10 +82,11 @@ def test_render_headless_smoke(pygame_ready):
         assert variance > 5.0, f"tick {tick}: frame looks all-black (std={variance:.2f})"
 
         # Player silhouette near screen center: camera re-centers on the
-        # player every tick, so a bright (non-floor) pixel should always be
-        # present in a small box around (W/2, H/2).
+        # player every tick (with critically-damped lag while moving), so a
+        # bright (non-floor) pixel should always be present in a box around
+        # (W/2, H/2) generous enough to cover that lag.
         cx, cy = INTERNAL_W // 2, INTERNAL_H // 2
-        box = arr[cx - 8:cx + 8, cy - 8:cy + 8, :]
+        box = arr[cx - 40:cx + 40, cy - 40:cy + 40, :]
         brightest = float(box.sum(axis=2).max())
         assert brightest > 260.0, (
             f"tick {tick}: no bright (player) pixel found near screen center "

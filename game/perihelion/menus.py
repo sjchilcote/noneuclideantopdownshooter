@@ -212,6 +212,8 @@ class IntroCard(Scene):
         if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
             if self.shown_chars < len(self.text):
                 self.shown_chars = len(self.text)
+                # keep in sync so the next update() doesn't rewind the reveal
+                self.t = len(self.text) / self.CHARS_PER_SEC
             else:
                 app.pop()
 
