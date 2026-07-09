@@ -579,7 +579,7 @@ def l08():
         squad(b, p, petal_squads[i])
         if petal_caches[i]:
             cache(b, p, petal_caches[i])
-    cache(b, core, "medkit medkit ammo_cell ammo_shell ammo_9mm")
+    cache(b, core, "medkit medkit ammo_cell ammo_shell ammo_9mm safe_room_core portable_hole")
     b.exit(core, (0, 40), gate_kind="warden")
     b.radio("kills:14", "Ratio: That was a Warden. The thing under the "
                         "Core prints them, the way your seed prints "

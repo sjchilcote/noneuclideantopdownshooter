@@ -51,7 +51,8 @@ def run_campaign(bot_name: str, seed: int, verbose=True):
             outcome, s = run_level(level, bot, seed + attempts, entry_state)
             if outcome == "complete":
                 state = dict(hp=max(s.hp, 40), ammo=dict(s.ammo),
-                             weapons=list(s.weapons), weapon=s.weapon)
+                             weapons=list(s.weapons), weapon=s.weapon,
+                             holes=s.holes, cloister=s.cloister is not None)
                 break
             if attempts >= MAX_RETRIES:
                 break

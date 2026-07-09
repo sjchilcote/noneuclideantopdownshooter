@@ -95,6 +95,8 @@ PICKUPS: dict[str, dict] = {
     "weapon_rail": dict(radius=7.0),
     "weapon_tau": dict(radius=7.0),
     "portable_hole": dict(radius=6.0),
+    "safe_room_core": dict(radius=7.0),
+    "turret": dict(radius=6.0),
     "implant_lightning": dict(radius=7.0),
     "key_red": dict(radius=5.5), "key_blue": dict(radius=5.5),
     "key_gold": dict(radius=5.5), "key_void": dict(radius=5.5),
@@ -197,6 +199,8 @@ class GameSession:
         self.holes = int(st.get("holes", 0))
         self.hole_mark: tuple | None = None  # (room, edge, t0, t1, x, y)
         self.tau_charge = 0
+        self.cloister: dict | None = None  # {sanctum, corridor, links, attached}
+        self.turrets: dict[int, dict] = {}
 
         # --- camera: player-room local -> internal screen ---
         px, py = level.player_pos
@@ -218,6 +222,8 @@ class GameSession:
 
         self.exit_room = level.exit_room
         self.exit_pos = level.exit_pos
+        if st.get("cloister"):
+            self._build_cloister()
 
         # --- output channels ---
         self.fx: list[tuple] = []  # drained by app each tick
@@ -348,6 +354,7 @@ class GameSession:
         self._consume_events(events)
         self.sweep_bullets()
 
+        self._turret_tick()
         self._pickup_scan(proom)
         self._terminal_scan(proom, inp)
         self._exit_scan(proom)
@@ -576,6 +583,20 @@ class GameSession:
             self._snd("dry_click", proom, (px, py), 0.5)
             return
         t0, t1 = (along - half) / elen, (along + half) / elen
+        if self.cloister is not None:
+            if room in (self.cloister["sanctum"], self.cloister["corridor"]):
+                self._snd("dry_click", proom, (px, py), 0.5)
+                return
+            mid = self.sim.split_edge(room, edge, t0, t1)
+            self._shift_edge_maps(room, edge)
+            self.cloister["links"].append((room, mid))
+            self._attach_cloister(len(self.cloister["links"]) - 1)
+            self.holes -= 1
+            self._decal(room, "scorch", hx, hy, 8.0)
+            self._snd("door_unlock", room, (hx, hy))
+            self.fx.append(("holeopen", room, hx, hy))
+            self._shake(2.5)
+            return
         if self.hole_mark is None:
             self.hole_mark = (room, edge, t0, t1, hx, hy)
             self._snd("terminal_type", room, (hx, hy))
@@ -619,6 +640,85 @@ class GameSession:
                 d["ea"] += 2
             if d["b"] == room and d["eb"] > edge:
                 d["eb"] += 2
+        if self.cloister:
+            self.cloister["links"] = [
+                (r, e + 2 if r == room and e > edge else e)
+                for (r, e) in self.cloister["links"]]
+
+    # ------------------------------------------------------------------
+    # the cloister (safe room): an isolated pocket with no address,
+    # linked to wherever the portable hole has cut
+    # ------------------------------------------------------------------
+
+    def _build_cloister(self):
+        if self.cloister is not None:
+            return
+        s = self.sim
+        verts = []
+        for i in range(8):
+            a = math.radians(22.5) - i * math.pi / 4.0
+            verts.append((85.0 * math.cos(a), 85.0 * math.sin(a)))
+        sanctum = s.add_room(verts)
+        elen = 2 * 85.0 * math.sin(math.pi / 8.0)
+        t0 = 0.5 - 7.5 / elen
+        t1 = 0.5 + 7.5 / elen
+        door = s.split_edge(sanctum, 4, t0, t1)
+        corridor = s.add_room([(0.0, 0.0), (0.0, 15.0), (36.0, 15.0), (36.0, 0.0)])
+        s.connect(sanctum, door, corridor, 0)
+        self.cloister = dict(sanctum=sanctum, corridor=corridor,
+                             links=[], attached=None)
+        # the anti-looter guardians, re-sworn: invincible, player-loyal
+        for tx, ty in ((-30.0, -34.0), (-30.0, 34.0)):
+            tid = s.spawn(sanctum, tx, ty, 6.0, 50.0, GROUP_PICKUP)
+            s.set_props(tid, transfers=False)
+            self.turrets[tid] = dict(cd=0)
+        # the seed keeps the pantry stocked
+        self.spawn_pickup(sanctum, (30.0, -20.0), "medkit")
+        self.spawn_pickup(sanctum, (30.0, 20.0), "ammo_9mm")
+        self.level.room_seeds.extend([sanctum * 7919 + 13, corridor * 7919 + 13])
+
+    def _attach_cloister(self, idx: int):
+        c = self.cloister
+        if c["attached"] is not None:
+            self.sim.disconnect(c["corridor"], 2)
+        room, edge = c["links"][idx]
+        self.sim.connect(room, edge, c["corridor"], 2)
+        c["attached"] = idx
+
+    def _rotate_cloister(self):
+        c = self.cloister
+        if c and len(c["links"]) > 1 and c["attached"] is not None:
+            self._attach_cloister((c["attached"] + 1) % len(c["links"]))
+
+    def _turret_tick(self):
+        if not self.turrets:
+            return
+        s = self.sim
+        for tid, t in self.turrets.items():
+            if t["cd"] > 0:
+                t["cd"] -= 1
+                continue
+            room = s.get_room(tid)
+            _, tx, ty, *_ = s.get(tid)
+            best, bd = None, 1e18
+            for eid in s.room_entities(room):
+                if eid in self.enemies:
+                    _, ex, ey, *_ = s.get(eid)
+                    d = (ex - tx) ** 2 + (ey - ty) ** 2
+                    if d < bd:
+                        best, bd = (ex, ey), d
+            if best is None:
+                continue
+            t["cd"] = 16
+            dx, dy = best[0] - tx, best[1] - ty
+            dl = math.hypot(dx, dy) or 1e-6
+            nx, ny = dx / dl, dy / dl
+            bid = s.spawn(room, tx + nx * 8, ty + ny * 8, 1.6, 0.002, GROUP_PBULLET)
+            s.set_props(bid, rest_wall=0.0, max_substep=3.2)
+            s.set_vel(bid, nx * 1200.0, ny * 1200.0)
+            self.bullets[bid] = dict(kind="turret", dmg=6, ttl=40)
+            self._snd("smg_fire", room, (tx, ty), 0.35)
+            self.fx.append(("flash", room, tx + nx * 8, ty + ny * 8, 14.0))
 
     def _detonate_dart(self, bid: int, room: int, x: float, y: float):
         w = WEAPONS["lightning"]
@@ -866,6 +966,8 @@ class GameSession:
             if tag == "transfer":
                 _, ent, from_room, to_room, edge, m9 = ev
                 if ent == self.pid:
+                    if self.cloister and to_room == self.cloister["sanctum"]:
+                        self._rotate_cloister()
                     # camera re-base: zero visible change by construction
                     self.cam = necore.mat_mul(self.cam, necore.mat_inv(m9))
                     self.metrics["transfers"] += 1
@@ -903,7 +1005,7 @@ class GameSession:
                     room = self.sim.get_room(x) if self.sim.exists(x) \
                         else self.sim.get_room(y)
                     self._detonate_dart(x, room, cx, cy)
-                elif bx["kind"] in ("bullet", "tau", "taucharged"):
+                elif bx["kind"] in ("bullet", "tau", "taucharged", "turret"):
                     self._damage_enemy(y, bx["dmg"], (nx if x == b else -nx, ny if x == b else -ny), 90.0)
                 self.sim.remove(x)
                 self.bullets.pop(x, None)
@@ -916,6 +1018,8 @@ class GameSession:
                     self._detonate_dart(x, room, cx, cy)
                     px_, py_ = self.player_pos()
                     self._damage_player(WEAPONS["lightning"]["dmg"] * 0.6, room)
+                elif bx["kind"] == "turret":
+                    pass  # the guardians do not miss that badly
                 else:
                     # a round you fired found its way back through the fold
                     self._damage_player(bx["dmg"] * 0.75, room)
@@ -960,6 +1064,20 @@ class GameSession:
                 self.ammo_bonus_for(w)
                 self._snd("pickup_ammo", proom, (x, y))
                 self.fx.append(("weapon", w))
+            elif kind == "safe_room_core":
+                self._build_cloister()
+                if "hole" not in self.weapons:
+                    self.weapons.append("hole")
+                self.holes += 2
+                self._snd("pickup_key", proom, (x, y))
+                self.fx.append(("weapon", "cloister"))
+                text = ("Ratio: Testator work. A detached subgraph — a room "
+                        "with no address. Your seed has already shaken hands "
+                        "with it. You have a cloister now. It follows you.")
+                self.radio_queue.append(text)
+                self.fx.append(("radio", text))
+            elif kind == "turret":
+                continue  # not a pickup; the guardians are furniture
             elif kind == "portable_hole":
                 self.holes += 1
                 if "hole" not in self.weapons:
@@ -1088,6 +1206,9 @@ class GameSession:
             keys=set(self.keys),
             lightning_ready=self.lightning_charge >= LIGHTNING_RECHARGE_TICKS,
             holes=self.holes, tau_charge=self.tau_charge,
+            cloister=(dict(links=len(self.cloister["links"]),
+                           attached=self.cloister["attached"])
+                      if self.cloister else None),
             enemies=enemies, pickups=pickups,
             exit_room=self.exit_room,
             exit_next_edge=self.sim.next_edge(proom, self.exit_room)

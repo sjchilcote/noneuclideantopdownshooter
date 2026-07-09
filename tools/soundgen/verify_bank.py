@@ -28,12 +28,49 @@ import audio_judge  # noqa: E402
 REPORT_PATH = Path(__file__).resolve().parent / "verify_report.json"
 CONTEXT = "lo-fi industrial cosmic-horror top-down shooter, Teleglitch-adjacent"
 
+# Anchored/comparative judging: each candidate is judged against a shipped
+# 0.9+ sound from OUR OWN bank that calibrates "shippable at this game's
+# aesthetic". Chosen per family (director-approved mapping).
+_ANCHOR_BY_CATEGORY = {
+    "gun": "rail_fire",
+    "impact": "player_hurt",
+    "enemy": "player_hurt",
+    "player": "player_hurt",
+    "pickup": "terminal_open",
+    "ui": "terminal_open",
+    "door": "terminal_open",
+    "drone": "amb_drone_mid",
+    "stinger": "amb_drone_mid",
+}
+# melee sounds are impacts regardless of their weapon category
+_ANCHOR_OVERRIDES = {
+    "knife_swing": "player_hurt",
+    "knife_hit": "player_hurt",
+}
+
+
+def make_anchor_resolver(manifest):
+    by_name = {e["name"]: e for e in manifest}
+    repo_root = Path(__file__).resolve().parents[2]
+
+    def resolve(entry):
+        anchor_name = _ANCHOR_OVERRIDES.get(
+            entry["name"], _ANCHOR_BY_CATEGORY.get(entry.get("category")))
+        if anchor_name is None or anchor_name == entry["name"]:
+            return None
+        return repo_root / by_name[anchor_name]["path"]
+
+    return resolve
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", type=str, default=None,
                      help="comma-separated sound names to (re-)judge; merges into existing report")
     ap.add_argument("--n-passes", type=int, default=2)
+    ap.add_argument("--anchored", action="store_true",
+                     help="anchored/comparative mode: judge each candidate "
+                          "against a shipped 0.9+ sound from this bank")
     ap.add_argument("--out", type=Path, default=REPORT_PATH)
     args = ap.parse_args()
 
@@ -53,9 +90,13 @@ def main() -> int:
 
     only = set(n.strip() for n in args.only.split(",")) if args.only else None
 
+    resolver = make_anchor_resolver(bank.MANIFEST) if args.anchored else None
     print(f"Judging {'subset ' + args.only if only else 'full bank'} "
-          f"with {MODEL_NAME()} ({args.n_passes} pass(es)/sound)...")
-    report = audio_judge.judge_bank(bank.MANIFEST, n_passes=args.n_passes, context=CONTEXT, only=only)
+          f"with {MODEL_NAME()} ({args.n_passes} pass(es)/sound"
+          f"{', anchored' if args.anchored else ''})...")
+    report = audio_judge.judge_bank(bank.MANIFEST, n_passes=args.n_passes,
+                                    context=CONTEXT, only=only,
+                                    anchor_resolver=resolver)
 
     if only and args.out.exists():
         prev = json.loads(args.out.read_text())

@@ -447,6 +447,8 @@ class App:
             return
         if not was_complete and game.session.complete:
             carried = dict(hp=max(game.session.hp, 40), ammo=dict(game.session.ammo),
+                           holes=game.session.holes,
+                           cloister=game.session.cloister is not None,
                             weapons=list(game.session.weapons), weapon=game.session.weapon)
             self.advance_level(carried)
 

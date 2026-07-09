@@ -656,6 +656,17 @@ class Renderer:
                               (ix - int(r * 0.6), iy), (ix + int(r * 0.6), iy), 2)
             pygame.draw.line(surf, (235, 235, 235),
                               (ix, iy - int(r * 0.6)), (ix, iy + int(r * 0.6)), 2)
+        elif kind == "turret":
+            # a re-sworn guardian: squat tripod, thin bright rim
+            pts = [(ix, iy - int(r)), (ix - int(r * 0.9), iy + int(r * 0.7)),
+                   (ix + int(r * 0.9), iy + int(r * 0.7))]
+            pygame.draw.polygon(surf, (46, 58, 66), pts)
+            pygame.draw.polygon(surf, (150, 220, 235), pts, 1)
+            pygame.draw.circle(surf, (150, 220, 235), (ix, iy), 2)
+        elif kind == "safe_room_core":
+            pygame.draw.circle(surf, (30, 26, 44), (ix, iy), max(3, int(r)))
+            pygame.draw.circle(surf, (170, 140, 255), (ix, iy), max(3, int(r)), 1)
+            pygame.draw.circle(surf, (220, 205, 255), (ix, iy), 1)
         elif kind.startswith("weapon_"):
             pygame.draw.rect(surf, (190, 195, 200),
                               pygame.Rect(ix - int(r), iy - 1, int(r * 2), 2))

@@ -32,6 +32,47 @@ MODEL = "google/gemini-3.5-flash"  # OpenRouter model id
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_CONTEXT = "lo-fi industrial cosmic-horror top-down shooter, Teleglitch-adjacent"
 
+ANCHORED_PROMPT_TEMPLATE = """You are a veteran game sound designer doing a \
+calibrated listening review.
+
+Game context: {context}
+
+You will hear TWO clips.
+
+Clip A is a sound that already SHIPPED in this exact game -- by definition it \
+is shippable-at-this-game's-aesthetic quality. It calibrates the bar: lo-fi, \
+gritty, analog-industrial dread. A and B are DIFFERENT kinds of sounds; A \
+calibrates craft and aesthetic fit, not identity.
+
+Clip B is the candidate under review. Its intended spec: {spec}
+{repeat_note}
+First describe factually what you hear in each clip: events, attack, \
+frequency balance, texture, decay. Then, using Clip A as your calibration of \
+"shippable for this game", judge Clip B against ITS OWN spec.
+
+p_shippable = P(the designer who shipped A would also ship B for B's spec). \
+Use the full range: 0.9+ craft comparable to A; 0.6 usable with minor tweaks; \
+0.4 wrong in one important way; below 0.2 severe audible artifacts or reads \
+as a different sound entirely.
+
+Report a flaw ONLY if it is present in your own description of Clip B.
+
+Return STRICT JSON only, no markdown code fences, matching exactly this \
+schema:
+{{"heard_a": "1-2 factual sentences",
+  "heard_b": "2-3 factual sentences",
+  "matches_spec": true|false,
+  "p_shippable": 0.x,
+  "better_or_worse": "B clearly worse | comparable craft | B better",
+  "amateur_tells": ["only flaws actually audible in clip B"],
+  "summary": "2-3 sentences"}}"""
+
+REPEAT_NOTE = """
+Note: any clip that is a short one-shot has been repeated FOUR times with \
+~350ms gaps so you can hear it clearly ({which}). Judge the single effect, \
+not the repetition pattern.
+"""
+
 PROMPT_TEMPLATE = """You are a veteran game sound designer doing a listening review.
 
 Game context: {context}
@@ -114,6 +155,26 @@ def _wav_duration_s(path: Path) -> float:
         return f.getnframes() / f.getframerate()
 
 
+REPEAT_UNDER_S = 0.6
+REPEAT_TIMES = 4
+REPEAT_GAP_S = 0.35
+
+
+def _repeat_wav(src: Path, out: Path, times: int = REPEAT_TIMES,
+                gap_s: float = REPEAT_GAP_S) -> None:
+    """Write `out` = `src` repeated `times` times with silent gaps (stdlib
+    wave only). Used so ultra-short one-shots give the judge enough audio."""
+    import wave
+    with wave.open(str(src), "rb") as f:
+        params = f.getparams()
+        frames = f.readframes(f.getnframes())
+    gap = b"\x00" * (int(params.framerate * gap_s) * params.sampwidth * params.nchannels)
+    data = gap.join([frames] * times) if times > 1 else frames
+    with wave.open(str(out), "wb") as g:
+        g.setparams(params)
+        g.writeframes(data)
+
+
 def to_mp3(src: Path, out: Path, max_s: float = 50.0) -> None:
     _ensure_ffmpeg()
     cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(src), "-vn",
@@ -144,17 +205,29 @@ def _parse_json_response(txt: str) -> dict:
     return json.loads(txt)
 
 
-def _ask(mp3_path: Path, spec: str, context: str) -> dict:
-    prompt = PROMPT_TEMPLATE.format(context=context, spec=spec)
+def _ask(mp3_path: Path, spec: str, context: str,
+         anchor_mp3: Optional[Path] = None,
+         repeated_which: Optional[str] = None) -> dict:
+    if anchor_mp3 is not None:
+        repeat_note = REPEAT_NOTE.format(which=repeated_which) if repeated_which else ""
+        prompt = ANCHORED_PROMPT_TEMPLATE.format(context=context, spec=spec,
+                                                 repeat_note=repeat_note)
+        content = [
+            {"type": "text", "text": prompt},
+            {"type": "text", "text": "Clip A (the shipped calibration anchor):"},
+            _audio_block(anchor_mp3),
+            {"type": "text", "text": "Clip B (the candidate under review):"},
+            _audio_block(mp3_path),
+        ]
+    else:
+        prompt = PROMPT_TEMPLATE.format(context=context, spec=spec)
+        content = [
+            {"type": "text", "text": prompt},
+            _audio_block(mp3_path),
+        ]
     body = {
         "model": MODEL,
-        "messages": [{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
-                _audio_block(mp3_path),
-            ],
-        }],
+        "messages": [{"role": "user", "content": content}],
         "temperature": 0.2,
     }
     req = urllib.request.Request(
@@ -171,14 +244,17 @@ def _ask(mp3_path: Path, spec: str, context: str) -> dict:
     return _parse_json_response(txt)
 
 
-def _ask_with_retry(mp3_path: Path, spec: str, context: str, attempts: int = 3) -> dict:
+def _ask_with_retry(mp3_path: Path, spec: str, context: str, attempts: int = 3,
+                    anchor_mp3: Optional[Path] = None,
+                    repeated_which: Optional[str] = None) -> dict:
     """3-attempt retry with linear backoff (8s * attempt_number), matching the
     autoclipping recipe. On final failure, returns an explicit error dict --
     never silently fabricates a passing judgement."""
     last_err: Optional[BaseException] = None
     for attempt in range(attempts):
         try:
-            return _ask(mp3_path, spec, context)
+            return _ask(mp3_path, spec, context, anchor_mp3=anchor_mp3,
+                        repeated_which=repeated_which)
         except Exception as e:  # noqa: BLE001 - deliberately broad, see docstring
             last_err = e
             print(f"audio_judge: attempt {attempt + 1}/{attempts} failed: {e}", file=sys.stderr)
@@ -191,18 +267,54 @@ def _ask_with_retry(mp3_path: Path, spec: str, context: str, attempts: int = 3) 
 # public API
 # --------------------------------------------------------------------------
 
+def _prep_clip(wav_path: Path, tmp_dir: Path, max_s: float,
+               tag: str = "judge") -> tuple[Path, bool]:
+    """Transcode a wav for judging; short one-shots (<REPEAT_UNDER_S) are
+    repeated 4x with gaps first. Returns (mp3_path, was_repeated)."""
+    dur = _wav_duration_s(wav_path)
+    repeated = dur < REPEAT_UNDER_S
+    src = wav_path
+    if repeated:
+        rep_wav = tmp_dir / f"{wav_path.stem}_{tag}_x{REPEAT_TIMES}.wav"
+        _repeat_wav(wav_path, rep_wav)
+        src = rep_wav
+    mp3_path = tmp_dir / f"{wav_path.stem}_{tag}.mp3"
+    to_mp3(src, mp3_path, max_s=max_s)
+    return mp3_path, repeated
+
+
 def judge(wav_path, spec: str, n_passes: int = 2, context: Optional[str] = None,
-          max_s: float = 50.0, tmp_dir: Optional[Path] = None) -> dict:
+          max_s: float = 50.0, tmp_dir: Optional[Path] = None,
+          anchor_path=None, anchor_max_s: float = 15.0) -> dict:
     """Judge a single wav file against `spec`, averaging over n_passes
-    independent Gemini calls to reduce single-call noise."""
+    independent Gemini calls to reduce single-call noise.
+
+    If `anchor_path` is given, uses the anchored/comparative prompt: the
+    anchor (a shipped-quality sound from this bank) is sent as Clip A to
+    calibrate the model's notion of 'shippable', the candidate as Clip B.
+    Clips shorter than REPEAT_UNDER_S are repeated 4x with 350ms gaps."""
     wav_path = Path(wav_path)
     context = context or DEFAULT_CONTEXT
     tmp_dir = Path(tmp_dir) if tmp_dir else Path(tempfile.gettempdir())
     tmp_dir.mkdir(parents=True, exist_ok=True)
-    mp3_path = tmp_dir / f"{wav_path.stem}_judge.mp3"
-    to_mp3(wav_path, mp3_path, max_s=max_s)
+    mp3_path, cand_repeated = _prep_clip(wav_path, tmp_dir, max_s)
 
-    passes = [_ask_with_retry(mp3_path, spec, context) for _ in range(n_passes)]
+    anchor_mp3 = None
+    repeated_which = None
+    if anchor_path is not None:
+        anchor_path = Path(anchor_path)
+        anchor_mp3, anchor_repeated = _prep_clip(anchor_path, tmp_dir,
+                                                 anchor_max_s, tag="anchor")
+        which = []
+        if anchor_repeated:
+            which.append("Clip A")
+        if cand_repeated:
+            which.append("Clip B")
+        repeated_which = " and ".join(which) if which else None
+
+    passes = [_ask_with_retry(mp3_path, spec, context, anchor_mp3=anchor_mp3,
+                              repeated_which=repeated_which)
+              for _ in range(n_passes)]
     ok_passes = [p for p in passes if "error" not in p]
     err_passes = [p for p in passes if "error" in p]
 
@@ -223,7 +335,7 @@ def judge(wav_path, spec: str, n_passes: int = 2, context: Optional[str] = None,
         tells = []
         summary = ""
 
-    return {
+    result = {
         "name": wav_path.stem,
         "spec": spec,
         "p_shippable": p_shippable,
@@ -236,15 +348,21 @@ def judge(wav_path, spec: str, n_passes: int = 2, context: Optional[str] = None,
         "errors": [p["error"] for p in err_passes],
         "raw_passes": passes,
     }
+    if anchor_path is not None:
+        result["anchored"] = True
+        result["anchor"] = Path(anchor_path).stem
+        result["better_or_worse"] = [p.get("better_or_worse") for p in ok_passes]
+    return result
 
 
 def judge_bank(manifest, n_passes: int = 2, context: Optional[str] = None,
                max_s_default: float = 50.0, max_s_drone: float = 15.0,
                only: Optional[set] = None, repo_root: Optional[Path] = None,
-               verbose: bool = True) -> dict:
+               verbose: bool = True, anchor_resolver=None) -> dict:
     """Judge every entry in `manifest` (list of dicts with at least name/spec/
     path[/category]). Drones are judged on a `max_s_drone`-second excerpt to
-    control cost."""
+    control cost. `anchor_resolver(entry) -> wav path | None` enables the
+    anchored/comparative mode per candidate."""
     repo_root = Path(repo_root) if repo_root else Path(__file__).resolve().parents[2]
     context = context or DEFAULT_CONTEXT
     results = []
@@ -253,7 +371,9 @@ def judge_bank(manifest, n_passes: int = 2, context: Optional[str] = None,
             continue
         wav_path = repo_root / entry["path"]
         max_s = max_s_drone if entry.get("category") == "drone" else max_s_default
-        r = judge(wav_path, entry["spec"], n_passes=n_passes, context=context, max_s=max_s)
+        anchor_path = anchor_resolver(entry) if anchor_resolver else None
+        r = judge(wav_path, entry["spec"], n_passes=n_passes, context=context,
+                  max_s=max_s, anchor_path=anchor_path)
         r["category"] = entry.get("category")
         results.append(r)
         if verbose:
