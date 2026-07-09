@@ -237,7 +237,6 @@ class GameSession:
                             dmg_taken=0.0, pickups=0, transfers=0, deaths=0,
                             rooms_visited={level.player_room}, hp_series=[],
                             completed=False)
-        self._maybe_radio("start")
 
     # ------------------------------------------------------------------
     # spawning
@@ -333,6 +332,10 @@ class GameSession:
         self.fx = []
         self.tick_count += 1
         self.metrics["ticks"] = self.tick_count
+        if self.tick_count == 1:
+            # fired here, not in __init__: fx is cleared per tick, so an
+            # init-time line would vanish before any consumer sees it
+            self._maybe_radio("start")
         if self.tick_count % 60 == 0:
             self.metrics["hp_series"].append(self.hp)
         if self.dead or self.complete:

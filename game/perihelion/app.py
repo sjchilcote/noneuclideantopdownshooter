@@ -441,6 +441,19 @@ class App:
                     self._recompute_layout()
                 elif self.scenes:
                     self.scenes[-1].handle_event(self, event)
+            if getattr(self.args, "autoplay", False) and self.scenes:
+                top = self.scenes[-1]
+                # soaks must test gameplay, not a press-any-key card
+                if not isinstance(top, GameScene):
+                    self._autoplay_wait = getattr(self, "_autoplay_wait", 0) + 1
+                    if self._autoplay_wait > 90:
+                        self._autoplay_wait = 0
+                        top.handle_event(self, pygame.event.Event(
+                            pygame.KEYDOWN, key=pygame.K_SPACE, unicode=" "))
+                        if self.scenes and self.scenes[-1] is top and \
+                                not isinstance(top, GameScene):
+                            top.handle_event(self, pygame.event.Event(
+                                pygame.KEYDOWN, key=pygame.K_ESCAPE))
 
             ticks_this_frame = 0
             while accumulator >= DT and ticks_this_frame < 4:

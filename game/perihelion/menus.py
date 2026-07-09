@@ -578,17 +578,21 @@ class RadioBar:
     -- GameScene owns and drives it every sim tick so it decays in ticks
     like everything else, and draws it itself after the world."""
 
-    HOLD_TICKS = 90
-    CHARS_PER_TICK = 0.9
+    HOLD_TICKS = 110
+    CHARS_PER_TICK = 1.1
+    # Fixedsys 16px is 8px/char: 56 chars fit 448px with margins
+    WRAP_CHARS = 56
+    STRIP_H = 40
 
     def __init__(self):
         self.queue: deque[str] = deque()
         self.current = ""
+        self.lines: list[str] = []
         self.shown = 0
         self.hold = 0
         self._accum = 0.0
-        self._strip = pygame.Surface((INTERNAL_W, 22), pygame.SRCALPHA)
-        self._strip.fill((0, 15, 6, 200))
+        self._strip = pygame.Surface((INTERNAL_W, self.STRIP_H), pygame.SRCALPHA)
+        self._strip.fill((0, 15, 6, 210))
 
     def push(self, text: str) -> None:
         self.queue.append(text)
@@ -598,6 +602,15 @@ class RadioBar:
             if not self.queue:
                 return
             self.current = self.queue.popleft()
+            # long transmissions arrive in two-line pages; overflow requeues
+            wrapped = _wrap(self.current, self.WRAP_CHARS)
+            if len(wrapped) > 2:
+                self.lines = wrapped[:2]
+                rest = " ".join(wrapped[2:])
+                self.queue.appendleft("..." + rest)
+                self.current = " ".join(self.lines)
+            else:
+                self.lines = wrapped
             self.shown = 0
             self._accum = 0.0
         if self.shown < len(self.current):
@@ -608,7 +621,8 @@ class RadioBar:
             self.shown = new_shown
         else:
             self.hold += 1
-            if self.hold > self.HOLD_TICKS:
+            # hold scales with how much there is to read
+            if self.hold > self.HOLD_TICKS + 2 * len(self.current):
                 self.current = ""
                 self.hold = 0
 
@@ -616,7 +630,12 @@ class RadioBar:
         if not self.current:
             return
         w, h = surf.get_size()
-        surf.blit(self._strip, (0, h - 22))
-        pygame.draw.line(surf, PHOSPHOR_GREEN, (0, h - 22), (w, h - 22), 1)
-        img = get_font(12).render(self.current[: self.shown], True, PHOSPHOR_GREEN)
-        surf.blit(img, (8, h - 17))
+        top = h - self.STRIP_H
+        surf.blit(self._strip, (0, top))
+        pygame.draw.line(surf, PHOSPHOR_GREEN, (0, top), (w, top), 1)
+        remaining = self.current[: self.shown]
+        f = get_font(12)
+        y = top + 3
+        for line in _wrap(remaining, self.WRAP_CHARS)[:2]:
+            surf.blit(f.render(line, True, PHOSPHOR_GREEN), (8, y))
+            y += 17
