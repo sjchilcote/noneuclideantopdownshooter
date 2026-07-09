@@ -281,6 +281,7 @@ class SettingsScene(Scene):
         if event.type != pygame.KEYDOWN:
             return
         if event.key == pygame.K_ESCAPE:
+            app._persist_save()  # volume/mute/shake/difficulty survive relaunch
             app.pop()
         elif event.key == pygame.K_LEFT:
             app.audio.set_master(app.audio.master_vol - 0.1)
@@ -365,7 +366,7 @@ class IntroCard(Scene):
 class PauseScene(Scene):
     def __init__(self):
         self.sel = 0
-        self.items = ["Resume", "Restart Level", "Quit to Title"]
+        self.items = ["Resume", "Restart Level", "Settings", "Quit to Title"]
         self._overlay: "pygame.Surface | None" = None
 
     def _ensure_overlay(self, size):
@@ -390,6 +391,8 @@ class PauseScene(Scene):
             elif item == "Restart Level":
                 app.pop()
                 app.restart_level()
+            elif item == "Settings":
+                app.push(SettingsScene())
             elif item == "Quit to Title":
                 app.pop_to_title()
 

@@ -234,10 +234,14 @@ class App:
         self.scenes: list[menus.Scene] = []
         self.game: GameScene | None = None
         self.pending_weapon_select = 0
-        self.settings = {"shake": True,
-                 "difficulty": "hard" if getattr(args, "hard", False) else "normal"}
-
         self.save_data = self._load_save()
+        saved = self.save_data.get("settings", {})
+        self.settings = {"shake": saved.get("shake", True),
+                         "difficulty": "hard" if getattr(args, "hard", False)
+                         else saved.get("difficulty", "normal")}
+        self.audio.set_master(saved.get("volume", 1.0))
+        if saved.get("muted") and not args.mute:
+            self.audio.set_mute(True)
         self._campaign_paths: list[str] | None = None
         self.current_level_index = 0
         self._level_start_state: dict | None = None
@@ -291,6 +295,15 @@ class App:
     # ------------------------------------------------------------------
     # layout / coordinate mapping
     # ------------------------------------------------------------------
+
+    def _toggle_fullscreen(self) -> None:
+        self._fullscreen = not getattr(self, "_fullscreen", False)
+        if self._fullscreen:
+            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode(
+                (self.window_w, self.window_h), pygame.RESIZABLE)
+        self._recompute_layout()
 
     def _recompute_layout(self) -> None:
         ww, wh = self.screen.get_size()
@@ -363,6 +376,10 @@ class App:
         return {"unlocked": 1, "states": {}}
 
     def _persist_save(self) -> None:
+        self.save_data["settings"] = dict(
+            volume=round(self.audio.master_vol, 2), muted=self.audio.muted,
+            shake=self.settings.get("shake", True),
+            difficulty=self.settings.get("difficulty", "normal"))
         p = save_path()
         try:
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -554,6 +571,8 @@ class App:
                     self.running = False
                 elif event.type == pygame.VIDEORESIZE:
                     self._recompute_layout()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                    self._toggle_fullscreen()
                 elif self.scenes:
                     self.scenes[-1].handle_event(self, event)
             if getattr(self.args, "autoplay", False) and self.scenes:
