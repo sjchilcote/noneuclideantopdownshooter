@@ -321,7 +321,8 @@ class EditorModel:
 
         exit_ = self.data.get("exit")
         if not exit_:
-            errs.append("no exit")
+            if not self.data.get("vigil"):
+                errs.append("no exit")
         elif not (isinstance(exit_.get("room"), int) and 0 <= exit_["room"] < n_rooms):
             errs.append("exit room index out of range")
 
