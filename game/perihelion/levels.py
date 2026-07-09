@@ -53,6 +53,7 @@ class Level:
     room_verts: list[list[tuple[float, float]]]  # local coords (centroid at 0)
     room_centroids: list[tuple[float, float]]  # authoring-canvas centroids
     room_seeds: list[int]
+    room_kinds: list[str]  # function tags: dock, corridor, storage, lab, quarters, chapel, core, generic...
     connects: list[tuple[int, int, int, int]]
     connects_x: list[tuple[int, int, int, int, tuple]]
     doors: list[DoorSpec]
@@ -109,7 +110,8 @@ def level_from_dict(data: dict) -> Level:
         raise ValueError(f"level version {data.get('version')} != {LEVEL_VERSION}")
     room_verts: list[list[tuple[float, float]]] = []
     room_centroids: list[tuple[float, float]] = []
-    room_seeds: list[int] = []
+    room_seeds: list[int]
+    room_kinds: list[str]  # function tags: dock, corridor, storage, lab, quarters, chapel, core, generic... = []
     entities: list[tuple[int, EntitySpec]] = []
 
     for ri, room in enumerate(data["rooms"]):
@@ -124,6 +126,7 @@ def level_from_dict(data: dict) -> Level:
         room_centroids.append(c)
         room_verts.append([(x - c[0], y - c[1]) for x, y in verts])
         room_seeds.append(int(room.get("detail_seed", ri * 7919 + 13)))
+        room_kinds.append(str(room.get("kind", "generic")))
         for e in room.get("entities", []):
             ex, ey = e["pos"]
             entities.append(
@@ -156,6 +159,7 @@ def level_from_dict(data: dict) -> Level:
         room_verts=room_verts,
         room_centroids=room_centroids,
         room_seeds=room_seeds,
+        room_kinds=room_kinds,
         connects=[tuple(c) for c in data.get("connects", [])],
         connects_x=[
             (c[0], c[1], c[2], c[3], tuple(c[4])) for c in data.get("connects_x", [])
@@ -208,12 +212,18 @@ class LevelBuilder:
             "lore": {"intro": "", "radio": [], "terminals": []},
         }
 
-    def room(self, verts, detail_seed: int | None = None) -> int:
+    def room(self, verts, detail_seed: int | None = None,
+             kind: str | None = None) -> int:
         r = {"verts": [list(v) for v in verts], "entities": []}
         if detail_seed is not None:
             r["detail_seed"] = detail_seed
+        if kind is not None:
+            r["kind"] = kind
         self.data["rooms"].append(r)
         return len(self.data["rooms"]) - 1
+
+    def set_kind(self, room: int, kind: str) -> None:
+        self.data["rooms"][room]["kind"] = kind
 
     def rect(self, x, y, w, h, seed=None) -> int:
         return self.room([(x, y), (x, y + h), (x + w, y + h), (x + w, y)], seed)
