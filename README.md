@@ -77,29 +77,33 @@ invariant there, the change is wrong.
 ## Store copy (draft)
 
 PERIHELION is a top-down survival shooter aboard a station falling into the
-sun. The station's geometry is not Euclidean: corridors loop back on
-themselves, mirror rooms reflect more than light, and a sixteen-room
-tesseract deck runs on graph rules no floor plan can draw. Combat follows
-the Teleglitch model — ammunition is scarce, engagements are short, and a
-mistake in a corridor is usually the last one you make. The portable hole
-cuts a doorway through any wall on command; the Cloister, a safe room
-folded into the station's blind spots, is where you go when the hole isn't
-enough.
+sun — one continuous, seamless station whose geometry is not Euclidean:
+corridors loop back on themselves, mirror rooms reflect more than light,
+and a sixteen-room tesseract deck runs on graph rules no floor plan can
+draw. Ten decks stream past with no loading screen between the dock where
+you make landfall and the core where it ends. Combat follows the Teleglitch
+model — ammunition is scarce, engagements are short, and a mistake in a
+corridor is usually the last one you make. The portable hole cuts a doorway
+through any wall on command; the Cloister, a safe room folded into the
+station's blind spots, is where you go when the hole isn't enough.
 
-Ratio, the station's remaining rational voice, argues faith against
-evidence across a ten-level campaign, between sorties, while your frame
-rides the transit spine. The tau cannon fires bolts that bounce off
-portals the same way they bounce off walls, so the room layout is part
-of the loadout. Hard mode makes everything tougher and meaner; New Game+
-starts the fall over with the arsenal you finished it with.
+Ratio, the station's remaining rational mind, talks you deck to deck over a
+tight-beam relay — and remembers how you answer. Trust her or needle her;
+by the end, what she's willing to say depends on it. The crew is gone, but
+their terminals aren't: work orders, watch logs, and transfer appeals that
+add up to more than anyone logged on purpose. The tau cannon fires bolts
+that bounce off portals the same way they bounce off walls, so the room
+layout is part of the loadout. Hard mode makes everything tougher and
+meaner; New Game+ starts the fall over with the arsenal you finished with.
 
-- Seamless non-Euclidean world: mirror rooms, infinite corridors, a
-  tesseract deck
+- One seamless non-Euclidean station: mirror wards, infinite corridors, a
+  tesseract deck — no loading screens, ever
 - Teleglitch-style scarce-ammo survival combat
+- Dialogue with memory: your answers move Ratio's trust, and her endgame
+- A crew's worth of terminal lore with mysteries that don't resolve
 - Portable hole: cut a doorway through any wall; retreat to the Cloister
 - Tau cannon: bolts ricochet off portals
-- Ten-level campaign with a companion-argument narrative (Ratio)
 - THE VIGIL: an endless holdout mode on a fold arena
 - Hard mode and New Game+
 - Level editor included
-- Original soundtrack, synthesized from scratch
+- Sound design synthesized from scratch, tuned by ear
