@@ -963,19 +963,21 @@ def gen_tau_fire() -> np.ndarray:
     crack_ = sy.highpass(crack_, 900)
     crack_ = sy.apply_env(crack_, sy.env_exp_decay(0.012, tau=0.004))
     # metallic ring-down (brighter than rail, but still inharmonic metal)
-    ring = metal_clank(880, 0.11, ratios=(1.0, 1.51, 2.32, 3.17),
-                       seed=seed + 1, lp_hz=3600)
-    # weight: thump + knock
-    th = gun_thump(f0=140, f1=62, pitch_s=0.02, dur_s=0.1, drive=2.2)
-    knock = body_knock(0.08, 210, seed=seed + 2)
+    ring = metal_clank(720, 0.11, ratios=(1.0, 1.51, 2.32, 3.17),
+                       seed=seed + 1, lp_hz=3000)
+    # weight: thump + knock + short room tail
+    th = gun_thump(f0=140, f1=62, pitch_s=0.02, dur_s=0.12, drive=2.2)
+    knock = body_knock(0.09, 200, seed=seed + 2)
+    tail = gun_tail(0.12, lp_hz=700, seed=seed + 3)
     x = place(dur,
               (0.0, crack_, 0.9),
-              (0.0, zap, 0.7),
-              (0.002, th, 1.0),
-              (0.002, knock, 0.75),
-              (0.004, ring, 0.5))
-    x = sy.soft_clip(x, 2.2)
-    return finish(x, fade_s=0.03, pad_s=0.03)
+              (0.0, zap, 0.6),
+              (0.002, th, 1.15),
+              (0.002, knock, 0.9),
+              (0.004, ring, 0.45),
+              (0.01, tail, 0.25))
+    x = sy.soft_clip(x, 2.0)
+    return finish(x, fade_s=0.035, pad_s=0.03)
 
 
 def gen_tau_charge() -> np.ndarray:
@@ -983,11 +985,13 @@ def gen_tau_charge() -> np.ndarray:
     dur = 1.5
     n = sy.samples(dur)
     tt = np.linspace(0.0, 1.0, n)
-    # capacitor whine: swept sine 300->1800 with a quiet saw octave shimmer
-    sweep = sy.pitch_env(dur, 300, 1800)
+    # capacitor whine: sweep 300->1500 over 1.35s, then hold the top for the
+    # last 0.15s (charged-and-ready plateau) with a quiet saw octave shimmer
+    sweep = np.concatenate([sy.pitch_env(dur - 0.15, 300, 1500),
+                            np.full(sy.samples(0.15), 1500.0)])[: sy.samples(dur)]
     whine = sy.sine(sweep, dur)
     shimmer = sy.saw(sweep * 2.01, dur)
-    shimmer = sy.lowpass(shimmer, 4200)
+    shimmer = sy.lowpass(shimmer, 3400)
     # growing amplitude tremolo: rate 8->24Hz, depth 0.1->0.5
     trem_rate = 8.0 + 16.0 * tt
     trem_phase = 2.0 * np.pi * np.cumsum(trem_rate) / SR
@@ -1009,12 +1013,14 @@ def gen_tau_charge() -> np.ndarray:
     hum = sy.soft_clip(hum, 1.5)
     grow = (0.35 + 0.65 * tt) ** 1.3
     x = (whine.astype(np.float64) * 0.7 + shimmer.astype(np.float64) * 0.18 +
-         hum.astype(np.float64) * 0.5) * trem * grow
+         hum.astype(np.float64) * 0.55) * trem * grow
     x = x.astype(np.float32)
     x = sy.mix_layers([x, crackles], [1.0, 0.9])
     x = sy.soft_clip(x, 1.7)
-    # ends hot by design (hands off to the shot); tiny anti-click fade only
-    return finish(x, fade_s=0.006, pad_s=0.0)
+    x = sy.lowpass(x, 3800)
+    # ends hot by design (hands off to the shot): hold a short tremolo
+    # plateau at the top, then a fast-but-not-instant release
+    return finish(x, fade_s=0.04, pad_s=0.0)
 
 
 def gen_tau_charged_fire() -> np.ndarray:
@@ -1030,27 +1036,30 @@ def gen_tau_charged_fire() -> np.ndarray:
         (0.012, gun_tail(0.4, lp_hz=650, seed=seed + 3), 0.3),
     )
     concussion = sy.soft_clip(concussion, 2.4)
-    # long electric arc tail: descending gated resonant noise
+    # long electric arc tail: gated resonant noise settling low (no pitch
+    # glide -- a gliding tone reads as a cartoon screech, judged 0.03)
     arc_dur = 0.55
     arc = sy.white_noise(arc_dur, seed=seed + 4)
-    arc = sy.bandpass(arc, sy.pitch_env(arc_dur, 2600, 320), q=4.5)
+    arc = sy.bandpass(arc, sy.pitch_env(arc_dur, 1600, 300), q=3.0)
     arc = (arc.astype(np.float64) *
-           telegraph_gate(arc_dur, 220, 0.3, seed=seed + 5)).astype(np.float32)
+           telegraph_gate(arc_dur, 180, 0.3, seed=seed + 5)).astype(np.float32)
     arc = sy.apply_env(arc, sy.env_exp_decay(arc_dur, tau=arc_dur / 2.8, end=0.001))
-    arc = sy.soft_clip(arc, 2.0)
-    # descending metallic ring: detuned pair gliding down
-    ringdur = 0.5
-    rsweep = sy.pitch_env(ringdur, 1350, 480)
-    ring = sy.mix_layers([sy.sine(rsweep, ringdur),
-                          sy.sine(rsweep * 1.013, ringdur)], [0.6, 0.45])
-    ring = sy.apply_env(ring, sy.env_exp_decay(ringdur, tau=0.16, end=0.001))
-    ring = sy.lowpass(ring, 2800)
+    arc = sy.soft_clip(arc, 1.8)
+    # fixed-pitch inharmonic metal ring-down (structure ringing after the hit)
+    ring = metal_clank(420, 0.4, ratios=(1.0, 1.48, 2.37), seed=seed + 6,
+                       strike=False, lp_hz=2200)
+    # low aftershock rumble
+    rumble = sy.brown_noise(0.5, seed=seed + 7)
+    rumble = sy.lowpass(rumble, 220)
+    rumble = sy.apply_env(rumble, sy.env_exp_decay(0.5, tau=0.18, end=0.001))
     x = place(dur,
-              (0.0, concussion, 1.0),
-              (0.03, arc, 0.55),
-              (0.06, ring, 0.35))
-    x = sy.soft_clip(x, 1.8)
-    return finish(x, fade_s=0.06)
+              (0.0, concussion, 1.3),
+              (0.04, arc, 0.35),
+              (0.05, ring, 0.3),
+              (0.02, rumble, 0.8))
+    x = sy.soft_clip(x, 1.6)
+    x = sy.lowpass(x, 3400)
+    return finish(x, fade_s=0.08)
 
 
 def gen_tau_overcharge_hurt() -> np.ndarray:

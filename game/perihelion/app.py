@@ -310,9 +310,13 @@ class App:
                           file=sys.stderr)
         return build_debug_level(), None
 
-    def start_new_game(self) -> None:
+    def start_new_game(self, plus: bool = False) -> None:
         self.current_level_index = 0
-        self._load_and_play(0, carried_state=None)
+        if plus and self.save_data.get("ng_plus"):
+            self.settings["difficulty"] = "hard"
+            self._load_and_play(0, carried_state=self.save_data.get("ng_state"))
+        else:
+            self._load_and_play(0, carried_state=None)
 
     def start_level_index(self, idx: int) -> None:
         self.current_level_index = idx
@@ -337,8 +341,15 @@ class App:
         paths = self.campaign_levels()
         if idx >= len(paths):
             self.save_data["unlocked"] = max(self.save_data.get("unlocked", 1), idx)
+            # the watch continues: the campaign loops on hard, arsenal kept
+            self.save_data["ng_plus"] = self.save_data.get("ng_plus", 0) + 1
+            self.save_data["ng_state"] = carried_state
             self._persist_save()
-            self.replace(menus.WinScene(EPILOGUE_TEXT))
+            self.replace(menus.WinScene(
+                EPILOGUE_TEXT +
+                "\n\nTHE WATCH CONTINUES.\n"
+                "New Game+ unlocked: the loop begins again,\n"
+                "harder, with everything you carry."))
             return
         self.save_data["unlocked"] = max(self.save_data.get("unlocked", 1), idx + 1)
         self.save_data.setdefault("states", {})[str(idx)] = carried_state

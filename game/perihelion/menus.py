@@ -126,6 +126,8 @@ class TitleScene(Scene):
 
     def on_enter(self, app) -> None:
         self.t = 0.0
+        if app.save_data.get("ng_plus") and "New Game+" not in self.items:
+            self.items.insert(1, "New Game+")
 
     def update(self, app, dt: float) -> None:
         self.t += dt
@@ -144,6 +146,8 @@ class TitleScene(Scene):
         item = self.items[self.sel]
         if item == "New Game":
             app.start_new_game()
+        elif item == "New Game+":
+            app.start_new_game(plus=True)
         elif item == "Level Select":
             app.push(LevelSelectScene())
         elif item == "Settings":
