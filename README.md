@@ -6,7 +6,14 @@ rooms connected by portals that don't have to make sense: corridors loop onto
 themselves, two wings occupy the same volume, a ward's south wall reflects
 more than light. The game never tells you. You find out.
 
-Ten-level campaign. Cosmic horror on the radio. Every shot counts.
+One seamless station: the campaign's ten decks stream in as you approach —
+no loading screens, no level select, one continuous space from Dock 4 to the
+Perihelion Core. Between decks, tight-beam relays carry a two-hander with
+Ratio, the station's surviving mind — with choices, and a memory. Terminals
+hold the crew's paper trail; some of what they logged was never explained.
+Every shot counts.
+
+A showcase run: [media/showcase_2026-07-09.mp4](media/showcase_2026-07-09.mp4)
 
 ![the records stack has no end](media/infinite_aisle.gif)
 
