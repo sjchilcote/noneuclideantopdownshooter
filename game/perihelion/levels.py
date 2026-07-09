@@ -63,6 +63,7 @@ class Level:
     exit_pos: tuple[float, float]
     exit_key: str  # "" = none; else a key id the player must hold
     alert_hops: int  # gunshot alert radius in room-hops
+    vigil: bool  # endless holdout mode: the wave director runs
     exit_gate_kind: str  # "" = none; else all enemies of this kind must die
     intro: str
     radio: list[RadioLine]
@@ -168,6 +169,7 @@ def level_from_dict(data: dict) -> Level:
         exit_key=(exit_ or {}).get("key", ""),
         exit_gate_kind=(exit_ or {}).get("gate_kind", ""),
         alert_hops=int(data.get("alert_hops", 2)),
+        vigil=bool(data.get("vigil", False)),
         intro=lore.get("intro", ""),
         radio=radio,
         terminals=terminals,

@@ -222,6 +222,8 @@ class GameSession:
 
         self.exit_room = level.exit_room
         self.exit_pos = level.exit_pos
+        self.wave = 0
+        self.wave_timer = 60 * 6 if level.vigil else -1
         if st.get("cloister"):
             self._build_cloister()
 
@@ -231,6 +233,7 @@ class GameSession:
         self.radio_queue: list[str] = []
         self._radio_fired: set[str] = set()
         self.metrics = dict(ticks=0, shots=0, hits=0, kills=0, dmg_dealt=0.0,
+                            wave=0,
                             dmg_taken=0.0, pickups=0, transfers=0, deaths=0,
                             rooms_visited={level.player_room}, hp_series=[],
                             completed=False)
@@ -359,6 +362,8 @@ class GameSession:
         self._terminal_scan(proom, inp)
         self._exit_scan(proom)
 
+        if self.level.vigil:
+            self._vigil_tick(proom)
         if self.cooldown > 0:
             self.cooldown -= 1
         if self.hurt_cd > 0:
@@ -652,6 +657,59 @@ class GameSession:
             self.cloister["links"] = [
                 (r, e + 2 if r == room and e > edge else e)
                 for (r, e) in self.cloister["links"]]
+
+    # ------------------------------------------------------------------
+    # the vigil: the wave director. Things still come through. They are met.
+    # ------------------------------------------------------------------
+
+    VIGIL_COSTS = (("mite", 1), ("husk", 2), ("spitter", 4), ("shrieker", 5),
+                   ("brute", 7))
+    VIGIL_LINES = (
+        "Ratio: Contacts. Petal breach, multiple.",
+        "Ratio: Another push. The count holds.",
+        "Ratio: They are learning the doors. So are you.",
+        "Ratio: Wave logged. The heart is still yours.",
+        "Ratio: More of them. I have stopped counting individuals.",
+    )
+
+    def _vigil_tick(self, proom: int):
+        if self.wave_timer > 0:
+            self.wave_timer -= 1
+            return
+        if any(e for e in self.enemies.values()):
+            return  # the wave is met when the last of it falls
+        self.wave += 1
+        self.metrics["wave"] = self.wave
+        budget = 3 + 2 * self.wave
+        # spawn away from the player: petal rooms only (never room 0's heart
+        # unless the player left it)
+        rooms = [r for r in range(self.sim.num_rooms())
+                 if r != proom and (self.cloister is None or
+                 r not in (self.cloister["sanctum"], self.cloister["corridor"]))]
+        spawned = 0
+        while budget > 0 and spawned < 22:
+            kinds = [(k, c) for k, c in self.VIGIL_COSTS if c <= budget]
+            if self.wave >= 5 and self.wave % 5 == 0 and spawned == 0:
+                kind, cost = "warden", budget  # a fresh print at the door
+            else:
+                kind, cost = kinds[self.rng.randrange(len(kinds))]
+            room = rooms[self.rng.randrange(len(rooms))]
+            a = self.rng.uniform(0, 6.28)
+            eid = self.spawn_enemy(room, (55 * math.cos(a), 55 * math.sin(a)), kind)
+            self.enemies[eid]["state"] = "hunt"
+            budget -= cost
+            spawned += 1
+        self.wave_timer = 60 * 8
+        self._snd("stinger_wrongness", proom, self.player_pos(), 0.5)
+        if self.wave % 3 == 1:
+            line = self.VIGIL_LINES[(self.wave // 3) % len(self.VIGIL_LINES)]
+            self.radio_queue.append(line)
+            self.fx.append(("radio", line))
+        # the seed keeps the pantry stocked between pushes
+        if self.wave % 2 == 0:
+            kind = "medkit" if self.wave % 4 == 0 else                 ("ammo_shell" if self.wave % 3 == 0 else "ammo_9mm")
+            a = self.rng.uniform(0, 6.28)
+            self.spawn_pickup(0, (60 * math.cos(a), 60 * math.sin(a)), kind)
 
     # ------------------------------------------------------------------
     # the cloister (safe room): an isolated pocket with no address,

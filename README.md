@@ -20,7 +20,7 @@ Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and a Rust toolchain
 ```bash
 uv sync
 uv run maturin develop --release -m engine/necore-py/Cargo.toml
-uv run python -m perihelion            # campaign
+uv run python -m perihelion            # campaign (The Vigil is on the title menu)
 uv run python -m perihelion --level levels/l06.json   # single level
 ```
 
@@ -90,6 +90,7 @@ starts the fall over with the arsenal you finished it with.
 - Portable hole: cut a doorway through any wall; retreat to the Cloister
 - Tau cannon: bolts ricochet off portals
 - Ten-level campaign with a companion-argument narrative (Ratio)
+- THE VIGIL: an endless holdout mode on a fold arena
 - Hard mode and New Game+
 - Level editor included
 - Original soundtrack, synthesized from scratch

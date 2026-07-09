@@ -783,6 +783,51 @@ def l10():
     return b
 
 
+
+# ---------------------------------------------------------------------------
+# THE VIGIL — endless holdout on a fold arena. "Things still come through,
+# some decades. They are met."
+# ---------------------------------------------------------------------------
+
+def vigil():
+    b = LevelBuilder("THE VIGIL", 4, "amb_drone_finale")
+    b.data["vigil"] = True
+    b.data["alert_hops"] = 1
+    core = b.ngon(0, 0, 110, 6, phase=math.radians(90))
+    petals = []
+    angs = []
+    for i in range(6):
+        a = math.radians(90) - (i + 0.5) * math.pi / 3
+        angs.append(a)
+        petals.append(b.ngon(280 * math.cos(a), 280 * math.sin(a), 110, 6,
+                             phase=a + math.radians(90), seed=4000 + i))
+    for i, a in enumerate(angs):
+        b.connect_pts(core, (95.3 * math.cos(a), 95.3 * math.sin(a)),
+                      petals[i],
+                      (280 * math.cos(a) - 95.3 * math.cos(a),
+                       280 * math.sin(a) - 95.3 * math.sin(a)))
+    for i in range(6):
+        j = (i + 2) % 6
+        ai, aj = angs[i], angs[j]
+        pi_c = (280 * math.cos(ai), 280 * math.sin(ai))
+        pj_c = (280 * math.cos(aj), 280 * math.sin(aj))
+        b.connect_pts(
+            petals[i], (pi_c[0] + 95.3 * math.cos(ai - math.pi / 3),
+                        pi_c[1] + 95.3 * math.sin(ai - math.pi / 3)),
+            petals[j], (pj_c[0] + 95.3 * math.cos(aj + math.pi / 3),
+                        pj_c[1] + 95.3 * math.sin(aj + math.pi / 3)))
+    b.player(core, (0, 0))
+    cache(b, core, "medkit ammo_9mm ammo_shell")
+    b.intro("The watch, kept.\n"
+            "Things still come through, some decades.\n"
+            "They are met.")
+    b.radio("start", "Ratio: Contact plotting is live. They come through "
+                     "the petals; the heart is yours to hold. I'll keep "
+                     "the count.")
+    return b
+
+
+
 LEVELS = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10]
 
 
@@ -801,6 +846,10 @@ def main():
         print(f"{name}: {lvl.name!r} rooms={len(lvl.room_verts)} "
               f"connects={len(lvl.connects)} doors={len(lvl.doors)} "
               f"enemies={n_enemies}")
+    vb = vigil()
+    vb.build()
+    save_level(vb.to_dict(), OUT / "vigil.json")
+    print("vigil.json: THE VIGIL arena")
     (OUT / "campaign.json").write_text(json.dumps({"levels": manifest}, indent=1))
     print(f"campaign.json: {len(manifest)} levels")
 

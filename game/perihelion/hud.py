@@ -26,6 +26,10 @@ AMMO_LABEL = {"pistol": "9mm", "smg": "9mm", "shotgun": "shell", "rail": "cell",
 class HUD:
     def draw(self, surf: "pygame.Surface", session, mouse_pos=None) -> None:
         w, h = surf.get_size()
+        if getattr(session.level, "vigil", False):
+            img = _font(11).render(f"WAVE {session.metrics.get('wave', 0)}",
+                                   True, (200, 190, 170))
+            surf.blit(img, (6, 6))
         self._draw_hp(surf, session, h)
         self._draw_weapon(surf, session, w, h)
         self._draw_keys(surf, session, w)

@@ -113,7 +113,8 @@ class TitleScene(Scene):
     def __init__(self):
         self.t = 0.0
         self.sel = 0
-        self.items = ["New Game", "Level Select", "Settings", "Quit"]
+        self.items = ["New Game", "The Vigil (endless)", "Level Select",
+                      "Settings", "Quit"]
         self.dust = [(random.uniform(0, INTERNAL_W), random.uniform(0, INTERNAL_H),
                       random.uniform(6, 18)) for _ in range(40)]
         self._text_band: "pygame.Surface | None" = None
@@ -148,6 +149,8 @@ class TitleScene(Scene):
             app.start_new_game()
         elif item == "New Game+":
             app.start_new_game(plus=True)
+        elif item == "The Vigil (endless)":
+            app.start_vigil()
         elif item == "Level Select":
             app.push(LevelSelectScene())
         elif item == "Settings":
@@ -382,8 +385,10 @@ COMMANDO_LOGS = [
 
 
 class DeathScene(Scene):
-    def __init__(self, deaths: int):
+    def __init__(self, deaths: int, wave: int = 0, best_wave: int = 0):
         self.deaths = deaths
+        self.wave = wave
+        self.best_wave = best_wave
         self.t = 0.0
         self._overlay: "pygame.Surface | None" = None
 
@@ -418,7 +423,11 @@ class DeathScene(Scene):
         img = get_font(26).render("YOU DIED", True, color)
         surf.blit(img, (w // 2 - img.get_width() // 2, 100))
         mf = get_font(12)
-        img2 = mf.render(f"deaths: {self.deaths}", True, (190, 150, 150))
+        deaths_text = f"deaths: {self.deaths}"
+        if self.wave:
+            deaths_text = (f"the watch held for {self.wave} waves"
+                           f"   (best: {self.best_wave})")
+        img2 = mf.render(deaths_text, True, (190, 150, 150))
         surf.blit(img2, (w // 2 - img2.get_width() // 2, 140))
         img3 = mf.render("R: retry level    ESC: title", True, (170, 130, 130))
         surf.blit(img3, (w // 2 - img3.get_width() // 2, 160))
