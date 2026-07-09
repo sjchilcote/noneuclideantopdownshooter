@@ -93,16 +93,15 @@ GIB_FRICTION = 0.90
 
 
 def _dim(depth: int) -> float:
-    return max(0.42, 0.88 ** depth)
+    # Depth dimming was a seam: crossing a portal snapped the new room's
+    # brightness (invariant 5). Distance-to-player lighting replaces it —
+    # applied screen-space after the world draw, smooth across portals.
+    return 1.0
 
 
 def _floor_dim(depth: int) -> tuple[float, float, float]:
-    """Per-channel floor dimming: red decays slowest, blue fastest, so deeper
-    instances drift warm — a deliberate, depth-driven sun-red cast (the
-    station is falling into the sun)."""
-    return (max(0.52, 0.92 ** depth),
-            max(0.42, 0.86 ** depth),
-            max(0.38, 0.83 ** depth))
+    return (1.0, 1.0, 1.0)
+
 
 
 def _shade(base, dim, tint=(0, 0, 0)):
@@ -200,6 +199,9 @@ class Renderer:
 
         self._bake_glows()
         self._bake_vignette()
+        self._darkness: "pygame.Surface | None" = None
+        self._deferred_glows: list = []
+        self._deferred_bolts: list = []
         self._bake_overlays()
 
     # ------------------------------------------------------------------
@@ -361,6 +363,8 @@ class Renderer:
     def draw(self, surf: "pygame.Surface", debug: bool = False) -> None:
         surf.fill((0, 0, 0))
         session = self.session
+        self._deferred_glows = []
+        self._deferred_bolts = []
         instances = session.visible(self.max_depth, self.max_instances)
         for room, xform, depth, clip_screen, walls, entry_edge, ents in instances:
             if len(clip_screen) < 3:
@@ -373,9 +377,41 @@ class Renderer:
             self._draw_doors(surf, room, xform, clip_screen)
             self._draw_entities(surf, ents, clip_screen)
             self._draw_effects(surf, room, xform, clip_screen)
+        self._apply_darkness(surf)
+        # light sources punch through the dark: muzzle glows and bolts
+        for sx, sy, radius, clip_screen in self._deferred_glows:
+            self._blit_glow(surf, sx, sy, radius, clip_screen)
+        for color, pieces, glow in self._deferred_bolts:
+            for piece in pieces:
+                pygame.draw.lines(surf, color, False, _pts(piece), 1)
+            if glow is not None:
+                self._blit_glow(surf, *glow)
         self._draw_post(surf)
         if debug:
             self._draw_debug(surf, instances)
+
+    def _apply_darkness(self, surf) -> None:
+        """Player-centered radial falloff, multiply-composited over the whole
+        world after it draws at uniform brightness. Smooth across portals by
+        construction: the field lives in screen space, not room space."""
+        size = surf.get_size()
+        if self._darkness is None or self._darkness.get_size() != size:
+            import numpy as np
+            w, h = size
+            yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+            cx, cy = w / 2.0, h / 2.0
+            d = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2)
+            d = np.clip(d / (0.72 * max(w, h)), 0.0, 1.0)
+            k = d * d * (3.0 - 2.0 * d)  # smoothstep
+            arr = np.empty((h, w, 3), dtype=np.uint8)
+            # warm-dark edges: red survives longest (the sun is always there)
+            arr[..., 0] = (255 * (1.0 - 0.42 * k)).astype(np.uint8)
+            arr[..., 1] = (255 * (1.0 - 0.55 * k)).astype(np.uint8)
+            arr[..., 2] = (255 * (1.0 - 0.60 * k)).astype(np.uint8)
+            dark = pygame.Surface(size)
+            pygame.surfarray.blit_array(dark, arr.swapaxes(0, 1))
+            self._darkness = dark
+        surf.blit(self._darkness, (0, 0), special_flags=pygame.BLEND_RGB_MULT)
 
     # -- (1) floor ------------------------------------------------------
 
@@ -754,12 +790,13 @@ class Renderer:
             if fl["room"] != room:
                 continue
             sx, sy = necore.mat_apply(xform, fl["x"], fl["y"])
-            self._blit_glow(surf, sx, sy, fl["radius"] * scale, clip_screen)
+            self._deferred_glows.append((sx, sy, fl["radius"] * scale, clip_screen))
 
         for b in self._bolts:
             if b["room"] != room:
                 continue
             sx, sy = necore.mat_apply(xform, b["x"], b["y"])
+            pieces = []
             if b["life"] % 2 == 0:
                 for seg in b["segs"]:
                     spts = []
@@ -768,8 +805,10 @@ class Renderer:
                         spts.append((sx + wdx, sy + wdy))
                     for piece in necore.clip_polyline(spts, clip_screen):
                         if len(piece) >= 2:
-                            pygame.draw.lines(surf, LIGHTNING_COLOR, False, _pts(piece), 1)
-            self._blit_glow(surf, sx, sy, b["radius"] * scale * 0.6, clip_screen)
+                            pieces.append(piece)
+            self._deferred_bolts.append(
+                (LIGHTNING_COLOR, pieces,
+                 (sx, sy, b["radius"] * scale * 0.6, clip_screen)))
 
         for sc in self._screams:
             if sc["room"] != room:
@@ -786,7 +825,6 @@ class Renderer:
 
     def _draw_post(self, surf):
         session = self.session
-        surf.blit(self._vignette, (0, 0))
         if session.hp < 35 and not session.dead:
             pulse = 0.55 + 0.45 * math.sin(session.tick_count * 0.25)
             a = max(0, min(255, int(150 * pulse)))
