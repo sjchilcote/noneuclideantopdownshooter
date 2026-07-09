@@ -192,7 +192,8 @@ class GameScene(menus.Scene):
                 max(0, int(255 * (60 * 14 - self.session.tick_count) / (60 * 3)))
             for i, line in enumerate(("WASD move    mouse aim    LMB fire",
                                       "E read terminals    1-8 weapons    ESC pause")):
-                img = f.render(line, True, (200, 200, 190))
+                img = f.render(line, True, (200, 200, 190),
+                               (10, 10, 14))  # plate: busy floors eat bare text
                 img.set_alpha(fade)
                 surf.blit(img, (surf.get_width() // 2 - img.get_width() // 2,
                                 surf.get_height() - 66 + i * 14))
@@ -545,25 +546,31 @@ class App:
                 top = self.scenes[-1]
                 # soaks must test gameplay, not a press-any-key card
                 if not isinstance(top, GameScene):
+                    scene_kind = type(top).__name__
                     self._autoplay_wait = getattr(self, "_autoplay_wait", 0) + 1
-                    # intro cards typewrite their text; give them time to
-                    # finish before dismissing or recordings cut mid-sentence
-                    dwell = 360 if type(top).__name__ == "IntroCard" else 90
+                    dwell = 90
+                    if scene_kind == "IntroCard":
+                        # any keypress mid-typewriter completes the text and
+                        # the NEXT pops — never send keys while it types, or
+                        # a same-frame followup key cuts the card mid-word
+                        if top.shown_chars < len(top.text):
+                            self._autoplay_wait = 0
+                        else:
+                            dwell = 150  # reading beat once fully typed
                     if self._autoplay_wait > dwell:
                         self._autoplay_wait = 0
                         top.handle_event(self, pygame.event.Event(
                             pygame.KEYDOWN, key=pygame.K_SPACE, unicode=" "))
                         if self.scenes and self.scenes[-1] is top and \
                                 not isinstance(top, GameScene):
-                            # a conversation waiting on a dialogue choice:
-                            # pick option 1 rather than ESC-skipping the scene
-                            top.handle_event(self, pygame.event.Event(
-                                pygame.KEYDOWN, key=pygame.K_1, unicode="1"))
-                        if self.scenes and self.scenes[-1] is top and \
-                                not isinstance(top, GameScene) and \
-                                type(top).__name__ != "ConversationScene":
-                            top.handle_event(self, pygame.event.Event(
-                                pygame.KEYDOWN, key=pygame.K_ESCAPE))
+                            if scene_kind == "ConversationScene":
+                                # waiting on a dialogue choice: pick option 1
+                                # rather than skipping the scene
+                                top.handle_event(self, pygame.event.Event(
+                                    pygame.KEYDOWN, key=pygame.K_1, unicode="1"))
+                            elif scene_kind != "IntroCard":
+                                top.handle_event(self, pygame.event.Event(
+                                    pygame.KEYDOWN, key=pygame.K_ESCAPE))
 
             ticks_this_frame = 0
             while accumulator >= DT and ticks_this_frame < 4:
