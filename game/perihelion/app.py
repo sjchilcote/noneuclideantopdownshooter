@@ -461,6 +461,8 @@ class App:
 
     def restart_level(self) -> None:
         if self.game is not None and self.game.streamer is not None:
+            self.game.radio.clear()
+            self.game.float_texts.clear()
             self.game.streamer.respawn()
             return
         self._load_and_play(self.current_level_index, carried_state=self._level_start_state)

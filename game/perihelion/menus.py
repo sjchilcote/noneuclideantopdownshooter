@@ -597,6 +597,16 @@ class RadioBar:
     def push(self, text: str) -> None:
         self.queue.append(text)
 
+    def clear(self) -> None:
+        """Drop everything mid-air — a respawn should not inherit the
+        previous life's half-read transmission."""
+        self.queue.clear()
+        self.current = ""
+        self.lines = []
+        self.shown = 0
+        self.hold = 0
+        self._accum = 0.0
+
     def update(self, app) -> None:
         if not self.current:
             if not self.queue:

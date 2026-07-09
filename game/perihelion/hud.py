@@ -43,7 +43,9 @@ class HUD:
         x, y = 6, 12
         low = session.hp < 35 and not session.dead
         pulse = 0.5 + 0.5 * math.sin(session.tick_count * 0.35) if low else 1.0
-        color = (int(190 * pulse) + 40, 40, 40) if low else (235, 235, 235)
+        # pulse floor stays readable: at the old floor the digit hit
+        # (40,40,40) mid-pulse — invisible exactly when hp matters most
+        color = (int(120 * pulse) + 115, 45, 45) if low else (235, 235, 235)
         # backing plate: combat debris/glyphs behind the corner otherwise
         # render right through the digits
         img = _font(11).render(f"{max(0, int(session.hp))}", True, color)
