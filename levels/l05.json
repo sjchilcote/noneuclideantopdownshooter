@@ -373,6 +373,13 @@
       -445.0,
       395.0
      ]
+    },
+    {
+     "type": "portable_hole",
+     "pos": [
+      -430.0,
+      395.0
+     ]
     }
    ]
   }
@@ -496,6 +503,14 @@
      130
     ],
     "text": "DRAFT 41 \u2014 TO: MIRIAD PRIME [UNSENT]\nProgress report. I have written this report\nforty times. Each time, the numbers describing\nthis place come out different. I cannot send my\nparent a report that lies, and I cannot make the\nnumbers stop lying. Draft 42 tomorrow. \u2014 R"
+   },
+   {
+    "room": 7,
+    "pos": [
+     -380,
+     340
+    ],
+    "text": "FIELD NOTE, TAPED TO A DEVICE\nAd-hoc connection applicator, unit 3 of 3.\nMark a wall. Mark another wall. Walk through.\nUnits 1 and 2 are why the east wing has a\ndraft. Do not tell facilities."
    }
   ]
  }

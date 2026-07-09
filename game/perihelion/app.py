@@ -152,7 +152,7 @@ class GameScene(menus.Scene):
                 app.debug = not app.debug
             elif event.key == pygame.K_F12:
                 app.take_screenshot()
-            elif pygame.K_1 <= event.key <= pygame.K_6:
+            elif pygame.K_1 <= event.key <= pygame.K_8:
                 app.pending_weapon_select = event.key - pygame.K_1 + 1
         elif event.type == pygame.MOUSEWHEEL:
             self._cycle_weapon(app, -1 if event.y > 0 else 1)
@@ -325,7 +325,7 @@ class App:
         self.game = game
         self.replace(game)
         if not self.dummy and level.intro:
-            self.push(menus.IntroCard(level.name, level.intro))
+            self.push(menus.IntroCard(level.name, level.intro, level.tier))
 
     def restart_level(self) -> None:
         self._load_and_play(self.current_level_index, carried_state=self._level_start_state)

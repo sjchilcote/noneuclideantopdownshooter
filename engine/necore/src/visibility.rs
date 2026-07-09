@@ -74,6 +74,11 @@ pub struct RoomInstance {
     /// Per room edge: visible span in screen coords + whether it is a portal.
     pub walls: Vec<(Vec2, Vec2, bool)>,
     pub entry_edge: Option<usize>,
+    /// The frustum this instance's `clip_local` was clipped against (None
+    /// for the camera room itself, which is unclipped). Exposed so callers
+    /// (tests, tooling) can recompute `Frustum::half_planes` and verify
+    /// containment independently of the traversal internals.
+    pub frustum: Option<Frustum>,
 }
 
 struct Node {
@@ -282,6 +287,7 @@ pub fn visible_set(
             clip_screen,
             walls,
             entry_edge,
+            frustum: node.frustum,
         });
     }
 

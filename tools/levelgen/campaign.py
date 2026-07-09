@@ -386,7 +386,13 @@ def l05():
     cache(b, w2, "ammo_9mm ammo_shell")
     cache(b, e2, "medkit ammo_9mm")
     cache(b, w3, "ammo_shell")
-    cache(b, chapel, "weapon_rail ammo_cell ammo_cell medkit")
+    cache(b, chapel, "weapon_rail ammo_cell ammo_cell medkit portable_hole")
+    b.terminal(chapel, (-380, 340),
+               "FIELD NOTE, TAPED TO A DEVICE\n"
+               "Ad-hoc connection applicator, unit 3 of 3.\n"
+               "Mark a wall. Mark another wall. Walk through.\n"
+               "Units 1 and 2 are why the east wing has a\n"
+               "draft. Do not tell facilities.")
     # two identical gold keys, in the same bunk, in both wings
     b.entity(w1, "key_gold", (-90, 40))
     b.entity(e1, "key_gold", (1270, 40))
@@ -436,7 +442,7 @@ def l06():
     squad(b, side, "spitter")
     squad(b, morgue, "brute shrieker")
     cache(b, hall, "ammo_9mm", off=(-120, 0))
-    cache(b, side, "ammo_cell medkit")
+    cache(b, side, "weapon_tau ammo_cell medkit")
     cache(b, morgue, "ammo_shell ammo_shell medkit")
     # the seal sits against the mirror wall: to leave, you must walk up to
     # your own reflection
@@ -506,7 +512,7 @@ def l07():
     squad(b, closet, "spitter spitter")
     squad(b, deep, "brute brute shrieker")
     cache(b, stack, "ammo_9mm ammo_shell", off=(60, 30))
-    cache(b, closet, "medkit ammo_cell")
+    cache(b, closet, "medkit ammo_cell portable_hole")
     cache(b, deep, "medkit ammo_cell ammo_shell")
     b.entity(closet, "key_gold", (735, 335))
     b.radio("pickup:gold", "Ratio: Gold seal, filed under 'gold seal'. "
@@ -635,7 +641,7 @@ def l09():
     squad(b, rooms[12], "brute shrieker")
     squad(b, rooms[15], "brute brute")
     cache(b, rooms[4], "ammo_9mm ammo_shell")
-    cache(b, rooms[8], "medkit ammo_cell")
+    cache(b, rooms[8], "medkit ammo_cell portable_hole")
     cache(b, rooms[7], "ammo_shell ammo_9mm medkit")
     cache(b, rooms[13], "ammo_cell ammo_shell")
     cache(b, rooms[6], "medkit")

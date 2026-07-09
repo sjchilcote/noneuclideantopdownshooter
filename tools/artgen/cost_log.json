@@ -1,0 +1,69 @@
+{
+  "total_cost": 0.543536,
+  "calls": [
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/title_bg_a1.png",
+      "cost": 0.067326,
+      "prompt_tokens": 252,
+      "completion_tokens": 1120,
+      "ts": 1783605943.955084
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/win_bg_a1.png",
+      "cost": 0.0681515,
+      "prompt_tokens": 241,
+      "completion_tokens": 1397,
+      "ts": 1783605999.5358682
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/death_bg_a1.png",
+      "cost": 0.0688145,
+      "prompt_tokens": 223,
+      "completion_tokens": 1621,
+      "ts": 1783606034.4589524
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/intro_t1_a1.png",
+      "cost": 0.067306,
+      "prompt_tokens": 212,
+      "completion_tokens": 1120,
+      "ts": 1783606142.8879879
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/intro_t2_a1.png",
+      "cost": 0.068546,
+      "prompt_tokens": 490,
+      "completion_tokens": 1487,
+      "ts": 1783606213.71198
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/intro_t3_a1.png",
+      "cost": 0.0687215,
+      "prompt_tokens": 499,
+      "completion_tokens": 1544,
+      "ts": 1783606249.020728
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/intro_t3_a2.png",
+      "cost": 0.067341,
+      "prompt_tokens": 282,
+      "completion_tokens": 1120,
+      "ts": 1783606296.3072422
+    },
+    {
+      "model": "google/gemini-3.1-flash-image",
+      "out": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/artgen_raw/intro_t4_a1.png",
+      "cost": 0.0673295,
+      "prompt_tokens": 259,
+      "completion_tokens": 1120,
+      "ts": 1783606330.4085166
+    }
+  ]
+}

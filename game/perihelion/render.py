@@ -756,7 +756,12 @@ class Renderer:
             self._vignette_lowhp.set_alpha(a)
             surf.blit(self._vignette_lowhp, (0, 0))
         if self._hurt_ticks > 0:
-            self._hurt_overlay.set_alpha(int(140 * (self._hurt_ticks / 2.0)))
+            # pain reads at the screen edges (red vignette) + a faint cast;
+            # the center of the world must stay readable through the flash
+            k = self._hurt_ticks / 2.0
+            self._vignette_lowhp.set_alpha(int(230 * k))
+            surf.blit(self._vignette_lowhp, (0, 0))
+            self._hurt_overlay.set_alpha(int(36 * k))
             surf.blit(self._hurt_overlay, (0, 0))
         if session.dead and self._death_fade > 0:
             a = min(255, int(255 * self._death_fade / 40))

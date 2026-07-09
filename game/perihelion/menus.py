@@ -50,6 +50,35 @@ def get_font(size: int) -> "pygame.font.Font":
     return f
 
 
+# Generated-art menu backgrounds (tools/artgen). Every scene that draws one
+# falls back to its original procedural background if the file is missing
+# or fails to load -- the game must run with an empty assets/art/ dir.
+_ART_DIR = Path(__file__).resolve().parent.parent / "assets" / "art"
+_BG_CACHE: dict[str, "pygame.Surface | None"] = {}
+
+
+def _load_bg(name: str) -> "pygame.Surface | None":
+    if name in _BG_CACHE:
+        return _BG_CACHE[name]
+    img = None
+    try:
+        img = pygame.image.load(str(_ART_DIR / name))
+        try:
+            img = img.convert()
+        except pygame.error:
+            pass  # no display surface yet (e.g. headless test) -- blit still works
+    except (FileNotFoundError, pygame.error, OSError):
+        img = None
+    _BG_CACHE[name] = img
+    return img
+
+
+def _blit_bg(surf: "pygame.Surface", bg: "pygame.Surface", size: tuple[int, int]) -> None:
+    if bg.get_size() != size:
+        bg = pygame.transform.scale(bg, size)
+    surf.blit(bg, (0, 0))
+
+
 def _wrap(text: str, width: int) -> list[str]:
     lines: list[str] = []
     for para in text.split("\n"):
@@ -87,6 +116,13 @@ class TitleScene(Scene):
         self.items = ["New Game", "Level Select", "Settings", "Quit"]
         self.dust = [(random.uniform(0, INTERNAL_W), random.uniform(0, INTERNAL_H),
                       random.uniform(6, 18)) for _ in range(40)]
+        self._text_band: "pygame.Surface | None" = None
+
+    def _ensure_text_band(self, width: int, height: int) -> "pygame.Surface":
+        if self._text_band is None or self._text_band.get_size() != (width, height):
+            self._text_band = pygame.Surface((width, height), pygame.SRCALPHA)
+            self._text_band.fill((0, 0, 0, 110))
+        return self._text_band
 
     def on_enter(self, app) -> None:
         self.t = 0.0
@@ -117,14 +153,19 @@ class TitleScene(Scene):
 
     def draw(self, app, surf) -> None:
         w, h = surf.get_size()
-        pulse = 0.5 + 0.5 * math.sin(self.t * 0.6)
-        top = (int(14 + 16 * pulse), 4, 6)
-        for y in range(h):
-            k = y / h
-            r = int(top[0] * (1 - k))
-            g = int(top[1] * (1 - k))
-            b = int(top[2] * (1 - k))
-            pygame.draw.line(surf, (r, g, b), (0, y), (w, y))
+        bg = _load_bg("title_bg.png")
+        if bg is not None:
+            _blit_bg(surf, bg, (w, h))
+            surf.blit(self._ensure_text_band(w, 235), (0, 0))
+        else:
+            pulse = 0.5 + 0.5 * math.sin(self.t * 0.6)
+            top = (int(14 + 16 * pulse), 4, 6)
+            for y in range(h):
+                k = y / h
+                r = int(top[0] * (1 - k))
+                g = int(top[1] * (1 - k))
+                b = int(top[2] * (1 - k))
+                pygame.draw.line(surf, (r, g, b), (0, y), (w, y))
         for x, y, spd in self.dust:
             y2 = (y + self.t * spd) % h
             surf.set_at((int(x), int(y2)), (95, 75, 62))
@@ -219,11 +260,19 @@ class SettingsScene(Scene):
 class IntroCard(Scene):
     CHARS_PER_SEC = 28.0
 
-    def __init__(self, name: str, text: str):
+    def __init__(self, name: str, text: str, tier: int = 1):
         self.name = name
         self.text = text
+        self.tier = tier
         self.t = 0.0
         self.shown_chars = 0
+        self._overlay: "pygame.Surface | None" = None
+
+    def _ensure_overlay(self, size):
+        if self._overlay is None or self._overlay.get_size() != size:
+            self._overlay = pygame.Surface(size, pygame.SRCALPHA)
+            self._overlay.fill((0, 0, 0, 100))
+        return self._overlay
 
     def update(self, app, dt: float) -> None:
         self.t += dt
@@ -240,7 +289,13 @@ class IntroCard(Scene):
 
     def draw(self, app, surf) -> None:
         w, h = surf.get_size()
-        surf.fill((4, 4, 6))
+        tier = max(1, min(4, self.tier))
+        bg = _load_bg(f"intro_t{tier}.png")
+        if bg is not None:
+            _blit_bg(surf, bg, (w, h))
+            surf.blit(self._ensure_overlay((w, h)), (0, 0))
+        else:
+            surf.fill((4, 4, 6))
         img = get_font(20).render(self.name, True, (220, 220, 225))
         surf.blit(img, (w // 2 - img.get_width() // 2, 50))
         bf = get_font(11)
@@ -343,10 +398,13 @@ class DeathScene(Scene):
             app.pop_to_title()
 
     def draw(self, app, surf) -> None:
-        if app.game is not None:
+        w, h = surf.get_size()
+        bg = _load_bg("death_bg.png")
+        if bg is not None:
+            _blit_bg(surf, bg, (w, h))
+        elif app.game is not None:
             app.game.draw(app, surf)
         surf.blit(self._ensure_overlay(surf.get_size()), (0, 0))
-        w, h = surf.get_size()
         pulse = 0.6 + 0.4 * math.sin(self.t * 2.0)
         color = (min(255, int(200 * pulse) + 40), 20, 20)
         img = get_font(26).render("YOU DIED", True, color)
@@ -377,6 +435,13 @@ class WinScene(Scene):
     def __init__(self, text: str):
         self.text = text
         self.scroll_y = 0.0
+        self._overlay: "pygame.Surface | None" = None
+
+    def _ensure_overlay(self, size):
+        if self._overlay is None or self._overlay.get_size() != size:
+            self._overlay = pygame.Surface(size, pygame.SRCALPHA)
+            self._overlay.fill((0, 0, 0, 100))
+        return self._overlay
 
     def update(self, app, dt: float) -> None:
         self.scroll_y += dt * 10.0
@@ -386,8 +451,13 @@ class WinScene(Scene):
             app.pop_to_title()
 
     def draw(self, app, surf) -> None:
-        surf.fill((0, 0, 0))
         w, h = surf.get_size()
+        bg = _load_bg("win_bg.png")
+        if bg is not None:
+            _blit_bg(surf, bg, (w, h))
+            surf.blit(self._ensure_overlay((w, h)), (0, 0))
+        else:
+            surf.fill((0, 0, 0))
         f = get_font(13)
         lines = _wrap(self.text, 56)
         y0 = h - self.scroll_y

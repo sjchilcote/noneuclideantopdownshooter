@@ -175,16 +175,23 @@
      ]
     },
     {
-     "type": "ammo_cell",
+     "type": "weapon_tau",
      "pos": [
       665.0,
       -50.0
      ]
     },
     {
-     "type": "medkit",
+     "type": "ammo_cell",
      "pos": [
       680.0,
+      -50.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      695.0,
       -50.0
      ]
     }

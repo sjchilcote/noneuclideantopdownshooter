@@ -227,6 +227,62 @@ impl World {
         }
         Ok(())
     }
+
+    /// Split a SOLID wall edge into three collinear sub-edges by inserting
+    /// vertices at parametric t0 < t1 along it. Every portal in the world
+    /// that references a later edge of this room is remapped (+2). Returns
+    /// the edge index of the middle sub-segment (the doorway-to-be).
+    /// Collinear vertices keep the polygon convex; this is the runtime
+    /// counterpart of the level builder's doorway splitter, and what the
+    /// portable hole is made of.
+    pub fn split_edge(
+        &mut self,
+        r: RoomId,
+        e: usize,
+        t0: f64,
+        t1: f64,
+    ) -> Result<usize, WorldError> {
+        self.check_edge(r, e)?;
+        if self.rooms[r].portals[e].is_some() {
+            return Err(WorldError::EdgeOccupied(r, e));
+        }
+        if !(t0 > 1e-6 && t1 < 1.0 - 1e-6 && t1 - t0 > 1e-6) {
+            return Err(WorldError::DegenerateEdge);
+        }
+        let (a, b) = self.rooms[r].edge(e);
+        let p0 = a.lerp(b, t0);
+        let p1 = a.lerp(b, t1);
+        let n = geom::inward_normal(a, b);
+        let len = self.rooms[r].edge_len[e];
+
+        // insert vertices after position e
+        let room = &mut self.rooms[r];
+        room.verts.insert(e + 1, p1);
+        room.verts.insert(e + 1, p0);
+        // edge e keeps its wall status; two new edges inherit wall (None)
+        room.portals.insert(e + 1, None);
+        room.portals.insert(e + 1, None);
+        room.normals.insert(e + 1, n);
+        room.normals.insert(e + 1, n);
+        room.edge_len[e] = len * t0;
+        room.edge_len.insert(e + 1, len * (t1 - t0));
+        room.edge_len.insert(e + 2, len * (1.0 - t1));
+
+        // remap every portal (anywhere) that targets a shifted edge of r,
+        // and this room's own outgoing portal records moved by the inserts.
+        let nrooms = self.rooms.len();
+        for ri in 0..nrooms {
+            for ei in 0..self.rooms[ri].portals.len() {
+                if let Some(p) = self.rooms[ri].portals[ei].as_mut() {
+                    if p.target_room == r && p.target_edge > e {
+                        p.target_edge += 2;
+                    }
+                }
+            }
+        }
+        self.topology_version += 1;
+        Ok(e + 1)
+    }
 }
 
 #[cfg(test)]
@@ -260,6 +316,33 @@ mod tests {
         let (b0, b1) = w.rooms[b].edge(0);
         assert!(pa.xform.apply(b1).dist(a0) < 1e-9);
         assert!(pa.xform.apply(b0).dist(a1) < 1e-9);
+    }
+
+    #[test]
+    fn split_edge_inserts_doorway_and_remaps_portals() {
+        let mut w = World::new();
+        let a = w.add_room(&square_verts(0.0, 0.0, 50.0)).unwrap();
+        let b = w.add_room(&square_verts(0.0, 0.0, 50.0)).unwrap();
+        // connect b to a's edge 3 (top); then split a's edge 1 (bottom):
+        // edge 3 shifts to 5 and b's paired portal must follow.
+        w.connect(a, 3, b, 1).unwrap();
+        let mid = w.split_edge(a, 1, 0.4, 0.55).unwrap();
+        assert_eq!(mid, 2);
+        assert_eq!(w.rooms[a].verts.len(), 6);
+        assert!((w.rooms[a].edge_len[1] - 40.0).abs() < 1e-9);
+        assert!((w.rooms[a].edge_len[2] - 15.0).abs() < 1e-9);
+        assert!((w.rooms[a].edge_len[3] - 45.0).abs() < 1e-9);
+        let pb = w.rooms[b].portals[1].unwrap();
+        assert_eq!(pb.target_room, a);
+        assert_eq!(pb.target_edge, 5, "portal into a must be remapped");
+        let pa = w.rooms[a].portals[5].unwrap();
+        assert_eq!(pa.target_room, b);
+        // geometry still convex-valid: connect a third room to the doorway
+        let c = w.add_room(&square_verts(0.0, 0.0, 7.5)).unwrap();
+        w.connect(a, mid, c, 0).unwrap();
+        assert!(w.rooms[a].portals[mid].is_some());
+        // splitting an occupied edge is refused
+        assert!(w.split_edge(a, mid, 0.3, 0.6).is_err());
     }
 
     #[test]

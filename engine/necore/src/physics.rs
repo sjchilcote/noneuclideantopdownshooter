@@ -286,8 +286,10 @@ impl Sim {
                 let room_ref = &self.world.rooms[e.room];
                 let (a, b) = room_ref.edge(i);
                 let n = room_ref.normals[i];
-                // Entities that never transfer treat portals as walls.
-                let is_portal = room_ref.portals[i].is_some() && e.transfers;
+                // Entities that never transfer treat portals as walls, and an
+                // entity only fits through an opening wider than itself.
+                let fits = 2.0 * e.radius <= room_ref.edge_len[i] * 1.05;
+                let is_portal = room_ref.portals[i].is_some() && e.transfers && fits;
                 let d0 = (e.pos - a).dot(n);
                 let d1 = (target - a).dot(n);
                 let rad = if is_portal { 0.0 } else { e.radius };

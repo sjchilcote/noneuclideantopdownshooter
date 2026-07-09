@@ -167,11 +167,13 @@ pub fn raycast(
                 hops += 1;
                 // Into the child: positions through inv, direction through the
                 // linear part (renormalized; scale portals stretch distances).
-                o = p.inv.apply(hit_pos) ;
+                o = p.inv.apply(hit_pos);
                 let nd = p.inv.apply_dir(d);
                 d = nd.normalized();
-                // Nudge forward so we don't re-hit the same line.
+                // Nudge forward so we don't re-hit the same line (and keep
+                // the travelled distance honest about it).
                 o = o + d * 1e-6;
+                travelled += 1e-6;
                 xform = xform.mul(p.xform);
                 room = p.target_room;
             }

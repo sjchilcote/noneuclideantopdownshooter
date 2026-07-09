@@ -45,8 +45,17 @@ WEAPONS: dict[str, dict] = {
     "rail": dict(dmg=42, cd=84, ammo="cell", per=1, sound="rail_fire", pierce=3, kick=5.0),
     "lightning": dict(dmg=26, cd=None, speed=720.0, sound="lightning_fire",
                       radius=110.0, force=1500.0),
+    "tau": dict(dmg=9, cd=7, speed=1900.0, spread=math.radians(2.0), pellets=1,
+                ammo="cell", per=1, sound="tau_fire", kick=2.6, bounces=2),
+    "hole": dict(cd=18, sound="terminal_open"),
 }
-WEAPON_ORDER = ["knife", "pistol", "smg", "shotgun", "rail", "lightning"]
+WEAPON_ORDER = ["knife", "pistol", "smg", "shotgun", "rail", "lightning",
+                "tau", "hole"]
+TAU_CHARGE_FULL = 80        # ticks of held charge for max damage
+TAU_OVERCHARGE = 160        # holding past this hurts
+HOLE_WIDTH = 15.0           # player diameter 13 + clearance; brutes (27) excluded
+HOLE_RANGE = 160.0
+HOLE_CORRIDOR_LEN = 36.0
 LIGHTNING_RECHARGE_TICKS = 60 * 9
 
 # Speed doctrine (Teleglitch): base walk slightly SLOWER than the player
@@ -84,6 +93,8 @@ PICKUPS: dict[str, dict] = {
     "weapon_smg": dict(radius=7.0),
     "weapon_shotgun": dict(radius=7.0),
     "weapon_rail": dict(radius=7.0),
+    "weapon_tau": dict(radius=7.0),
+    "portable_hole": dict(radius=6.0),
     "implant_lightning": dict(radius=7.0),
     "key_red": dict(radius=5.5), "key_blue": dict(radius=5.5),
     "key_gold": dict(radius=5.5), "key_void": dict(radius=5.5),
@@ -178,6 +189,9 @@ class GameSession:
         self.cooldown = 0
         self.hurt_cd = 0
         self.aim = (1.0, 0.0)
+        self.holes = int(st.get("holes", 0))
+        self.hole_mark: tuple | None = None  # (room, edge, t0, t1, x, y)
+        self.tau_charge = 0
 
         # --- camera: player-room local -> internal screen ---
         px, py = level.player_pos
@@ -385,13 +399,30 @@ class GameSession:
         # fire
         if inp.fire and self.cooldown <= 0:
             self._fire(proom, px, py)
-        if inp.alt and self.lightning_charge >= LIGHTNING_RECHARGE_TICKS \
+        # alt: tau charge when tau is in hand, lightning implant otherwise
+        if self.weapon == "tau" and "tau" in self.weapons:
+            if inp.alt and self.ammo.get("cell", 0) > 0:
+                self.tau_charge += 1
+                if self.tau_charge == 1:
+                    self._snd("tau_charge", proom, (px, py), 0.8)
+                if self.tau_charge > TAU_OVERCHARGE:
+                    self._damage_player(12, proom)
+                    self._snd("tau_overcharge_hurt", proom, (px, py))
+                    self.tau_charge = 0
+            elif self.tau_charge > 0:
+                self._fire_tau_charged(proom, px, py)
+                self.tau_charge = 0
+        elif inp.alt and self.lightning_charge >= LIGHTNING_RECHARGE_TICKS \
                 and "lightning" in self.weapons:
             self._fire_lightning(proom, px, py)
 
     def _fire(self, proom: int, px: float, py: float):
         w = WEAPONS[self.weapon]
         adx, ady = self.aim
+        if self.weapon == "hole":
+            self.cooldown = w["cd"]
+            self._hole_shot(proom, px, py, adx, ady)
+            return
         if self.weapon == "knife":
             self.cooldown = w["cd"]
             self._snd("knife_swing", proom, (px, py))
@@ -442,6 +473,10 @@ class GameSession:
                                  math.sin(ang) * spd + pvy * 0.4)
                 self.sim.set_dir(bid, math.cos(ang), math.sin(ang))
                 self.bullets[bid] = dict(kind="bullet", dmg=w["dmg"], ttl=90)
+                if self.weapon == "tau":
+                    self.bullets[bid].update(kind="tau", ttl=140,
+                                             bounces=w.get("bounces", 0))
+                    self.sim.set_props(bid, rest_wall=1.0)
         # gunfire is loud: it travels the graph
         self.alert_enemies(proom, self.level.alert_hops)
 
@@ -486,6 +521,95 @@ class GameSession:
         self._snd("lightning_fire", proom, (px, py))
         self._shake(4.0)
         self.alert_enemies(proom, self.level.alert_hops + 1)
+
+    def _fire_tau_charged(self, proom, px, py):
+        adx, ady = self.aim
+        frac = min(1.0, self.tau_charge / TAU_CHARGE_FULL)
+        cost = min(self.ammo.get("cell", 0), 5)
+        if cost <= 0:
+            self._snd("dry_click", proom, (px, py))
+            return
+        self.ammo["cell"] -= cost
+        power = frac * (0.4 + 0.6 * cost / 5.0)
+        dmg = 18 + 46 * power
+        _, _, _, pvx, pvy, _, _ = self.sim.get(self.pid)
+        bid = self.sim.spawn(proom, px + adx * (PLAYER_RADIUS + 5),
+                             py + ady * (PLAYER_RADIUS + 5), 2.2, 0.006,
+                             GROUP_PBULLET)
+        self.sim.set_props(bid, rest_wall=1.0, max_substep=4.0)
+        self.sim.set_vel(bid, adx * 2600.0 + pvx * 0.3, ady * 2600.0 + pvy * 0.3)
+        self.bullets[bid] = dict(kind="taucharged", dmg=dmg, ttl=160, bounces=3)
+        self.metrics["shots"] += 1
+        self._snd("tau_charged_fire", proom, (px, py))
+        self._shake(4.0 + 5.0 * power)
+        self._hitstop(2)
+        self.fx.append(("flash", proom, px + adx * 12, py + ady * 12, 30.0))
+        self.alert_enemies(proom, self.level.alert_hops)
+
+    # ------------------------------------------------------------------
+    # portable hole
+    # ------------------------------------------------------------------
+
+    def _hole_shot(self, proom, px, py, adx, ady):
+        if self.holes <= 0:
+            self._snd("dry_click", proom, (px, py))
+            return
+        hit = self.sim.raycast(proom, px, py, adx, ady, 0, HOLE_RANGE, 0, self.pid)
+        if hit[0] != "wall":
+            self._snd("dry_click", proom, (px, py), 0.5)
+            return
+        _, room, edge, hx, hy, dist, hops, m9 = hit
+        x1, y1, x2, y2 = self.sim.edge_endpoints(room, edge)
+        elen = math.hypot(x2 - x1, y2 - y1)
+        along = (hx - x1) * (x2 - x1) / elen + (hy - y1) * (y2 - y1) / elen
+        half = HOLE_WIDTH / 2.0
+        if along < half + 2.0 or along > elen - half - 2.0:
+            self._snd("dry_click", proom, (px, py), 0.5)
+            return
+        t0, t1 = (along - half) / elen, (along + half) / elen
+        if self.hole_mark is None:
+            self.hole_mark = (room, edge, t0, t1, hx, hy)
+            self._snd("terminal_type", room, (hx, hy))
+            self.fx.append(("holemark", room, hx, hy))
+            return
+        m_room, m_edge, m_t0, m_t1, mx, my = self.hole_mark
+        if m_room == room and m_edge == edge:
+            self._snd("dry_click", proom, (px, py), 0.5)
+            return
+        # split the FIRST mark's wall first; if the second mark shares the
+        # room with a later edge index, account for the insertion shift
+        if m_room == room and edge > m_edge:
+            edge += 2
+        mid_a = self.sim.split_edge(m_room, m_edge, m_t0, m_t1)
+        self._shift_edge_maps(m_room, m_edge)
+        mid_b = self.sim.split_edge(room, edge, t0, t1)
+        self._shift_edge_maps(room, edge)
+        if m_room == room and mid_a > edge:
+            mid_a += 2  # the second split renumbered the first doorway
+        w = HOLE_WIDTH
+        cor = self.sim.add_room([(0.0, 0.0), (0.0, w),
+                                 (HOLE_CORRIDOR_LEN, w), (HOLE_CORRIDOR_LEN, 0.0)])
+        self.sim.connect(m_room, mid_a, cor, 0)
+        self.sim.connect(room, mid_b, cor, 2)
+        self.level.room_seeds.append(cor * 7919 + 13)
+        self.holes -= 1
+        self.hole_mark = None
+        self._snd("door_unlock", room, (hx, hy))
+        self.fx.append(("holeopen", room, hx, hy))
+        self._shake(3.0)
+
+    def _shift_edge_maps(self, room: int, edge: int):
+        """A split inserted two edges after `edge` in `room`; every python-
+        side (room, edge) reference beyond it shifts by 2."""
+        remapped = {}
+        for (r, e), k in self.door_edges.items():
+            remapped[(r, e + 2 if r == room and e > edge else e)] = k
+        self.door_edges = remapped
+        for d in self.doors:
+            if d["a"] == room and d["ea"] > edge:
+                d["ea"] += 2
+            if d["b"] == room and d["eb"] > edge:
+                d["eb"] += 2
 
     def _detonate_dart(self, bid: int, room: int, x: float, y: float):
         w = WEAPONS["lightning"]
@@ -735,6 +859,11 @@ class GameSession:
                 _, ent, room, edge, px_, py_, nx, ny, speed = ev
                 b = self.bullets.get(ent)
                 if b is not None:
+                    if b["kind"] in ("tau", "taucharged") and b.get("bounces", 0) > 0:
+                        b["bounces"] -= 1
+                        self._snd("ricochet", room, (px_, py_), 0.5)
+                        self.fx.append(("spark", room, px_, py_, nx, ny))
+                        continue  # engine already reflected it (rest_wall=1)
                     if b["kind"] == "spit":
                         self._decal(room, "splat", px_, py_, 4.0)
                     elif b["kind"] == "dart":
@@ -758,7 +887,7 @@ class GameSession:
                     room = self.sim.get_room(x) if self.sim.exists(x) \
                         else self.sim.get_room(y)
                     self._detonate_dart(x, room, cx, cy)
-                elif bx["kind"] in ("bullet",):
+                elif bx["kind"] in ("bullet", "tau", "taucharged"):
                     self._damage_enemy(y, bx["dmg"], (nx if x == b else -nx, ny if x == b else -ny), 90.0)
                 self.sim.remove(x)
                 self.bullets.pop(x, None)
@@ -807,6 +936,12 @@ class GameSession:
                 self.ammo_bonus_for(w)
                 self._snd("pickup_ammo", proom, (x, y))
                 self.fx.append(("weapon", w))
+            elif kind == "portable_hole":
+                self.holes += 1
+                if "hole" not in self.weapons:
+                    self.weapons.append("hole")
+                self._snd("pickup_key", proom, (x, y))
+                self.fx.append(("weapon", "hole"))
             elif kind == "implant_lightning":
                 if "lightning" not in self.weapons:
                     self.weapons.append("lightning")
@@ -823,7 +958,8 @@ class GameSession:
             self.pickups.pop(eid, None)
 
     def ammo_bonus_for(self, w: str):
-        bonus = {"smg": ("9mm", 30), "shotgun": ("shell", 8), "rail": ("cell", 6)}
+        bonus = {"smg": ("9mm", 30), "shotgun": ("shell", 8), "rail": ("cell", 6),
+                 "tau": ("cell", 10)}
         if w in bonus:
             t, n = bonus[w]
             self.ammo[t] = self.ammo.get(t, 0) + n
@@ -927,6 +1063,7 @@ class GameSession:
             weapon=self.weapon, weapons=list(self.weapons), ammo=dict(self.ammo),
             keys=set(self.keys),
             lightning_ready=self.lightning_charge >= LIGHTNING_RECHARGE_TICKS,
+            holes=self.holes, tau_charge=self.tau_charge,
             enemies=enemies, pickups=pickups,
             exit_room=self.exit_room,
             exit_next_edge=self.sim.next_edge(proom, self.exit_room)

@@ -113,6 +113,14 @@ impl Sim {
         self.sim.world.disconnect(a, ea).map_err(world_err)
     }
 
+    /// Split a solid wall edge at parametric (t0, t1); returns the middle
+    /// sub-edge index. Portals referencing later edges of this room are
+    /// remapped internally (+2) — callers keeping (room, edge) maps in
+    /// Python must apply the same shift.
+    fn split_edge(&mut self, room: usize, edge: usize, t0: f64, t1: f64) -> PyResult<usize> {
+        self.sim.world.split_edge(room, edge, t0, t1).map_err(world_err)
+    }
+
     fn num_rooms(&self) -> usize {
         self.sim.world.rooms.len()
     }

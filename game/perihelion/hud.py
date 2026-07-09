@@ -20,7 +20,7 @@ def _font(size: int) -> "pygame.font.Font":
     return get_font(size)
 
 
-AMMO_LABEL = {"pistol": "9mm", "smg": "9mm", "shotgun": "shell", "rail": "cell"}
+AMMO_LABEL = {"pistol": "9mm", "smg": "9mm", "shotgun": "shell", "rail": "cell", "tau": "cell"}
 
 
 class HUD:
