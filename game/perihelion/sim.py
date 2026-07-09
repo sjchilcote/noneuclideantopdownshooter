@@ -1042,6 +1042,22 @@ class GameSession:
             elif tag == "wall":
                 _, ent, room, edge, px_, py_, nx, ny, speed = ev
                 b = self.bullets.get(ent)
+                if b is not None and b["kind"] != "spit" \
+                        and self.door_edges.get((room, edge)) == "shoot":
+                    # a cracked wall gives way
+                    for d in self.doors:
+                        if not d["open"] and d["key"] == "shoot" and (
+                                (d["a"], d["ea"]) == (room, edge)
+                                or (d["b"], d["eb"]) == (room, edge)):
+                            d["open"] = True
+                            self.sim.connect(d["a"], d["ea"], d["b"], d["eb"])
+                            self.door_edges.pop((d["a"], d["ea"]), None)
+                            self.door_edges.pop((d["b"], d["eb"]), None)
+                            self._snd("door_unlock", room, (px_, py_))
+                            self._decal(room, "scorch", px_, py_, 10.0)
+                            self._shake(3.0)
+                            self.fx.append(("holeopen", room, px_, py_))
+                            break
                 if b is not None:
                     if b["kind"] in ("tau", "taucharged") and b.get("bounces", 0) > 0:
                         b["bounces"] -= 1

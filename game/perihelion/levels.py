@@ -280,7 +280,7 @@ class LevelBuilder:
             guard += 1
             for ri in range(len(rooms)):
                 for rj in range(len(rooms)):
-                    if ri == rj or tuple(sorted((ri, rj))) in no_auto:
+                    if ri == rj:
                         continue
                     for ei, a0, a1 in edges_of(ri):
                         ax, ay = a1[0] - a0[0], a1[1] - a0[1]

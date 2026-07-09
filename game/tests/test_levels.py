@@ -48,7 +48,7 @@ def test_keys_reachable_before_their_doors(path):
         if p["kind"].startswith("key_"):
             key_rooms[p["kind"][4:]] = s.sim.get_room(eid)
     for d in s.doors:
-        if not d["key"]:
+        if d["key"] in ("", "shoot"):
             continue
         assert d["key"] in key_rooms, f"door needs key_{d['key']} but none placed"
         hops = s.sim.hop_distance(lvl.player_room, key_rooms[d["key"]])

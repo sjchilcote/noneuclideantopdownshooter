@@ -380,6 +380,9 @@ def l05():
     e3 = b.rect(820, 10, 180, 160)
     chapel = b.rect(-540, 300, 220, 160)
 
+    bunk_f = b.rect(-160, -110, 140, 120)   # the third twelve, flush above w1
+    b.door_pts(w1, (-90, 10), bunk_f, (-90, 10), "shoot")
+    b.no_connect(w1, bunk_f)
     b.connect_pts(lobby, (220, 90), e1, (1360, 90))   # east door, impossible
     b.connect_pts(w3, (-450, 170), chapel, (-430, 300))
     b.connect_pts(e3, (820, 90), chapel, (-320, 380))  # east wall of chapel
@@ -409,6 +412,13 @@ def l05():
                "this place come out different. I cannot send my\n"
                "parent a report that lies, and I cannot make the\n"
                "numbers stop lying. Draft 42 tomorrow. — R")
+    b.terminal(bunk_f, (-110, -100),
+               "BUNK 12-F\nThere is no bunk 12-F on the manifest.\n"
+               "Dear R, dear M — you are both right.\n"
+               "I hear you both through my walls,\n"
+               "and my walls touch neither of yours.\n"
+               "I stopped filing complaints. Enjoy the cache. — F")
+    cache(b, bunk_f, "ammo_cell ammo_cell medkit ammo_shell")
     squad(b, w1, "husk husk")
     squad(b, w2, "husk mite mite mite")
     squad(b, w3, "brute")

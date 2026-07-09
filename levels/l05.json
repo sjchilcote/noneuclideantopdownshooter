@@ -50,6 +50,14 @@
     [
      0,
      10
+    ],
+    [
+     -20.0,
+     10.0
+    ],
+    [
+     -160.0,
+     10.0
     ]
    ],
    "entities": [
@@ -382,6 +390,56 @@
      ]
     }
    ]
+  },
+  {
+   "verts": [
+    [
+     -160,
+     -110
+    ],
+    [
+     -160,
+     10
+    ],
+    [
+     -20,
+     10
+    ],
+    [
+     -20,
+     -110
+    ]
+   ],
+   "entities": [
+    {
+     "type": "ammo_cell",
+     "pos": [
+      -105.0,
+      -50.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      -90.0,
+      -50.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      -75.0,
+      -50.0
+     ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      -105.0,
+      -35.0
+     ]
+    }
+   ]
   }
  ],
  "connects": [
@@ -435,7 +493,15 @@
   ]
  ],
  "connects_x": [],
- "doors": [],
+ "doors": [
+  {
+   "a": 1,
+   "ea": 4,
+   "b": 8,
+   "eb": 1,
+   "key": "shoot"
+  }
+ ],
  "player": {
   "room": 0,
   "pos": [
@@ -503,6 +569,14 @@
      130
     ],
     "text": "DRAFT 41 \u2014 TO: MIRIAD PRIME [UNSENT]\nProgress report. I have written this report\nforty times. Each time, the numbers describing\nthis place come out different. I cannot send my\nparent a report that lies, and I cannot make the\nnumbers stop lying. Draft 42 tomorrow. \u2014 R"
+   },
+   {
+    "room": 8,
+    "pos": [
+     -110,
+     -100
+    ],
+    "text": "BUNK 12-F\nThere is no bunk 12-F on the manifest.\nDear R, dear M \u2014 you are both right.\nI hear you both through my walls,\nand my walls touch neither of yours.\nI stopped filing complaints. Enjoy the cache. \u2014 F"
    },
    {
     "room": 7,
