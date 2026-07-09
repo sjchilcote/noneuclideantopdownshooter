@@ -79,7 +79,7 @@ ENEMIES: dict[str, dict] = {
     "shrieker": dict(hp=10, radius=7.0, mass=0.8, accel=520.0, fric=3.4, touch_dmg=0,
                      touch_cd=60, alert_snd="shrieker_scream", die_snd="enemy_die_mite",
                      scream_cd=60 * 5, score=3),
-    "warden": dict(hp=340, radius=16.0, mass=12.0, accel=330.0, fric=2.4, touch_dmg=30,
+    "warden": dict(hp=300, radius=16.0, mass=12.0, accel=330.0, fric=2.4, touch_dmg=30,
                    touch_cd=48, alert_snd="shrieker_scream", die_snd="enemy_die_brute",
                    spit_cd=70, spit_speed=460.0, spit_dmg=13, keep_min=0.0,
                    keep_max=100.0, score=25),

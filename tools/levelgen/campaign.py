@@ -786,7 +786,7 @@ def l10():
     squad(b, hexes[4], "brute mite")
     squad(b, hexes[5], "husk husk spitter")
     squad(b, hexes[3], "brute")
-    squad(b, sanctum, "warden shrieker")
+    squad(b, sanctum, "warden")
     for _e in b.data["rooms"][sanctum]["entities"]:
         if _e["type"] == "warden":
             _e["props"] = {"tether": 1}
