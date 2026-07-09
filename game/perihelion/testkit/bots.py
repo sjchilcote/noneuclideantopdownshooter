@@ -236,10 +236,15 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
         else:
             inp = InputFrame()
             medkits = [p for p in snapshot["pickups"]
-                       if p["room"] == proom and p["kind"] == "medkit"]
-            if snapshot["hp"] < 40 and medkits:
-                target = min(medkits, key=lambda p: _dist(p["pos"], (px, py)))
-                inp.mx, inp.my = nav_to_point(session, px, py, target["pos"])
+                       if p["kind"] == "medkit" and 0 <= p["hops"] <= 3]
+            if snapshot["hp"] < 60 and medkits:
+                target = min(medkits, key=lambda p: (p["hops"],
+                             _dist(p["pos"], (px, py))))
+                if target["room"] == proom:
+                    inp.mx, inp.my = nav_to_point(session, px, py, target["pos"])
+                else:
+                    inp.mx, inp.my = nav_to_room(session, snapshot,
+                                                 target["room"], None)
             else:
                 inp.mx, inp.my = self._navigate(session, snapshot)
             inp.ax, inp.ay = session.screen_w / 2.0, session.screen_h / 2.0

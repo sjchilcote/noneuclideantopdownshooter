@@ -71,7 +71,7 @@ ENEMIES: dict[str, dict] = {
                  score=1),
     "spitter": dict(hp=18, radius=9.0, mass=1.4, accel=340.0, fric=3.8, touch_dmg=8,
                     touch_cd=45, alert_snd="enemy_alert_husk", die_snd="enemy_die_husk",
-                    spit_cd=95, spit_speed=430.0, spit_dmg=9, keep_min=110.0,
+                    spit_cd=95, spit_speed=380.0, spit_dmg=9, keep_min=110.0,
                     keep_max=190.0, score=2),
     "brute": dict(hp=65, radius=13.5, mass=7.0, accel=260.0, fric=2.6, touch_dmg=24,
                   touch_cd=55, alert_snd="enemy_alert_husk", die_snd="enemy_die_brute",
@@ -81,7 +81,7 @@ ENEMIES: dict[str, dict] = {
                      scream_cd=60 * 5, score=3),
     "warden": dict(hp=340, radius=16.0, mass=12.0, accel=330.0, fric=2.4, touch_dmg=30,
                    touch_cd=48, alert_snd="shrieker_scream", die_snd="enemy_die_brute",
-                   spit_cd=70, spit_speed=520.0, spit_dmg=13, keep_min=0.0,
+                   spit_cd=70, spit_speed=460.0, spit_dmg=13, keep_min=0.0,
                    keep_max=100.0, score=25),
 }
 
@@ -232,7 +232,11 @@ class GameSession:
     def _spawn_from_spec(self, room: int, spec) -> None:
         t = spec.type
         if t in ENEMIES:
-            self.spawn_enemy(room, spec.pos, t)
+            eid = self.spawn_enemy(room, spec.pos, t)
+            if "hp" in spec.props:
+                self.enemies[eid]["hp"] = float(spec.props["hp"])
+            if spec.props.get("tether"):
+                self.enemies[eid]["tether"] = True
         elif t in PICKUPS:
             self.spawn_pickup(room, spec.pos, t)
         elif t == "player":
@@ -798,6 +802,8 @@ class GameSession:
                         continue
                 s.set_vel(eid, evx + nx * accel * DT, evy + ny * accel * DT)
             else:
+                if e.get("tether"):
+                    continue  # arena guardian: holds its ground
                 edge = s.next_edge(room, proom)
                 if edge < 0:
                     continue

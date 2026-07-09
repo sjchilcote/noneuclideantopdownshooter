@@ -533,6 +533,7 @@ def l07():
 
 def l08():
     b = LevelBuilder("THE FOLD", 4, "amb_drone_late")
+    b.data["alert_hops"] = 1  # the fold eats sound
     core = b.ngon(0, 0, 100, 6, phase=math.radians(90))
     petals = []
     angs = []
@@ -569,10 +570,10 @@ def l08():
                "No. A haunting is a place remembering.\n"
                "This is a place being remembered —\nby something on the other side.")
     squad(b, core, "warden")
-    b.data["rooms"][core]["entities"][-1]["props"] = {"hp": 220}
-    petal_squads = ["husk husk", "spitter", "mite mite mite",
-                    "brute", "shrieker", "husk spitter"]
-    petal_caches = ["ammo_9mm ammo_shell", "medkit", "medkit ammo_cell",
+    b.data["rooms"][core]["entities"][-1]["props"] = {"hp": 180, "tether": 1}
+    petal_squads = ["husk", "spitter", "mite mite mite",
+                    "brute", "shrieker", "spitter"]
+    petal_caches = ["ammo_9mm ammo_shell medkit", "medkit", "medkit ammo_cell",
                     "ammo_shell medkit", "ammo_shell ammo_9mm", "medkit"]
     for i, p in enumerate(petals):
         squad(b, p, petal_squads[i])
@@ -717,14 +718,17 @@ def l10():
                "GUARD / ACCEPT / KNEEL / BURN\n\n"
                "[You think of Ratio. You guard.]")
     squad(b, hexes[1], "husk husk husk")
-    squad(b, hexes[2], "spitter spitter brute")
-    squad(b, hexes[4], "brute mite mite")
+    squad(b, hexes[2], "spitter brute")
+    squad(b, hexes[4], "brute mite")
     squad(b, hexes[5], "husk husk spitter")
     squad(b, hexes[3], "brute")
     squad(b, sanctum, "warden shrieker")
-    cache(b, hexes[2], "ammo_cell ammo_shell medkit")
+    for _e in b.data["rooms"][sanctum]["entities"]:
+        if _e["type"] == "warden":
+            _e["props"] = {"tether": 1}
+    cache(b, hexes[2], "ammo_cell ammo_shell medkit medkit")
     cache(b, hexes[4], "ammo_9mm ammo_9mm ammo_shell")
-    cache(b, hexes[5], "medkit medkit ammo_cell")
+    cache(b, hexes[5], "medkit medkit ammo_cell medkit")
     b.entity(hexes[5], "key_void",
              (center(b, hexes[5])[0], center(b, hexes[5])[1] - 60))
     b.radio("pickup:void", "Ratio: The void seal. It was waiting in the far "
