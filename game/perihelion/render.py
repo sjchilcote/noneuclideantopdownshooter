@@ -97,6 +97,10 @@ def _brighten(c, amt: int):
     return (min(255, c[0] + amt), min(255, c[1] + amt), min(255, c[2] + amt))
 
 
+def _scale_color(c, f: float):
+    return (int(c[0] * f), int(c[1] * f), int(c[2] * f))
+
+
 # Every enemy gets a value-contrast outline (fill +70); these override the
 # derived color/width where the archetype's read demands it.
 ENEMY_RIM = {"warden": (235, 235, 245)}
@@ -1290,6 +1294,41 @@ class Renderer:
             if len(pts) < 3:
                 return
         pygame.draw.polygon(surf, fill, _pts(pts))
+        if not flashed:
+            # two-tone body: a shadow core trailing the facing plus a lit
+            # brow toward it — volume instead of a flat cutout
+            r = max(srad, 2.0)
+            bx = sx - math.cos(ang) * r * 0.22
+            by = sy - math.sin(ang) * r * 0.22
+            body = _xform_pts(shape, bx, by, r * 0.62, ang)
+            if not fully_inside:
+                body = necore.clip_polygon(body, clip_screen)
+            if len(body) >= 3:
+                pygame.draw.polygon(surf, _scale_color(fill, 0.72), _pts(body))
+            hx = sx + math.cos(ang) * r * 0.42
+            hy = sy + math.sin(ang) * r * 0.42
+            if fully_inside or _point_in_poly(hx, hy, clip_screen):
+                if kind == "spitter":
+                    pygame.draw.circle(surf, (140, 205, 60), _pt((hx, hy)),
+                                       max(1, int(r * 0.24)))
+                elif kind != "shrieker":
+                    pygame.draw.circle(surf, _brighten(fill, 36), _pt((hx, hy)),
+                                       max(1, int(r * 0.26)))
+            if kind == "brute":
+                for side in (-1, 1):
+                    ta = ang + side * 0.55
+                    x0 = sx + math.cos(ta) * r * 0.7
+                    y0 = sy + math.sin(ta) * r * 0.7
+                    x1 = sx + math.cos(ta) * r * 1.15
+                    y1 = sy + math.sin(ta) * r * 1.15
+                    if fully_inside or (_point_in_poly(x0, y0, clip_screen)
+                                        and _point_in_poly(x1, y1, clip_screen)):
+                        pygame.draw.line(surf, (228, 210, 190),
+                                         _pt((x0, y0)), _pt((x1, y1)), 2)
+            elif kind == "warden":
+                if fully_inside or _point_in_poly(sx, sy, clip_screen):
+                    pygame.draw.circle(surf, (140, 110, 170), _pt((sx, sy)),
+                                       max(2, int(r * 0.5)), 1)
         pygame.draw.polygon(surf, rim, _pts(pts), ENEMY_RIM_W.get(kind, 1))
         if kind == "husk" and not flashed:
             pygame.draw.circle(surf, (66, 78, 62), _pt((sx, sy)), max(1, int(srad * 0.22)))
