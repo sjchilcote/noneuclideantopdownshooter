@@ -64,3 +64,32 @@ uv run python tools/playtest/run.py --level levels/l05.json --bot aggro
 
 Design constitution: `design_document_2.md` §11. If a change violates an
 invariant there, the change is wrong.
+
+## Store copy (draft)
+
+PERIHELION is a top-down survival shooter aboard a station falling into the
+sun. The station's geometry is not Euclidean: corridors loop back on
+themselves, mirror rooms reflect more than light, and a sixteen-room
+tesseract deck runs on graph rules no floor plan can draw. Combat follows
+the Teleglitch model — ammunition is scarce, engagements are short, and a
+mistake in a corridor is usually the last one you make. The portable hole
+cuts a doorway through any wall on command; the Cloister, a safe room
+folded into the station's blind spots, is where you go when the hole isn't
+enough.
+
+Ratio, the station's remaining rational voice, argues faith against
+evidence across a ten-level campaign, between sorties, while your frame
+rides the transit spine. The tau cannon fires bolts that bounce off
+portals the same way they bounce off walls, so the room layout is part
+of the loadout. Hard mode makes everything tougher and meaner; New Game+
+starts the fall over with the arsenal you finished it with.
+
+- Seamless non-Euclidean world: mirror rooms, infinite corridors, a
+  tesseract deck
+- Teleglitch-style scarce-ammo survival combat
+- Portable hole: cut a doorway through any wall; retreat to the Cloister
+- Tau cannon: bolts ricochet off portals
+- Ten-level campaign with a companion-argument narrative (Ratio)
+- Hard mode and New Game+
+- Level editor included
+- Original soundtrack, synthesized from scratch
