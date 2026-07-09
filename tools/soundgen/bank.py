@@ -620,6 +620,41 @@ def gen_hit_wall() -> np.ndarray:
     return finish(x, fade_s=0.03, pad_s=0.03)
 
 
+def gen_step_soft() -> np.ndarray:
+    """A husk's footfall: wet pad on deck plating, soft, no ring."""
+    seed = _seed("stepsoft")
+    dur = 0.09
+    pad = sy.brown_noise(dur, seed=seed)
+    pad = sy.lowpass(pad, 480)
+    pad = sy.apply_env(pad, sy.env_exp_decay(dur, tau=dur / 3.5, end=0.001))
+    kn = body_knock(dur_s=0.06, center_hz=125.0, q=0.9, seed=seed + 1)
+    wet = squelch_grains(0.05, n_grains=3, f_lo=300, f_hi=700, seed=seed + 2)
+    # deck-plating contact: a small bright tick so the surface reads metal
+    tick = hot_transient(0.003, seed=seed + 3, gain=0.5, lp_hz=3200)
+    x = place(dur, (0.0, tick, 0.5), (0.0, pad, 1.2), (0.0, kn, 0.7),
+              (0.01, wet, 0.25))
+    x = sy.lowpass(x, 2600)
+    return finish(x, fade_s=0.02, pad_s=0.02)
+
+
+def gen_step_heavy() -> np.ndarray:
+    """A brute/warden footfall: deck plating takes real mass, felt more
+    than heard -- deep, dry, short."""
+    seed = _seed("stepheavy")
+    dur = 0.17
+    th = gun_thump(f0=95.0, f1=42.0, pitch_s=0.02, dur_s=0.09, drive=1.6)
+    kn = body_knock(dur_s=0.1, center_hz=68.0, q=1.0, seed=seed + 1)
+    dust = sy.brown_noise(dur, seed=seed + 2)
+    dust = sy.lowpass(dust, 260)
+    dust = sy.apply_env(dust, sy.env_exp_decay(dur, tau=dur / 3.0, end=0.001))
+    # plate rattle: the deck answers the mass with a brief metallic edge
+    rattle = hot_transient(0.005, seed=seed + 3, gain=0.6, lp_hz=2400)
+    x = place(dur, (0.0, rattle, 0.55), (0.0, th, 1.0), (0.0, kn, 0.8),
+              (0.0, dust, 0.9))
+    x = sy.lowpass(x, 1800)
+    return finish(x, fade_s=0.03, pad_s=0.03)
+
+
 def gen_ricochet() -> np.ndarray:
     # Round-3 punch-up, take 2: judged under non-anchored mode this looked
     # stuck at floor with "no descending whine present" even though the
@@ -1499,6 +1534,7 @@ PEAK_PLAYER = -3.0
 PEAK_UI = -4.0
 RMS_DRONE = -12.0
 PEAK_STINGER = -6.0
+PEAK_STEP = -7.0  # texture, not event: steps sit under everything
 
 # (name, spec, dur_min, dur_max, category, generator, normalize)
 _ENTRIES = [
@@ -1511,6 +1547,8 @@ _ENTRIES = [
     ("reload", "a mechanical weapon reload: two heavy, distinct metal-on-metal clacks (magazine out, magazine in) with weight and friction rattle -- real gun-metal machinery, not a toy", 0.25, 0.35, "gun", gen_reload, ("peak", PEAK_IMPACT)),
     ("knife_swing", "a fast whoosh of a blade swinging through air: airy turbulent whoosh with a natural rise and fall, no click, no low-end thud -- must read as air displacement, not white noise hiss", 0.08, 0.16, "gun", gen_knife_swing, ("peak", PEAK_IMPACT)),
     ("knife_hit", "a wet thunk of a blade stabbing into flesh: sharp thin slice transient into a wet low-mid squelch body, fast decay -- an organic stabbing impact, not a dry synthetic hit", 0.07, 0.14, "gun", gen_knife_hit, ("peak", PEAK_IMPACT)),
+    ("step_soft", "a soft organic footfall on metal deck plating: quiet wet pad thud, no ring, sits far under combat sounds", 0.05, 0.14, "enemy", gen_step_soft, ("peak", PEAK_STEP)),
+    ("step_heavy", "a massive footfall on deck plating: deep dry stomp, felt more than heard, no ring", 0.10, 0.24, "enemy", gen_step_heavy, ("peak", PEAK_STEP)),
     ("hit_flesh", "wet impact on flesh", 0.06, 0.20, "impact", gen_hit_flesh, ("peak", PEAK_IMPACT)),
     ("hit_wall", "dull concrete tick, dry, no ring", 0.04, 0.14, "impact", gen_hit_wall, ("peak", PEAK_IMPACT)),
     ("ricochet", "a metallic bullet ricochet: sharp metallic clank transient into a descending resonant whine -- dangerous and physically bright, with a clean bright metal ping over real low-end grit", 0.12, 0.28, "impact", gen_ricochet, ("peak", PEAK_IMPACT)),

@@ -970,6 +970,25 @@ class GameSession:
             if e.get("buff", 0) > 0:
                 e["buff"] -= 1
 
+            # footfalls: the dread channel again — mass on deck plating,
+            # audible through walls before anything is visible. Deltas are
+            # only meaningful within one room's local frame, so a transfer
+            # resets the stride.
+            if kind not in ("mite", "shrieker"):
+                lroom, lx, ly = e.get("step_from", (room, ex, ey))
+                if lroom == room:
+                    e["step_acc"] = e.get("step_acc", 0.0) + \
+                        math.hypot(ex - lx, ey - ly)
+                else:
+                    e["step_acc"] = 0.0
+                e["step_from"] = (room, ex, ey)
+                stride = 44.0 if kind in ("brute", "warden") else 30.0
+                if e.get("step_acc", 0.0) >= stride:
+                    e["step_acc"] = 0.0
+                    self._snd("step_heavy" if kind in ("brute", "warden")
+                              else "step_soft", room, (ex, ey),
+                              0.6 if e["state"] == "hunt" else 0.35)
+
             if e["state"] == "idle":
                 if room == proom:
                     # the notice beat: growl first, charge after — the
