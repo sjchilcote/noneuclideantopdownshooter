@@ -22,13 +22,30 @@ DIM_GREEN = (40, 110, 70)
 
 _FONT_CACHE: dict[int, "pygame.font.Font"] = {}
 
+# Fixedsys Excelsior 3.01 — the game's typeface. It is a bitmap-grid design
+# meant to be rendered at 16px vertical; sizes snap to multiples of 16 so
+# every glyph stays on the pixel grid at the 480x270 internal resolution.
+_FONT_PATH = Path(__file__).resolve().parent.parent / "assets" / "fonts" / "FSEX300.ttf"
+
+
+def _snap(size: int) -> int:
+    if size <= 24:
+        return 16
+    if size <= 40:
+        return 32
+    return 48
+
 
 def get_font(size: int) -> "pygame.font.Font":
+    size = _snap(size)
     f = _FONT_CACHE.get(size)
     if f is None:
         if not pygame.font.get_init():
             pygame.font.init()
-        f = pygame.font.Font(None, size)
+        try:
+            f = pygame.font.Font(str(_FONT_PATH), size)
+        except (FileNotFoundError, pygame.error):
+            f = pygame.font.Font(None, size)
         _FONT_CACHE[size] = f
     return f
 

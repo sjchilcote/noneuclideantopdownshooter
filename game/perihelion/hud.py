@@ -16,13 +16,8 @@ _FONT_CACHE: dict[int, "pygame.font.Font"] = {}
 
 
 def _font(size: int) -> "pygame.font.Font":
-    f = _FONT_CACHE.get(size)
-    if f is None:
-        if not pygame.font.get_init():
-            pygame.font.init()
-        f = pygame.font.Font(None, size)
-        _FONT_CACHE[size] = f
-    return f
+    from .menus import get_font
+    return get_font(size)
 
 
 AMMO_LABEL = {"pistol": "9mm", "smg": "9mm", "shotgun": "shell", "rail": "cell"}

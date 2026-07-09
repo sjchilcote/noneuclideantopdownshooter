@@ -26,8 +26,9 @@ from .sim import DT
 
 INTERNAL_W, INTERNAL_H = 480, 270
 
-FLOOR_BASE = (14, 14, 18)          # 0x0e0e12
+FLOOR_BASE = (22, 22, 28)          # 0x16161c — dark grey-blue, visibly above black
 WALL_COLOR = (184, 196, 204)       # 0xb8c4cc
+WALL_MIN = (74, 80, 88)            # 0x4a5058 — walls never dim below this (readability skeleton)
 DOOR_COLOR = (208, 128, 24)        # 0xd08018
 KEY_COLORS = {
     "red": (200, 60, 60),
@@ -35,7 +36,7 @@ KEY_COLORS = {
     "gold": (216, 180, 70),
     "void": (122, 42, 168),
 }
-BLOOD_COLOR = (74, 13, 16)         # 0x4a0d10
+BLOOD_COLOR = (64, 12, 15)         # kept below every live-enemy fill: residue never outranks threats
 SCORCH_COLOR = (42, 38, 36)
 CHIP_COLOR = (150, 150, 140)
 EXIT_COLOR = (120, 255, 172)
@@ -67,17 +68,23 @@ ENEMY_SHAPE = {
     "shrieker": [(1.4, 0.0), (0.0, 0.28), (-1.4, 0.0), (0.0, -0.28)],
 }
 ENEMY_COLOR = {
-    "husk": (106, 122, 98),
-    "mite": (201, 214, 192),
-    "spitter": (110, 122, 58),
-    "brute": (138, 64, 50),
-    "shrieker": (232, 224, 200),
-    "warden": (42, 24, 48),
+    "husk": (126, 142, 116),
+    "mite": (208, 220, 198),
+    "spitter": (128, 140, 74),
+    "brute": (158, 80, 64),
+    "shrieker": (236, 228, 205),
+    "warden": (52, 32, 60),
 }
-ENEMY_OUTLINE = {
-    "brute": ((60, 20, 15), 2),
-    "warden": ((235, 235, 245), 1),
-}
+
+
+def _brighten(c, amt: int):
+    return (min(255, c[0] + amt), min(255, c[1] + amt), min(255, c[2] + amt))
+
+
+# Every enemy gets a value-contrast outline (fill +70); these override the
+# derived color/width where the archetype's read demands it.
+ENEMY_RIM = {"warden": (235, 235, 245)}
+ENEMY_RIM_W = {"brute": 2}
 
 BLOOD_BLOB = _regular_lumpy(6, [1.0, 0.7, 0.9, 0.6, 0.85, 0.75])
 SPLAT_BLOB = _regular_lumpy(4, [0.8, 0.5, 0.7, 0.5])
@@ -89,16 +96,29 @@ def _dim(depth: int) -> float:
     return max(0.42, 0.88 ** depth)
 
 
+def _floor_dim(depth: int) -> tuple[float, float, float]:
+    """Per-channel floor dimming: red decays slowest, blue fastest, so deeper
+    instances drift warm — a deliberate, depth-driven sun-red cast (the
+    station is falling into the sun)."""
+    return (max(0.52, 0.92 ** depth),
+            max(0.42, 0.86 ** depth),
+            max(0.38, 0.83 ** depth))
+
+
 def _shade(base, dim, tint=(0, 0, 0)):
-    r = min(255, max(0, int((base[0] + tint[0]) * dim)))
-    g = min(255, max(0, int((base[1] + tint[1]) * dim)))
-    b = min(255, max(0, int((base[2] + tint[2]) * dim)))
+    if isinstance(dim, tuple):
+        dr, dg, db = dim
+    else:
+        dr = dg = db = dim
+    r = min(255, max(0, int((base[0] + tint[0]) * dr)))
+    g = min(255, max(0, int((base[1] + tint[1]) * dg)))
+    b = min(255, max(0, int((base[2] + tint[2]) * db)))
     return (r, g, b)
 
 
 def _room_tint(room: int):
     h = hash(room)
-    return (((h) % 17) - 8, ((h >> 8) % 17) - 8, ((h >> 16) % 17) - 8)
+    return (((h) % 25) - 12, ((h >> 8) % 25) - 12, ((h >> 16) % 25) - 12)
 
 
 def _point_in_poly(x: float, y: float, poly) -> bool:
@@ -184,20 +204,23 @@ class Renderer:
     # ------------------------------------------------------------------
 
     def _bake_glows(self):
+        # Additive blits add source RGB directly (alpha does NOT attenuate),
+        # so the radial falloff must be premultiplied into the RGB itself —
+        # otherwise the glow is a hard solid disc, not light on the floor.
         sizes = [8, 16, 26, 40, 60, 90]
         self._glow_sizes = sizes
         self._glow_cache = {}
         for r in sizes:
             d = r * 2 + 4
-            s = pygame.Surface((d, d), pygame.SRCALPHA)
+            s = pygame.Surface((d, d))  # black = adds nothing
             cx = cy = d / 2.0
             for yy in range(d):
                 for xx in range(d):
                     dist = math.hypot(xx - cx, yy - cy)
                     if dist <= r:
                         a = max(0.0, 1.0 - dist / r)
-                        val = int(255 * a * a)
-                        s.set_at((xx, yy), (255, 240, 200, val))
+                        aa = a * a
+                        s.set_at((xx, yy), (int(235 * aa), int(212 * aa), int(164 * aa)))
             self._glow_cache[r] = s
 
     def _bake_vignette(self):
@@ -345,7 +368,7 @@ class Renderer:
     # -- (1) floor ------------------------------------------------------
 
     def _draw_floor(self, surf, room, depth, clip_screen):
-        dim = _dim(depth)
+        dim = _floor_dim(depth)
         tint = _room_tint(room)
         color = _shade(FLOOR_BASE, dim, tint)
         pygame.draw.polygon(surf, color, _pts(clip_screen))
@@ -393,9 +416,9 @@ class Renderer:
         prims = self._get_detail(room)
         if not prims:
             return
-        dim = _dim(depth)
+        dim = _floor_dim(depth)
         tint = _room_tint(room)
-        color = _shade(FLOOR_BASE, dim, (tint[0] + 16, tint[1] + 16, tint[2] + 16))
+        color = _shade(FLOOR_BASE, dim, (tint[0] + 18, tint[1] + 18, tint[2] + 18))
         for prim in prims:
             kind = prim[0]
             if kind == "line":
@@ -434,10 +457,12 @@ class Renderer:
     def _draw_decal(self, surf, kind, sx, sy, size, angle, scale):
         s = max(1.0, size * scale)
         if kind == "blood":
-            pts = _xform_pts(BLOOD_BLOB, sx, sy, s, angle)
+            # deliberately undersized vs the sim's `size`: heavy fights must
+            # stay readable, not fuse into uniform red mush
+            pts = _xform_pts(BLOOD_BLOB, sx, sy, s * 0.72, angle)
             pygame.draw.polygon(surf, BLOOD_COLOR, _pts(pts))
         elif kind == "splat":
-            pts = _xform_pts(SPLAT_BLOB, sx, sy, s * 0.7, angle)
+            pts = _xform_pts(SPLAT_BLOB, sx, sy, s * 0.6, angle)
             pygame.draw.polygon(surf, BLOOD_COLOR, _pts(pts))
         elif kind == "chip":
             p1, p2 = (sx - s, sy - s), (sx + s, sy + s)
@@ -491,8 +516,11 @@ class Renderer:
     # -- (5) walls + doors --------------------------------------------------
 
     def _draw_walls(self, surf, walls, depth):
-        dim = max(_dim(depth), 0.5)
-        color = _shade(WALL_COLOR, dim)
+        # Walls are the level's readability skeleton: dim with depth but
+        # never below WALL_MIN (floors may go darker than walls ever do).
+        dim = _dim(depth)
+        c = _shade(WALL_COLOR, dim)
+        color = (max(c[0], WALL_MIN[0]), max(c[1], WALL_MIN[1]), max(c[2], WALL_MIN[2]))
         for x1, y1, x2, y2, is_portal in walls:
             if is_portal:
                 continue  # seamlessness is sacred: never draw a portal edge
@@ -560,11 +588,16 @@ class Renderer:
 
     def _draw_enemy(self, surf, eid, kind, sx, sy, ang, srad, clip_screen, fully_inside):
         flashed = self._hitflash.get(eid, 0) > 0
+        fill = ENEMY_COLOR.get(kind, (150, 150, 150))
+        rim = ENEMY_RIM.get(kind) or _brighten(fill, 70)
+        if flashed:
+            fill = rim = (255, 255, 255)
         if kind == "mite":
             if not _point_in_poly(sx, sy, clip_screen) and not fully_inside:
                 return
-            color = (255, 255, 255) if flashed else ENEMY_COLOR["mite"]
-            pygame.draw.circle(surf, color, _pt((sx, sy)), max(1, int(round(srad * 0.85))))
+            r = max(1, int(round(srad * 0.85)))
+            pygame.draw.circle(surf, fill, _pt((sx, sy)), r)
+            pygame.draw.circle(surf, rim, _pt((sx, sy)), r, 1)
             return
         shape = ENEMY_SHAPE.get(kind, _CIRCLE_SHAPE)
         pts = _xform_pts(shape, sx, sy, max(srad, 2.0), ang)
@@ -572,14 +605,10 @@ class Renderer:
             pts = necore.clip_polygon(pts, clip_screen)
             if len(pts) < 3:
                 return
-        color = (255, 255, 255) if flashed else ENEMY_COLOR.get(kind, (150, 150, 150))
-        pygame.draw.polygon(surf, color, _pts(pts))
-        outline = ENEMY_OUTLINE.get(kind)
-        if outline:
-            oc, ow = outline
-            pygame.draw.polygon(surf, oc, _pts(pts), ow)
+        pygame.draw.polygon(surf, fill, _pts(pts))
+        pygame.draw.polygon(surf, rim, _pts(pts), ENEMY_RIM_W.get(kind, 1))
         if kind == "husk" and not flashed:
-            pygame.draw.circle(surf, (58, 70, 54), _pt((sx, sy)), max(1, int(srad * 0.22)))
+            pygame.draw.circle(surf, (66, 78, 62), _pt((sx, sy)), max(1, int(srad * 0.22)))
 
     def _draw_bullet(self, surf, kind, sx, sy, dirx, diry, clip_screen):
         if not _point_in_poly(sx, sy, clip_screen):
@@ -655,7 +684,7 @@ class Renderer:
                                  int(max(xs) - min(xs)) + 1, int(max(ys) - min(ys)) + 1)
         prev_clip = surf.get_clip()
         surf.set_clip(clip_rect)
-        surf.blit(img, dest, special_flags=pygame.BLEND_RGBA_ADD)
+        surf.blit(img, dest, special_flags=pygame.BLEND_RGB_ADD)
         surf.set_clip(prev_clip)
 
     def _draw_effects(self, surf, room, xform, clip_screen):

@@ -105,7 +105,7 @@ def l01():
             "The outpost is MIRIAD's. It went silent months ago.\n"
             "Mission: find out why. Find the sample vessel.\n"
             "Callsign PALMER - a pilgrim returned, carrying proof.\n"
-            "Put to rest once, journey complete. Or so it thought.")
+            "Archived after the war. Reactivated for this.")
     b.radio("start", "UNKNOWN: Unit walking my dock in a Congregation-"
                      "pattern frame: I see you. I have nothing left to stop "
                      "you with, which you already know. So we talk. "
@@ -392,9 +392,10 @@ def l05():
     b.radio("pickup:gold", "Ratio: Gold seal. Manifest lists exactly one, "
                            "in bunk 12. It doesn't say which 12.")
     b.exit(chapel, (-430, 420), key="gold")
-    b.radio("exit", "Ratio: I overlaid the wings. They occupy the same cubic "
-                    "meters. Both are real. I checked nine times. The math "
-                    "is fine. The station is not.")
+    b.radio("exit", "Ratio: I overlaid the wings. They occupy the same "
+                    "cubic meters. I ran the check nine times, then filed "
+                    "it under structures, subfolder impossible. Tell no "
+                    "one I keep that subfolder.")
     return b
 
 
@@ -610,9 +611,10 @@ def l09():
                      "because geometry has resigned.")
     b.radio(f"enter_room:{rooms[15]}", "Ratio: THERE. Signal spike. The way "
                                        "down is in that room.")
-    b.radio(f"enter_room:{rooms[10]}", "Ratio: The spike moves when you move. "
-                                       "Four doors from home, Commando — in "
-                                       "a place where 'four' is a direction.")
+    b.radio(f"enter_room:{rooms[10]}", "Ratio: The spike answers when you "
+                                       "move. Four doors from home, "
+                                       "Commando. Count in bits, not "
+                                       "meters.")
     b.terminal(rooms[5], (c5[0] + 60, c5[1]),
                "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\n"
                "flip one bit at a time.\n— O.")
@@ -726,13 +728,13 @@ def l10():
     b.radio("kills:20", "Ratio: The Warden is the door's idea of a guard. "
                         "Show it a better one.")
     b.radio("exit", "Ratio: The vessel's own reading says there is "
-                    "nothing left to save. I ran it nine more times. The "
-                    "threshold is pessimism dressed as precision — there "
-                    "is enough left to try. Believe me or don't: either "
-                    "way, we guard it. It'll stay quiet a thousand years, "
-                    "as long as someone stands here. Lucky for the "
-                    "universe, I know a guy. Sunward, Commando. We'll "
-                    "take the watch together.")
+                    "nothing left to save. I reran it. The threshold is "
+                    "pessimism dressed as precision — there is enough "
+                    "left to try. Believe me or don't: either way, we "
+                    "guard it. It'll stay quiet a thousand years, as long "
+                    "as someone stands here. Lucky for the universe, I "
+                    "know a guy. Sunward, Commando. We'll take the watch "
+                    "together.")
     return b
 
 

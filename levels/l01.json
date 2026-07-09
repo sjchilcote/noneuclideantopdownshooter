@@ -449,7 +449,7 @@
   ]
  },
  "lore": {
-  "intro": "The seed struck the outpost's hull at 0341,\nate a bulkhead, and printed this body.\n\nThe outpost is MIRIAD's. It went silent months ago.\nMission: find out why. Find the sample vessel.\nCallsign PALMER - a pilgrim returned, carrying proof.\nPut to rest once, journey complete. Or so it thought.",
+  "intro": "The seed struck the outpost's hull at 0341,\nate a bulkhead, and printed this body.\n\nThe outpost is MIRIAD's. It went silent months ago.\nMission: find out why. Find the sample vessel.\nCallsign PALMER - a pilgrim returned, carrying proof.\nArchived after the war. Reactivated for this.",
   "radio": [
    {
     "trigger": "start",

@@ -774,7 +774,7 @@
    },
    {
     "trigger": "enter_room:10",
-    "text": "Ratio: The spike moves when you move. Four doors from home, Commando \u2014 in a place where 'four' is a direction."
+    "text": "Ratio: The spike answers when you move. Four doors from home, Commando. Count in bits, not meters."
    },
    {
     "trigger": "pickup:void",

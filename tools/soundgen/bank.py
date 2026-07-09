@@ -231,19 +231,22 @@ def metal_clank(base_hz: float = 700.0, decay_s: float = 0.3,
 
 
 def mech_clack(base_hz: float = 700.0, seed=None, thud_hz: float = 75.0,
-               ring_decay: float = 0.15, scrape: bool = True) -> np.ndarray:
-    """One mechanical event: low sine thud + inharmonic metal ring + noise scrape."""
-    dur = ring_decay * 1.4 + 0.05
-    thud = gun_thump(f0=thud_hz * 1.8, f1=thud_hz, pitch_s=0.012, dur_s=0.06, drive=1.8)
-    ring = metal_clank(base_hz, ring_decay, seed=seed)
-    events = [(0.0, thud, 0.9), (0.0, ring, 0.6)]
+               ring_decay: float = 0.15, scrape: bool = True,
+               ring_lp: float = 2600.0) -> np.ndarray:
+    """One mechanical event: heavy low-mid thud + knock + dark inharmonic
+    metal ring + noise scrape."""
+    dur = ring_decay * 1.4 + 0.08
+    thud = gun_thump(f0=thud_hz * 1.9, f1=thud_hz, pitch_s=0.015, dur_s=0.09, drive=2.2)
+    knock = body_knock(0.08, max(160.0, thud_hz * 2.4), seed=(seed or 0) + 21)
+    ring = metal_clank(base_hz, ring_decay, seed=seed, lp_hz=ring_lp)
+    events = [(0.0, thud, 1.25), (0.0, knock, 0.85), (0.0, ring, 0.55)]
     if scrape:
         sc = sy.white_noise(0.04, seed=(seed or 0) + 11)
-        sc = sy.bandpass(sc, 2000, q=1.0)
+        sc = sy.bandpass(sc, 1400, q=1.0)
         sc = sy.apply_env(sc, sy.env_adsr(0.04, 0.008, 0.01, 0.5, 0.02))
-        events.append((0.004, sc, 0.35))
+        events.append((0.004, sc, 0.4))
     x = place(dur, *events)
-    return sy.soft_clip(x, 1.6)
+    return sy.soft_clip(x, 1.8)
 
 
 def creature_voice(dur_s: float, pitch_pts, vib_hz: float = 5.0,
@@ -344,79 +347,92 @@ def gen_rail_fire() -> np.ndarray:
 def gen_lightning_fire() -> np.ndarray:
     seed = _seed("lightning")
     rng = np.random.default_rng(seed)
-    dur = 0.62
-    # dense micro-crackles, density decaying over time
+    dur = 0.72
+    # dense micro-crackles, density decaying over time, kept below 4kHz
     crackle_events = []
-    for _ in range(36):
-        t0 = dur * 0.85 * (rng.uniform(0, 1) ** 1.7)
-        cdur = rng.uniform(0.004, 0.018)
+    for _ in range(30):
+        t0 = dur * 0.8 * (rng.uniform(0, 1) ** 1.7)
+        cdur = rng.uniform(0.005, 0.02)
         c = sy.white_noise(cdur, seed=int(rng.integers(0, 1 << 30)))
-        c = sy.bandpass(c, rng.uniform(1500, 7000), q=rng.uniform(1.5, 4.0))
+        c = sy.bandpass(c, rng.uniform(700, 3800), q=rng.uniform(1.2, 3.0))
         c = sy.apply_env(c, sy.env_exp_decay(cdur, tau=cdur / 3.0))
-        c = sy.soft_clip(c, 3.5)
-        crackle_events.append((t0, c, rng.uniform(0.4, 1.0)))
+        c = sy.soft_clip(c, 2.5)
+        crackle_events.append((t0, c, rng.uniform(0.35, 0.9)))
     crackles = place(dur, *crackle_events)
     # continuous chaotic arc: resonant noise gated by random telegraph signal
     arc = sy.white_noise(dur, seed=seed + 1)
     walk = np.cumsum(rng.standard_normal(sy.samples(dur))) * 2.0
-    walk = 900.0 + 700.0 * np.sin(walk / 400.0) + sy.pitch_env(dur, 300, 2500)
-    arc = sy.bandpass(arc, np.clip(walk, 200, 6000), q=5.0)
+    walk = 700.0 + 500.0 * np.sin(walk / 400.0) + sy.pitch_env(dur, 250, 1800)
+    arc = sy.bandpass(arc, np.clip(walk, 180, 4000), q=4.0)
     arc = (arc.astype(np.float64) * telegraph_gate(dur, 250, 0.25, seed=seed + 2)).astype(np.float32)
-    arc = sy.apply_env(arc, sy.env_adsr(dur, 0.01, 0.1, 0.7, dur * 0.35))
-    arc = sy.soft_clip(arc, 2.5)
-    # sub-bass dread: pitched sub drop + brown rumble
-    sub = gun_thump(f0=90, f1=48, pitch_s=0.05, dur_s=dur * 0.9, drive=1.8)
+    arc = sy.apply_env(arc, sy.env_adsr(dur, 0.015, 0.1, 0.65, dur * 0.45))
+    arc = sy.soft_clip(arc, 1.8)
+    # repeated low pulses -- the dangerous 'body' of the discharge
+    pulse_events = []
+    t = 0.0
+    while t < dur * 0.6:
+        p = gun_thump(f0=110, f1=62, pitch_s=0.02, dur_s=0.14, drive=2.2)
+        pulse_events.append((t, p, 0.9 * (1.0 - t / dur)))
+        pulse_events.append((t, body_knock(0.1, 170, seed=seed + int(t * 1000)), 0.6))
+        t += rng.uniform(0.07, 0.13)
+    pulses = place(dur, *pulse_events)
     rumble = sy.brown_noise(dur, seed=seed + 3)
-    rumble = sy.lowpass(rumble, 140)
-    rumble = sy.apply_env(rumble, sy.env_exp_decay(dur, tau=dur / 3.0, end=0.002))
+    rumble = sy.lowpass(rumble, 200)
+    rumble = sy.apply_env(rumble, sy.env_exp_decay(dur, tau=dur / 2.5, end=0.001))
     x = place(dur,
-              (0.0, hot_transient(seed=seed + 4), 1.0),
-              (0.0, crackles, 0.85),
-              (0.0, arc, 0.6),
-              (0.002, sub, 0.85),
-              (0.0, rumble, 0.6))
-    x = sy.soft_clip(x, 2.2)
-    return finish(x, fade_s=0.03)
+              (0.0, hot_transient(seed=seed + 4, gain=0.5, lp_hz=3500), 1.0),
+              (0.0, crackles, 0.8),
+              (0.0, arc, 0.55),
+              (0.0, pulses, 1.0),
+              (0.0, rumble, 0.75))
+    x = sy.soft_clip(x, 1.6)
+    return finish(x, fade_s=0.06)
 
 
 def gen_dry_click() -> np.ndarray:
     seed = _seed("dryclick")
-    # hammer fall on empty chamber: thud + damped metal tick + slide
-    thud = gun_thump(f0=130, f1=70, pitch_s=0.008, dur_s=0.035, drive=1.8)
-    tick = metal_clank(1400, 0.035, ratios=(1.0, 1.71, 2.9), seed=seed, lp_hz=5000)
-    slide = sy.white_noise(0.02, seed=seed + 2)
-    slide = sy.bandpass(slide, 2400, q=1.0)
-    slide = sy.apply_env(slide, sy.env_exp_decay(0.02, tau=0.006))
-    x = place(0.09,
-              (0.0, hot_transient(0.004, seed=seed + 1, gain=0.8), 0.9),
-              (0.0, thud, 0.85),
-              (0.001, tick, 0.5),
-              (0.02, slide, 0.3))
+    # hammer fall on empty chamber: heavy low-mid thud + damped dark tick + slide
+    thud = gun_thump(f0=140, f1=75, pitch_s=0.012, dur_s=0.07, drive=2.2)
+    knock = body_knock(0.06, 230, seed=seed + 4)
+    tick = metal_clank(620, 0.045, ratios=(1.0, 1.71, 2.9), seed=seed, lp_hz=2400)
+    slide = sy.white_noise(0.025, seed=seed + 2)
+    slide = sy.bandpass(slide, 1400, q=1.0)
+    slide = sy.apply_env(slide, sy.env_exp_decay(0.025, tau=0.007))
+    x = place(0.12,
+              (0.0, hot_transient(0.004, seed=seed + 1, gain=0.4, lp_hz=3000), 0.9),
+              (0.0, thud, 1.2),
+              (0.0, knock, 0.8),
+              (0.001, tick, 0.45),
+              (0.025, slide, 0.3))
     x = sy.soft_clip(x, 1.8)
-    return finish(x, fade_s=0.012, pad_s=0.03)
+    return finish(x, fade_s=0.02, pad_s=0.03)
 
 
 def gen_reload() -> np.ndarray:
     seed = _seed("reload")
-    clack1 = mech_clack(680, seed=seed, thud_hz=78, ring_decay=0.12)
-    clack2 = mech_clack(590, seed=seed + 9, thud_hz=70, ring_decay=0.15)
-    x = place(0.42, (0.0, clack1, 0.9), (0.18, clack2, 1.0))
-    return finish(x, fade_s=0.03)
+    # two clearly separated, distinct mechanical events: mag out, mag in
+    clack1 = mech_clack(430, seed=seed, thud_hz=82, ring_decay=0.09)
+    clack2 = mech_clack(340, seed=seed + 9, thud_hz=68, ring_decay=0.13)
+    x = place(0.56, (0.0, clack1, 0.95), (0.26, clack2, 1.2))
+    return finish(x, fade_s=0.04)
 
 
 def gen_knife_swing() -> np.ndarray:
     seed = _seed("knifeswing")
-    dur = 0.16
+    dur = 0.22
+    # airy whoosh: swept band of pink noise + high 'blade air', soft attack,
+    # dispersing tail -- no sub, no click
     n = sy.pink_noise(dur, seed=seed)
-    sweep = sy.concat(sy.pitch_env(dur * 0.45, 380, 1900),
-                      sy.pitch_env(dur * 0.55, 1900, 600))
-    x = sy.bandpass(n, sweep[: sy.samples(dur)], q=1.1)
-    body = sy.brown_noise(dur, seed=seed + 1)
-    body = sy.lowpass(body, 500)
-    hump = sy.env_adsr(dur, attack=0.05, decay=0.04, sustain_level=0.6, release=0.06)
-    x = sy.mix_layers([sy.apply_env(x, hump), sy.apply_env(body, hump)], [0.9, 0.45])
-    x = sy.soft_clip(x, 1.5)
-    return finish(x, fade_s=0.03, pad_s=0.03)
+    sweep = sy.concat(sy.pitch_env(dur * 0.45, 500, 2100),
+                      sy.pitch_env(dur * 0.55, 2100, 700))
+    x = sy.bandpass(n, sweep[: sy.samples(dur)], q=1.0)
+    air = sy.white_noise(dur, seed=seed + 2)
+    air = sy.highpass(air, 2500)
+    hump = sy.env_adsr(dur, attack=0.07, decay=0.03, sustain_level=0.7, release=0.1)
+    x = sy.mix_layers([sy.apply_env(x, hump), sy.apply_env(air, hump)], [0.9, 0.3])
+    x = sy.highpass(x, 260)
+    x = sy.soft_clip(x, 1.3)
+    return finish(x, fade_s=0.06, pad_s=0.03)
 
 
 def gen_knife_hit() -> np.ndarray:
@@ -433,20 +449,23 @@ def gen_hit_flesh() -> np.ndarray:
 
 def gen_hit_wall() -> np.ndarray:
     seed = _seed("hitwall")
-    dur = 0.09
+    dur = 0.11
     dust = sy.brown_noise(dur, seed=seed)
-    dust = sy.lowpass(dust, 900)
-    dust = sy.apply_env(dust, sy.env_exp_decay(dur, tau=dur / 4.0, end=0.001))
-    th = gun_thump(f0=140, f1=65, pitch_s=0.01, dur_s=0.045, drive=1.6)
-    grit = squelch_grains(dur, 3, 1800, 3500, grain_s=0.003, spread=0.4,
-                          seed=seed + 3, gain=0.3)
+    dust = sy.lowpass(dust, 700)
+    dust = sy.apply_env(dust, sy.env_exp_decay(dur, tau=dur / 3.0, end=0.001))
+    th = gun_thump(f0=150, f1=78, pitch_s=0.012, dur_s=0.06, drive=2.0)
+    knock = body_knock(0.07, 280, q=1.2, seed=seed + 5)
+    grit = squelch_grains(dur, 3, 600, 1400, grain_s=0.004, spread=0.4,
+                          seed=seed + 3, gain=0.25)
     x = place(dur,
-              (0.0, hot_transient(0.004, seed=seed + 1, gain=0.7), 0.8),
-              (0.0, dust, 1.0),
-              (0.0, th, 0.75),
+              (0.0, hot_transient(0.004, seed=seed + 1, gain=0.35, lp_hz=2200), 0.8),
+              (0.0, dust, 1.1),
+              (0.0, th, 1.0),
+              (0.0, knock, 0.9),
               (0.005, grit, 1.0))
     x = sy.soft_clip(x, 1.9)
-    return finish(x, fade_s=0.015, pad_s=0.03)
+    x = sy.lowpass(x, 2400)
+    return finish(x, fade_s=0.02, pad_s=0.03)
 
 
 def gen_ricochet() -> np.ndarray:
@@ -481,53 +500,59 @@ def gen_enemy_die_husk() -> np.ndarray:
                            drive=4.5, breath=0.35, seed=seed)
     genv = sy.env_adsr(dur, attack=0.02, decay=0.15, sustain_level=0.6, release=0.22)
     voice = sy.apply_env(voice, genv)
-    impact = wet_impact(dur_s=0.16, thump_f0=160, thump_f1=60, n_grains=5,
-                        grain_lo=700, grain_hi=1400, seed=seed + 3)
-    collapse = sy.brown_noise(dur * 0.7, seed=seed + 4)
+    impact = wet_impact(dur_s=0.2, thump_f0=160, thump_f1=60, n_grains=7,
+                        grain_lo=300, grain_hi=900, seed=seed + 3)
+    collapse = sy.brown_noise(dur * 0.8, seed=seed + 4)
     collapse = sy.lowpass(collapse, 450)
-    collapse = sy.apply_env(collapse, sy.env_exp_decay(dur * 0.7, tau=dur / 3.5, end=0.001))
-    x = place(dur, (0.0, voice, 0.8), (0.05, impact, 0.9), (0.08, collapse, 0.5))
+    lfo = sy.one_pole_lowpass(sy.white_noise(dur * 0.8, seed=seed + 8), 30).astype(np.float64)
+    lfo = 0.5 + 0.5 * np.abs(lfo) / (np.max(np.abs(lfo)) + 1e-9)
+    collapse = (collapse.astype(np.float64) * lfo).astype(np.float32)
+    collapse = sy.apply_env(collapse, sy.env_exp_decay(dur * 0.8, tau=dur / 3.0, end=0.001))
+    knock = body_knock(0.14, 180, seed=seed + 9)
+    x = place(dur, (0.0, voice, 1.0), (0.05, impact, 1.15),
+              (0.05, knock, 0.8), (0.08, collapse, 0.75))
     x = sy.soft_clip(x, 1.8)
-    return finish(x, fade_s=0.04)
+    x = sy.lowpass(x, 2800)
+    return finish(x, fade_s=0.05)
 
 
 def gen_enemy_die_mite() -> np.ndarray:
     seed = _seed("diemite")
-    x = wet_impact(dur_s=0.13, thump_f0=320, thump_f1=110, n_grains=7,
-                   grain_lo=700, grain_hi=2100, body_lp=900, drive=2.2, seed=seed)
-    # tiny pitch-down chirp remnant, distorted (dying chitter)
-    chirp = sy.saw(sy.pitch_env(0.05, 2600, 700), 0.05)
-    chirp = sy.soft_clip(chirp, 3.0)
-    chirp = sy.bandpass(chirp, 1800, q=1.5)
-    chirp = sy.apply_env(chirp, sy.env_exp_decay(0.05, tau=0.015))
-    x = place(len(x) / SR, (0.0, x, 1.0), (0.01, chirp, 0.25))
-    return finish(x, fade_s=0.02, pad_s=0.02)
+    # small but properly wet squelch pop -- no metallic chirp
+    return wet_impact(dur_s=0.16, thump_f0=280, thump_f1=95, n_grains=9,
+                      grain_lo=300, grain_hi=1100, body_lp=700, drive=2.2, seed=seed)
 
 
 def gen_enemy_die_brute() -> np.ndarray:
     seed = _seed("diebrute")
-    dur = 0.75
-    sub = gun_thump(f0=95, f1=30, pitch_s=0.05, dur_s=0.4, drive=2.0)
-    sub2 = gun_thump(f0=70, f1=26, pitch_s=0.04, dur_s=0.3, drive=1.8)
-    fall = sy.brown_noise(0.45, seed=seed)
+    dur = 0.82
+    # audible heavy fall: thumps stay above ~45Hz with long decays + knocks
+    sub = gun_thump(f0=110, f1=48, pitch_s=0.06, dur_s=0.5, drive=2.4)
+    sub2 = gun_thump(f0=85, f1=44, pitch_s=0.05, dur_s=0.35, drive=2.2)
+    knock1 = body_knock(0.16, 160, seed=seed + 8)
+    knock2 = body_knock(0.12, 130, seed=seed + 9)
+    fall = sy.brown_noise(0.5, seed=seed)
     fall = sy.lowpass(fall, 380)
-    fall = sy.apply_env(fall, sy.env_exp_decay(0.45, tau=0.14, end=0.001))
-    wet = wet_impact(dur_s=0.2, thump_f0=140, thump_f1=50, n_grains=6,
-                     grain_lo=600, grain_hi=1300, drive=1.8, seed=seed + 5)
-    settle = sy.brown_noise(0.25, seed=seed + 6)
+    fall = sy.apply_env(fall, sy.env_exp_decay(0.5, tau=0.16, end=0.001))
+    wet = wet_impact(dur_s=0.24, thump_f0=140, thump_f1=55, n_grains=8,
+                     grain_lo=300, grain_hi=900, drive=1.9, seed=seed + 5)
+    settle = sy.brown_noise(0.3, seed=seed + 6)
     settle = sy.lowpass(settle, 300)
-    settle = sy.apply_env(settle, sy.env_exp_decay(0.25, tau=0.07, end=0.001))
-    tail = gun_tail(0.3, lp_hz=500, seed=seed + 7)
+    settle = sy.apply_env(settle, sy.env_exp_decay(0.3, tau=0.09, end=0.001))
+    tail = gun_tail(0.35, lp_hz=450, seed=seed + 7)
     x = place(dur,
-              (0.0, hot_transient(0.006, seed=seed + 1), 0.9),
-              (0.0, sub, 1.0),
-              (0.0, fall, 0.7),
-              (0.02, wet, 0.9),
-              (0.18, sub2, 0.7),
-              (0.2, settle, 0.5),
-              (0.03, tail, 0.3))
+              (0.0, hot_transient(0.006, seed=seed + 1, gain=0.4, lp_hz=2500), 0.9),
+              (0.0, sub, 1.2),
+              (0.0, knock1, 0.9),
+              (0.0, fall, 0.85),
+              (0.02, wet, 1.0),
+              (0.22, sub2, 0.85),
+              (0.22, knock2, 0.7),
+              (0.24, settle, 0.6),
+              (0.03, tail, 0.35))
     x = sy.soft_clip(x, 2.0)
-    return finish(x, fade_s=0.05)
+    x = sy.lowpass(x, 2800)
+    return finish(x, fade_s=0.07)
 
 
 def gen_enemy_alert_husk() -> np.ndarray:
@@ -555,72 +580,94 @@ def gen_enemy_alert_husk() -> np.ndarray:
 def gen_enemy_alert_mite() -> np.ndarray:
     seed = _seed("alertmite")
     rng = np.random.default_rng(seed)
-    dur = 0.24
+    dur = 0.3
     events = []
-    # irregular gallop of organic clicks: noise grain + tiny damped resonance
-    t = 0.005
-    while t < dur - 0.02:
-        cdur = rng.uniform(0.004, 0.009)
+    # clearly separated chitter clicks in an accelerating gallop, drifting
+    # down in pitch; each click = dark noise snap + damped body 'thock'
+    t = 0.01
+    i = 0
+    while t < dur - 0.05:
+        cdur = rng.uniform(0.006, 0.012)
+        drift = 1.0 - 0.35 * (t / dur)
         grain = sy.white_noise(cdur, seed=int(rng.integers(0, 1 << 30)))
-        grain = sy.bandpass(grain, rng.uniform(2200, 4800), q=2.0)
-        grain = sy.apply_env(grain, sy.env_exp_decay(cdur, tau=cdur / 3.0))
-        res = sy.sine(rng.uniform(1000, 1400), 0.012)
-        res = sy.apply_env(res, sy.env_exp_decay(0.012, tau=0.003))
-        events.append((t, grain, rng.uniform(0.5, 1.0)))
-        events.append((t + 0.001, res, rng.uniform(0.1, 0.25)))
-        t += rng.uniform(0.014, 0.035)
-    # faint breathy body under the clicks
-    bed = sy.white_noise(dur, seed=seed + 1)
-    bed = sy.bandpass(bed, 3000, q=0.8)
-    bed = sy.apply_env(bed, sy.env_adsr(dur, 0.03, 0.05, 0.4, 0.08))
-    events.append((0.0, bed, 0.15))
+        grain = sy.bandpass(grain, rng.uniform(1400, 2600) * drift, q=1.6)
+        grain = sy.apply_env(grain, sy.env_exp_decay(cdur, tau=cdur / 2.5))
+        thock = sy.sine(rng.uniform(480, 720) * drift, 0.025)
+        thock = sy.soft_clip(thock, 2.0)
+        thock = sy.apply_env(thock, sy.env_exp_decay(0.025, tau=0.007))
+        # AM warble on each click pair for organic modulation
+        g = rng.uniform(0.6, 1.0)
+        events.append((t, grain, g))
+        events.append((t + 0.002, thock, g * 0.55))
+        gap = 0.05 - 0.028 * (t / dur)  # gallop accelerates
+        t += gap * rng.uniform(0.8, 1.2)
+        i += 1
+    # low body presence under the clicks
+    bed = sy.brown_noise(dur, seed=seed + 1)
+    bed = sy.bandpass(bed, 260, q=0.9)
+    bed = sy.apply_env(bed, sy.env_adsr(dur, 0.04, 0.05, 0.5, 0.1))
+    events.append((0.0, bed, 0.4))
     x = place(dur, *events)
     x = sy.soft_clip(x, 1.8)
-    return finish(x, fade_s=0.02, pad_s=0.03)
+    x = sy.lowpass(x, 3200)
+    return finish(x, fade_s=0.04, pad_s=0.03)
 
 
 def gen_spitter_shoot() -> np.ndarray:
     seed = _seed("spitter")
-    dur = 0.22
-    # wet gurgle: brown noise amplitude-modulated by a slow random LFO
+    dur = 0.28
+    # deep wet gurgle: brown noise amplitude-modulated by a fast random LFO
     gurgle = sy.brown_noise(dur, seed=seed)
-    gurgle = sy.lowpass(gurgle, 800)
-    lfo = sy.one_pole_lowpass(sy.white_noise(dur, seed=seed + 1), 45).astype(np.float64)
-    lfo = 0.5 + 0.5 * lfo / (np.max(np.abs(lfo)) + 1e-9)
+    gurgle = sy.lowpass(gurgle, 650)
+    lfo = sy.one_pole_lowpass(sy.white_noise(dur, seed=seed + 1), 28).astype(np.float64)
+    lfo = 0.4 + 0.6 * np.abs(lfo) / (np.max(np.abs(lfo)) + 1e-9)
     gurgle = (gurgle.astype(np.float64) * lfo).astype(np.float32)
-    gurgle = sy.apply_env(gurgle, sy.env_adsr(dur, 0.01, 0.06, 0.5, 0.1))
+    gurgle = sy.apply_env(gurgle, sy.env_adsr(dur, 0.015, 0.07, 0.55, 0.12))
     # bloop: pitched-down sine, wet
-    bloop = gun_thump(f0=420, f1=110, pitch_s=0.07, dur_s=0.13, drive=1.8)
-    grains = squelch_grains(dur, 6, 600, 1600, grain_s=0.006, spread=0.7,
-                            seed=seed + 2, gain=0.7)
+    bloop = gun_thump(f0=380, f1=95, pitch_s=0.08, dur_s=0.16, drive=2.0)
+    knock = body_knock(0.1, 210, seed=seed + 5)
+    grains = squelch_grains(dur, 9, 250, 850, grain_s=0.009, spread=0.85,
+                            seed=seed + 2, gain=0.8)
     x = place(dur,
-              (0.0, hot_transient(0.004, seed=seed + 3, gain=0.5), 0.6),
-              (0.0, gurgle, 0.9),
-              (0.005, bloop, 0.75),
-              (0.0, grains, 0.9))
+              (0.0, hot_transient(0.004, seed=seed + 3, gain=0.25, lp_hz=1800), 0.6),
+              (0.0, gurgle, 1.1),
+              (0.005, bloop, 0.9),
+              (0.005, knock, 0.6),
+              (0.0, grains, 1.0))
     x = sy.soft_clip(x, 2.0)
-    return finish(x, fade_s=0.025, pad_s=0.03)
+    x = sy.lowpass(x, 2200)
+    return finish(x, fade_s=0.035, pad_s=0.03)
 
 
 def gen_shrieker_scream() -> np.ndarray:
     seed = _seed("shrieker")
-    dur = 0.78
-    voice = creature_voice(dur, [600, 1100, 1400, 1150, 900],
-                           vib_hz=5.2, vib_depth_end=0.09,
-                           formant1=(800, 1150), formant2=(2400, 3100),
-                           drive=5.0, breath=0.45, seed=seed)
-    # sub-growl underlay for weight
-    growl = sy.saw(sy.pitch_env(dur, 140, 90), dur)
-    growl = sy.soft_clip(growl, 4.0)
-    growl = sy.lowpass(growl, 500)
-    env = sy.env_adsr(dur, attack=0.04, decay=0.1, sustain_level=0.85, release=0.28)
-    tremolo = (1.0 + 0.18 * sy.sine(13.0, dur).astype(np.float64)).astype(np.float32)
-    x = sy.mix_layers([voice, growl], [0.9, 0.5])
-    x = sy.apply_env(x, (env.astype(np.float64) * tremolo.astype(np.float64)).astype(np.float32))
-    x = sy.soft_clip(x, 2.0)
-    x = sy.bitcrush(x, bits=10)
-    x = sy.highpass(x, 180)
-    return finish(x, fade_s=0.06)
+    dur = 0.88
+    # dynamic scream: ragged rise, held peak, collapsing fall -- not a flat buzz
+    voice = creature_voice(dur, [520, 950, 1350, 1400, 1000, 620],
+                           vib_hz=5.5, vib_depth_end=0.12,
+                           formant1=(750, 1100), formant2=(2200, 2900),
+                           drive=3.0, breath=0.7, seed=seed)
+    # scream noise core: swept ragged band, gives the 'throat tearing' texture
+    rasp = sy.white_noise(dur, seed=seed + 5)
+    rasp_sweep = np.interp(np.linspace(0, 1, sy.samples(dur)),
+                           [0.0, 0.3, 0.7, 1.0], [900, 2400, 2600, 1100])
+    rasp = sy.bandpass(rasp, rasp_sweep, q=2.2)
+    rasp = (rasp.astype(np.float64) *
+            telegraph_gate(dur, 180, 0.45, seed=seed + 6)).astype(np.float32)
+    # low growl underlay for weight
+    growl = sy.saw(sy.pitch_env(dur, 130, 85), dur)
+    growl = sy.soft_clip(growl, 3.0)
+    growl = sy.lowpass(growl, 450)
+    # dynamics arc: fast ragged rise, sustained peak, steep collapse
+    n = sy.samples(dur)
+    arc = np.interp(np.linspace(0, 1, n), [0.0, 0.12, 0.3, 0.72, 1.0],
+                    [0.0, 0.75, 1.0, 0.9, 0.0]) ** 1.2
+    tremolo = 1.0 + 0.14 * sy.sine(11.0, dur).astype(np.float64)
+    x = sy.mix_layers([voice, rasp, growl], [0.85, 0.5, 0.55])
+    x = (x.astype(np.float64) * arc * tremolo).astype(np.float32)
+    x = sy.soft_clip(x, 1.8)
+    x = sy.highpass(x, 140)
+    return finish(x, fade_s=0.08)
 
 
 # ==========================================================================
@@ -644,27 +691,37 @@ def gen_player_hurt() -> np.ndarray:
 
 def gen_player_die() -> np.ndarray:
     seed = _seed("playerdie")
-    dur = 1.35
-    voice = creature_voice(0.9, [130, 95, 55, 42], vib_hz=3.0, vib_depth_end=0.07,
-                           formant1=(550, 300), formant2=(1500, 800),
-                           drive=3.5, breath=0.3, seed=seed)
-    voice = sy.apply_env(voice, sy.env_adsr(0.9, attack=0.03, decay=0.3,
-                                            sustain_level=0.55, release=0.4))
-    body_fall = wet_impact(dur_s=0.2, thump_f0=150, thump_f1=48, n_grains=4,
-                           grain_lo=500, grain_hi=1100, drive=1.7, seed=seed + 2)
-    second = wet_impact(dur_s=0.14, thump_f0=120, thump_f1=45, n_grains=3,
-                        grain_lo=400, grain_hi=900, drive=1.6, seed=seed + 3)
-    # fading dark ring -- ears ringing as the screen dies
-    ring = metal_clank(480, 0.7, ratios=(1.0, 1.5, 2.76), seed=seed + 4, strike=False)
+    dur = 1.45
+    # short dying grunt, then a LOUD physical collapse, debris, and a long
+    # clearly-audible ear-ring fading to the end
+    voice = creature_voice(0.45, [140, 100, 60], vib_hz=3.2, vib_depth_end=0.08,
+                           formant1=(550, 320), formant2=(1500, 850),
+                           drive=3.5, breath=0.4, seed=seed)
+    voice = sy.apply_env(voice, sy.env_adsr(0.45, attack=0.02, decay=0.15,
+                                            sustain_level=0.5, release=0.2))
+    body_fall = wet_impact(dur_s=0.26, thump_f0=150, thump_f1=52, n_grains=6,
+                           grain_lo=300, grain_hi=800, drive=1.9, seed=seed + 2)
+    second = wet_impact(dur_s=0.18, thump_f0=120, thump_f1=48, n_grains=4,
+                        grain_lo=250, grain_hi=700, drive=1.7, seed=seed + 3)
+    debris = squelch_grains(0.5, 6, 400, 1100, grain_s=0.012, spread=0.9,
+                            seed=seed + 6, gain=0.4)
+    knock = body_knock(0.18, 150, seed=seed + 7)
+    # fading ear-ring: dark detuned pair, long decay, clearly audible
+    ringdur = 1.0
+    ring = sy.mix_layers([sy.sine(1050, ringdur), sy.sine(1063, ringdur)], [0.6, 0.5])
+    ring = sy.apply_env(ring, sy.env_exp_decay(ringdur, tau=0.38, end=0.001))
+    ring = sy.lowpass(ring, 2600)
     x = place(dur,
-              (0.0, voice, 0.85),
-              (0.3, body_fall, 0.8),
-              (0.55, second, 0.55),
-              (0.45, ring, 0.22))
+              (0.0, voice, 0.7),
+              (0.28, body_fall, 1.2),
+              (0.28, knock, 0.9),
+              (0.52, second, 0.8),
+              (0.5, debris, 1.0),
+              (0.42, ring, 0.3))
     x = sy.soft_clip(x, 1.7)
-    x = sy.reverb(x, room_size=0.6, damping=0.4, mix=0.22, tail_s=0.25)
-    x = sy.fade_out(x, 0.35)
-    return finish(x, fade_s=0.05)
+    x = sy.reverb(x, room_size=0.5, damping=0.5, mix=0.15, tail_s=0.2)
+    x = sy.fade_out(x, 0.25)
+    return finish(x, fade_s=0.08)
 
 
 def gen_heartbeat() -> np.ndarray:
@@ -690,44 +747,53 @@ def gen_heartbeat() -> np.ndarray:
 
 def gen_pickup_ammo() -> np.ndarray:
     seed = _seed("pickammo")
-    clink1 = metal_clank(950, 0.07, ratios=(1.0, 1.63, 2.51), seed=seed)
-    clink2 = metal_clank(1150, 0.09, ratios=(1.0, 1.59, 2.66), seed=seed + 1)
-    slide = sy.white_noise(0.08, seed=seed + 2)
-    slide = sy.bandpass(slide, sy.pitch_env(0.08, 2600, 1200), q=1.3)
-    slide = sy.apply_env(slide, sy.env_adsr(0.08, 0.01, 0.02, 0.6, 0.04))
-    thud = gun_thump(f0=140, f1=80, pitch_s=0.01, dur_s=0.04, drive=1.5)
-    x = place(0.22,
-              (0.0, thud, 0.5),
-              (0.0, clink1, 0.8),
-              (0.06, clink2, 0.6),
-              (0.05, slide, 0.4))
-    x = sy.soft_clip(x, 1.4)
-    return finish(x, fade_s=0.03, pad_s=0.03)
+    # heavy magazine handled: low case thud + two dark clinks + brass slide
+    clink1 = metal_clank(560, 0.08, ratios=(1.0, 1.63, 2.51), seed=seed, lp_hz=2400)
+    clink2 = metal_clank(660, 0.1, ratios=(1.0, 1.59, 2.66), seed=seed + 1, lp_hz=2400)
+    slide = sy.white_noise(0.09, seed=seed + 2)
+    slide = sy.bandpass(slide, sy.pitch_env(0.09, 1500, 700), q=1.2)
+    slide = sy.apply_env(slide, sy.env_adsr(0.09, 0.012, 0.02, 0.6, 0.045))
+    thud = gun_thump(f0=150, f1=85, pitch_s=0.015, dur_s=0.07, drive=2.0)
+    knock = body_knock(0.07, 240, seed=seed + 4)
+    x = place(0.24,
+              (0.0, thud, 1.1),
+              (0.0, knock, 0.8),
+              (0.0, clink1, 0.65),
+              (0.07, clink2, 0.5),
+              (0.06, slide, 0.45))
+    x = sy.soft_clip(x, 1.6)
+    return finish(x, fade_s=0.035, pad_s=0.03)
 
 
 def gen_pickup_medkit() -> np.ndarray:
     seed = _seed("pickmed")
-    latch = mech_clack(520, seed=seed, thud_hz=85, ring_decay=0.06, scrape=False)
-    hiss = sy.white_noise(0.16, seed=seed + 2)
-    hiss = sy.highpass(hiss, 2800)
-    hiss = sy.apply_env(hiss, sy.env_adsr(0.16, attack=0.02, decay=0.05,
-                                          sustain_level=0.5, release=0.07))
-    x = place(0.28, (0.0, latch, 0.85), (0.05, hiss, 0.3))
-    return finish(x, fade_s=0.03, pad_s=0.03)
+    # heavy case latch + low-pressure canister hiss (dark, not bright)
+    latch = mech_clack(330, seed=seed, thud_hz=90, ring_decay=0.07,
+                       scrape=False, ring_lp=1800)
+    hiss = sy.white_noise(0.18, seed=seed + 2)
+    hiss = sy.bandpass(hiss, 1800, q=0.7)
+    hiss = sy.apply_env(hiss, sy.env_adsr(0.18, attack=0.05, decay=0.05,
+                                          sustain_level=0.5, release=0.08))
+    x = place(0.3, (0.0, latch, 1.0), (0.07, hiss, 0.22))
+    x = sy.lowpass(x, 2600)
+    return finish(x, fade_s=0.04, pad_s=0.03)
 
 
 def gen_pickup_key() -> np.ndarray:
     seed = _seed("pickkey")
     # dark detuned chime: heavy beating partial pairs, darkened, dirty floor
-    x = metal_clank(520, 0.22, ratios=(1.0, 1.5027, 2.44), detune_cents=14,
-                    seed=seed, lp_hz=3200)
-    thud = gun_thump(f0=110, f1=65, pitch_s=0.012, dur_s=0.05, drive=1.5)
-    floor_ = sy.pink_noise(0.25, seed=seed + 2)
-    floor_ = sy.bandpass(floor_, 900, q=0.6)
-    floor_ = sy.apply_env(floor_, sy.env_exp_decay(0.25, tau=0.08, end=0.001))
-    x = place(0.3, (0.0, x, 0.85), (0.0, thud, 0.4), (0.0, floor_, 0.12))
+    x = metal_clank(390, 0.24, ratios=(1.0, 1.5027, 2.44), detune_cents=24,
+                    seed=seed, lp_hz=2000)
+    x = sy.soft_clip(x, 1.7)
+    thud = gun_thump(f0=120, f1=70, pitch_s=0.015, dur_s=0.07, drive=1.8)
+    knock = body_knock(0.06, 220, seed=seed + 4)
+    floor_ = sy.pink_noise(0.28, seed=seed + 2)
+    floor_ = sy.bandpass(floor_, 700, q=0.6)
+    floor_ = sy.apply_env(floor_, sy.env_exp_decay(0.28, tau=0.09, end=0.001))
+    x = place(0.32, (0.0, x, 0.8), (0.0, thud, 0.7), (0.0, knock, 0.5),
+              (0.0, floor_, 0.2))
     x = sy.soft_clip(x, 1.3)
-    return finish(x, fade_s=0.04, pad_s=0.02)
+    return finish(x, fade_s=0.05, pad_s=0.02)
 
 
 def gen_terminal_open() -> np.ndarray:
@@ -755,61 +821,81 @@ def gen_terminal_open() -> np.ndarray:
 
 def gen_terminal_type() -> np.ndarray:
     seed = _seed("termtype")
-    thud = gun_thump(f0=210, f1=95, pitch_s=0.006, dur_s=0.02, drive=1.8)
-    case = sy.white_noise(0.018, seed=seed)
-    case = sy.bandpass(case, 750, q=1.4)
-    case = sy.apply_env(case, sy.env_exp_decay(0.018, tau=0.005))
-    x = place(0.045,
-              (0.0, hot_transient(0.003, seed=seed + 1, gain=0.8), 0.85),
-              (0.0, thud, 0.7),
-              (0.001, case, 0.5))
-    x = sy.soft_clip(x, 1.7)
-    return finish(x, fade_s=0.01, pad_s=0.02)
+    # heavy mechanical key: low-mid thock dominates, dark tick on top
+    thud = gun_thump(f0=200, f1=105, pitch_s=0.008, dur_s=0.045, drive=2.2)
+    knock = body_knock(0.04, 300, q=1.3, seed=seed + 2)
+    case = sy.white_noise(0.025, seed=seed)
+    case = sy.bandpass(case, 550, q=1.2)
+    case = sy.apply_env(case, sy.env_exp_decay(0.025, tau=0.007))
+    x = place(0.065,
+              (0.0, hot_transient(0.003, seed=seed + 1, gain=0.35, lp_hz=2500), 0.85),
+              (0.0, thud, 1.2),
+              (0.0, knock, 0.9),
+              (0.001, case, 0.6))
+    x = sy.soft_clip(x, 1.8)
+    x = sy.lowpass(x, 3000)
+    return finish(x, fade_s=0.015, pad_s=0.02)
 
 
 def gen_radio_blip() -> np.ndarray:
     seed = _seed("radioblip")
-    dur = 0.17
+    dur = 0.24
+    # squelch burst -> voice-band burble -> squelch tail: reads as a radio
+    # keying up, not a UI beep
     static = sy.white_noise(dur, seed=seed)
     static = (static.astype(np.float64) *
-              telegraph_gate(dur, 500, 0.3, seed=seed + 1)).astype(np.float32)
-    static = sy.bandpass(static, 1700, q=0.9)
-    static = sy.apply_env(static, sy.env_adsr(dur, 0.008, 0.04, 0.55, 0.06))
-    tone = sy.square(880, 0.07)
-    tone = sy.soft_clip(tone, 2.0)
-    tone = sy.apply_env(tone, sy.env_adsr(0.07, 0.005, 0.01, 0.7, 0.03))
-    x = place(dur, (0.0, static, 0.85), (0.04, tone, 0.4))
+              telegraph_gate(dur, 300, 0.45, seed=seed + 1)).astype(np.float32)
+    static = sy.bandpass(static, 1100, q=0.8)
+    static = sy.apply_env(static, sy.env_adsr(dur, 0.01, 0.05, 0.6, 0.08))
+    # burble: two alternating low square tones through the voice band,
+    # like a compressed voice fragment
+    t1 = sy.square(340, 0.05)
+    t2 = sy.square(470, 0.05)
+    t3 = sy.square(290, 0.06)
+    burble = sy.concat(
+        sy.apply_env(t1, sy.env_adsr(0.05, 0.008, 0.01, 0.7, 0.02)),
+        sy.apply_env(t2, sy.env_adsr(0.05, 0.008, 0.01, 0.7, 0.02)),
+        sy.apply_env(t3, sy.env_adsr(0.06, 0.008, 0.015, 0.6, 0.03)),
+    )
+    burble = sy.soft_clip(burble, 2.5)
+    x = place(dur, (0.0, static, 0.9), (0.05, burble, 0.5))
     # radio voice-band filter + grit
-    x = sy.bandpass(x, 1400, q=0.7)
-    x = sy.soft_clip(x, 2.2)
+    x = sy.bandpass(x, 900, q=0.6)
+    x = sy.soft_clip(x, 2.4)
     x = sy.bitcrush(x, bits=8, rate_divisor=2)
-    return finish(x, fade_s=0.025, pad_s=0.02)
+    return finish(x, fade_s=0.035, pad_s=0.02)
 
 
 def gen_door_unlock() -> np.ndarray:
     seed = _seed("doorunlock")
-    # servo whir: low saw sweep with buzz, then heavy clunk + settle rattle
-    whir_dur = 0.16
+    # servo motor spin-up (AM buzz), then a MASSIVE bolt clunk + settle rattle
+    whir_dur = 0.2
     whir = sy.mix_layers([
-        sy.saw(sy.pitch_env(whir_dur, 45, 95), whir_dur),
-        sy.square(sy.pitch_env(whir_dur, 118, 240), whir_dur),
-    ], [0.8, 0.3])
-    whir = sy.lowpass(whir, 520)
-    whir = sy.soft_clip(whir, 2.2)
-    whir = sy.apply_env(whir, sy.env_adsr(whir_dur, 0.03, 0.02, 0.8, 0.03))
+        sy.saw(sy.pitch_env(whir_dur, 55, 120), whir_dur),
+        sy.square(sy.pitch_env(whir_dur, 140, 300), whir_dur),
+    ], [0.85, 0.35])
+    am = 1.0 + 0.5 * sy.sine(30.0, whir_dur).astype(np.float64)
+    whir = (whir.astype(np.float64) * am).astype(np.float32)
+    whir = sy.lowpass(whir, 800)
+    whir = sy.soft_clip(whir, 2.4)
+    whir = sy.apply_env(whir, sy.env_adsr(whir_dur, 0.04, 0.02, 0.85, 0.04))
     clunk = sy.mix_layers([
-        gun_thump(f0=95, f1=34, pitch_s=0.02, dur_s=0.16, drive=2.2),
-        metal_clank(310, 0.12, ratios=(1.0, 1.43, 2.28), seed=seed),
-    ], [1.0, 0.55])
-    rattle = squelch_grains(0.1, 4, 800, 2000, grain_s=0.005, spread=0.8,
-                            seed=seed + 3, gain=0.35)
-    x = place(0.42,
-              (0.0, whir, 0.6),
-              (0.15, hot_transient(0.005, seed=seed + 2, gain=0.9), 0.9),
-              (0.15, clunk, 1.0),
-              (0.2, rattle, 0.8))
+        gun_thump(f0=120, f1=48, pitch_s=0.03, dur_s=0.24, drive=2.5),
+        body_knock(0.14, 170, seed=seed + 5),
+        metal_clank(250, 0.14, ratios=(1.0, 1.43, 2.28), seed=seed, lp_hz=1600),
+    ], [1.2, 0.9, 0.6])
+    rattle = squelch_grains(0.14, 5, 400, 1100, grain_s=0.007, spread=0.85,
+                            seed=seed + 3, gain=0.4)
+    tail = gun_tail(0.2, lp_hz=500, seed=seed + 7)
+    x = place(0.52,
+              (0.0, whir, 0.75),
+              (0.19, hot_transient(0.005, seed=seed + 2, gain=0.5, lp_hz=2800), 0.9),
+              (0.19, clunk, 1.15),
+              (0.25, rattle, 0.85),
+              (0.21, tail, 0.3))
     x = sy.soft_clip(x, 1.9)
-    return finish(x, fade_s=0.04)
+    x = sy.lowpass(x, 2600)
+    return finish(x, fade_s=0.05)
 
 
 # ==========================================================================
@@ -954,8 +1040,13 @@ def gen_amb_drone_late() -> np.ndarray:
         end = min(n, start + len(w))
         whispers[start:end] += w[: end - start]
 
-    x = sy.mix_layers([shepard, bed, sub, whispers.astype(np.float32)],
-                      [0.5, 0.55, 0.35, 1.0])
+    # dirty the whole mix: tape hiss floor + gentle saturation + bitcrush
+    hiss = sy.pink_noise(dur, seed=seed + 7)
+    hiss = sy.highpass(hiss, 1800)
+    x = sy.mix_layers([shepard, bed, sub, whispers.astype(np.float32), hiss],
+                      [0.5, 0.55, 0.35, 1.0, 0.05])
+    x = sy.soft_clip(x, 1.4)
+    x = sy.bitcrush(x, bits=10)
     x = sy.crossfade_loop(x, 2.5)
     return x
 
@@ -1025,16 +1116,25 @@ def gen_stinger_wrongness() -> np.ndarray:
                             sustain_level=0.3, release=dur * 0.4)
     swell = sy.apply_env(swell, swell_env)
 
-    sub = gun_thump(f0=60, f1=34, pitch_s=0.4, dur_s=1.0, drive=1.5)
+    sub = gun_thump(f0=70, f1=42, pitch_s=0.4, dur_s=1.0, drive=1.8)
+
+    # tape floor: constant hiss + slow crackle so nothing reads 'clean'
+    hiss = sy.pink_noise(dur, seed=seed + 5)
+    hiss = sy.highpass(hiss, 1200)
+    crackle = squelch_grains(dur, 10, 700, 2200, grain_s=0.006, spread=0.95,
+                             seed=seed + 6, gain=0.12)
 
     x = place(dur,
               (0.0, cluster, 0.7),
-              (0.0, swell, 0.22),
-              (dur * 0.62, sub, 0.5))
+              (0.0, swell, 0.25),
+              (0.0, hiss, 0.05),
+              (0.0, crackle, 1.0),
+              (dur * 0.62, sub, 0.6))
     amp_env = sy.env_adsr(dur, attack=0.18, decay=0.2, sustain_level=0.85,
                           release=dur * 0.3)
     x = sy.apply_env(x, amp_env)
-    x = sy.soft_clip(x, 1.3)
+    x = sy.soft_clip(x, 1.5)
+    x = sy.bitcrush(x, bits=11)
     return finish(x, fade_s=0.15, pad_s=0.05)
 
 
