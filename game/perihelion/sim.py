@@ -30,7 +30,7 @@ ACTIVE_HOPS = 5
 PLAYER_HP = 100
 PLAYER_RADIUS = 6.5
 PLAYER_ACCEL = 820.0
-PLAYER_FRICTION = 5.6  # terminal speed ~146 u/s
+PLAYER_FRICTION = 5.6  # terminal speed ~133 u/s (discrete 60Hz tick)
 PLAYER_MASS = 1.2
 
 # name: (damage, cooldown_ticks, speed, spread_rad, pellets, ammo_type, ammo_per_shot, sound)
@@ -59,7 +59,7 @@ HOLE_CORRIDOR_LEN = 36.0
 LIGHTNING_RECHARGE_TICKS = 60 * 9
 
 # Speed doctrine (Teleglitch): base walk slightly SLOWER than the player
-# (terminal = accel/fric; player ~146 u/s) so spacing is a real skill; the
+# (discrete-tick terminal; player ~133 u/s) so spacing is a real skill; the
 # husk/brute lunge is the burst that punishes carelessness. Mites nearly
 # match player speed and win by numbers.
 ENEMIES: dict[str, dict] = {
@@ -245,7 +245,7 @@ class GameSession:
         if t in ENEMIES:
             eid = self.spawn_enemy(room, spec.pos, t)
             if "hp" in spec.props:
-                self.enemies[eid]["hp"] = float(spec.props["hp"])
+                self.enemies[eid]["hp"] = float(spec.props["hp"]) * self._hp_mul
             if spec.props.get("tether"):
                 self.enemies[eid]["tether"] = True
         elif t in PICKUPS:
@@ -320,7 +320,7 @@ class GameSession:
                 if d == 0:
                     _, ex, ey, *_ = self.sim.get(eid)
                     self._snd(ENEMIES[e["kind"]]["alert_snd"], er, (ex, ey), 0.8)
-                    self.fx.append(("alerted", eid))
+                    self.fx.append(("alerted", er, ex, ey))
 
     # ------------------------------------------------------------------
     # the tick
@@ -435,6 +435,14 @@ class GameSession:
     def _fire(self, proom: int, px: float, py: float):
         w = WEAPONS[self.weapon]
         adx, ady = self.aim
+        if self.weapon == "lightning":
+            # the implant fires the same whether triggered or selected
+            self.cooldown = 18
+            if self.lightning_charge >= LIGHTNING_RECHARGE_TICKS:
+                self._fire_lightning(proom, px, py)
+            else:
+                self._snd("dry_click", proom, (px, py))
+            return
         if self.weapon == "hole":
             self.cooldown = w["cd"]
             self._hole_shot(proom, px, py, adx, ady)
@@ -511,7 +519,6 @@ class GameSession:
                 r = self.sim.get_radius(eid) if self.sim.exists(eid) else 8.0
                 ox, oy, room, ignore = hx + dx * (2 * r + 1.0), hy + dy * (2 * r + 1.0), hroom, eid
             else:
-                _, hroom, *rest = hit if kind == "wall" else (None, room)
                 if kind == "wall":
                     _, hroom, hedge, hx, hy, dist, hops, m9 = hit
                     self._decal(hroom, "scorch", hx, hy, 4.0)
@@ -599,6 +606,7 @@ class GameSession:
             return
         if self.hole_mark is None:
             self.hole_mark = (room, edge, t0, t1, hx, hy)
+            self._decal(room, "scorch", hx, hy, 5.0)
             self._snd("terminal_type", room, (hx, hy))
             self.fx.append(("holemark", room, hx, hy))
             return
@@ -653,6 +661,7 @@ class GameSession:
     def _build_cloister(self):
         if self.cloister is not None:
             return
+        self.hole_mark = None  # paired-mode marks cannot complete anymore
         s = self.sim
         verts = []
         for i in range(8):
@@ -838,7 +847,7 @@ class GameSession:
                     e["state"] = "waking"
                     e["wake"] = self.WAKE_TICKS[kind]
                     self._snd(d["alert_snd"], room, (ex, ey), 0.9)
-                    self.fx.append(("alerted", eid))
+                    self.fx.append(("alerted", room, ex, ey))
                     ddx, ddy = px - ex, py - ey
                     dl = math.hypot(ddx, ddy) or 1e-6
                     s.set_dir(eid, ddx / dl, ddy / dl)
@@ -960,7 +969,6 @@ class GameSession:
     # ------------------------------------------------------------------
 
     def _consume_events(self, events):
-        s = self.sim
         for ev in events:
             tag = ev[0]
             if tag == "transfer":

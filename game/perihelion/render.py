@@ -318,6 +318,15 @@ class Renderer:
             elif tag == "flash":
                 _, room, x, y, radius = fx
                 self._flashes.append(dict(room=room, x=x, y=y, radius=radius, life=3))
+            elif tag == "holemark":
+                _, room, x, y = fx
+                self._flashes.append(dict(room=room, x=x, y=y, radius=12.0, life=6))
+            elif tag == "holeopen":
+                _, room, x, y = fx
+                self._flashes.append(dict(room=room, x=x, y=y, radius=26.0, life=8))
+            elif tag == "alerted":
+                _, room, x, y = fx
+                self._screams.append(dict(room=room, x=x, y=y, age=0, maxage=10))
             elif tag == "lightning":
                 _, room, x, y, radius = fx
                 segs = []

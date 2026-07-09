@@ -30,7 +30,7 @@ class DoorSpec:
     ea: int
     b: int
     eb: int
-    key: str  # key id, e.g. "red"; "" = opens by level trigger
+    key: str  # key id, e.g. "red" (empty string is reserved, unimplemented)
 
 
 @dataclass
