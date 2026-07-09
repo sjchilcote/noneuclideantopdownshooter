@@ -570,6 +570,30 @@
      445.0
     ],
     "text": "MEDICAL BAY (RELOCATED)\nPatient: unnamed, found in Gallery.\nImplant of unknown design fused to left arm.\nPatient states the implant 'came through the wall.'\nPatient discharged. Implant retained. Vault, blue seal."
+   },
+   {
+    "room": 0,
+    "pos": [
+     -80.0,
+     215.0
+    ],
+    "text": "POSTED NOTICE, GALLERY ENTRANCE\nGALLERY CLOSED PENDING STRUCTURAL REVIEW.\n[handwritten beneath, several different hands]\n\u2014 review complete, corridor safe, opening today.\n\u2014 then why does it still say four on the\n  manifest and I count three.\n\u2014 because you walked it the way everyone walks\n  it. Try backward.\n\u2014 did. still three. still four. going to log it\n  and go get lunch."
+   },
+   {
+    "room": 6,
+    "pos": [
+     635.0,
+     100.0
+    ],
+    "text": "BREAK LOG, CROSSING FOUR\nNothing to report. Nothing to report. Nothing to\nreport. Relief crew: bring cards.\n[later, different hand]\nSomething to report. See crossing one. Do not\nlinger here either, just in case whatever's wrong\nwith one isn't done counting."
+   },
+   {
+    "room": 2,
+    "pos": [
+     380.0,
+     -95.0
+    ],
+    "text": "STRUCTURAL NOTE, GALLERY MIDPOINT\nFour load-bearing crossings, per the original\ndrawings. Fieldwork confirms three, walking\nnorth.\nRecommendation: trust the drawings; they were\nmade before anyone walked it drunk on double\nshifts.\nSecond recommendation, struck through but still\nlegible: the walking is probably right. Filed\nunder morale. Moving on."
    }
   ]
  }

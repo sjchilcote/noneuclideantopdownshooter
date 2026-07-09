@@ -395,6 +395,22 @@
      -375.0
     ],
     "text": "INCIDENT FILE 0000\nEmpty folder. The tab reads 0000.\nSomeone filed the folder itself as\nthe incident.\nAppendix: one requisition slip,\napproved, for 'one additional room'."
+   },
+   {
+    "room": 0,
+    "pos": [
+     80.0,
+     15.0
+    ],
+    "text": "VOICE LOG, TRANSCRIBED \u2014 OSEI\nGoing in with the tape measure this time, not\nthe laser. If the laser's reading wrong the tape\nwill tell me different, and if the tape agrees\nwith the laser I'll believe the laser about\neverything else too.\nRatio wanted someone with steady hands for this.\nI have steady hands. I also have a tape measure.\nBelt, suspenders."
+   },
+   {
+    "room": 4,
+    "pos": [
+     755.0,
+     -345.0
+    ],
+    "text": "REQUISITION SLIP \u2014 APPROVED\nItem: one (1) additional room. Justification\nfield: blank.\nApproving signature: illegible scan, three\ncharacters resolve, the rest is scanner noise.\nThe three that resolve are not initials MIRIAD\nuses for anyone on this posting.\nCost center charged: Site One, pre-existing\nallocation. Site One had no pre-existing\nallocation. The charge went through anyway."
    }
   ]
  }

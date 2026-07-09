@@ -363,6 +363,22 @@
      35.0
     ],
     "text": "PATHOLOGY\nSubject recovered from ward.\nAll organs mirrored. Situs inversus totalis.\nSubject's ID chip reads valid.\nIt is the chip of a crewman standing\nguard outside."
+   },
+   {
+    "room": 0,
+    "pos": [
+     15.0,
+     70.0
+    ],
+    "text": "GUARD LOG, WARD ENTRANCE\n0600 \u2014 on post.\n0600 \u2014 on post.\nSame hand, same ink, two lines, no gap between\nthem. Whoever wrote it isn't answering the page.\nPost considered staffed. Post considered."
+   },
+   {
+    "room": 3,
+    "pos": [
+     575.0,
+     -50.0
+    ],
+    "text": "ADMISSION CHART, WARD BED 1\nPatient reports hearing own voice from an empty\nbed. Attending's note: patient IS the only\noccupant. Chart amended twice to reflect one (1)\npatient, current census.\nCensus taken again at shift change: two (2) beds\noccupied. Census not amended a third time.\nAttending went off shift and did not return for\nhandoff."
    }
   ]
  }

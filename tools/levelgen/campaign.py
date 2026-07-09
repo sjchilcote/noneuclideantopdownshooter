@@ -195,6 +195,47 @@ def l01():
                "Filed a ticket. Ticket auto-closed: unit is\n"
                "not on the parts registry for this ring.\n"
                "It dispenses fine. Leaving it alone.")
+    b.terminal(dock, wall_pos(b, dock, 1, 0.5, 15.0),
+               "TRANSFER REQUEST — THIRD SUBMISSION\n"
+               "Requesting party: OSEI. Posting: MIRIAD outpost,\n"
+               "Site One survey. Cycles passed over: two. Grounds\n"
+               "cited, verbatim: 'a once-in-a-civilization anomaly,\n"
+               "and colleagues worth the transit.'\n"
+               "Approved, forwarded for transit scheduling.\n\n"
+               "[handwritten under the printed field]\n"
+               "Bring the good boots. Don't bring the mandolin, no\n"
+               "room in the crate for both, checked twice.")
+    b.terminal(junction, wall_pos(b, junction, 2, 0.5, 15.0),
+               "WATCH LOG, JUNCTION — THIBAULT\n"
+               "Hatch north: sealed, pressure nominal on my side.\n"
+               "Hatch west: sealed, pressure reads high on my\n"
+               "side, higher on the other. That number should not\n"
+               "exist. Logged, not escalated.\n"
+               "Hatch east: sealed. No reading at all — not zero.\n"
+               "Absent. Relief in six hours. Tell relief to bring\n"
+               "a second gauge.")
+    b.terminal(ring_w, wall_pos(b, ring_w, 0, 0.5, 15.0),
+               "SURVEY LOG, RING SEGMENT WEST — VESALIUS\n"
+               "Ring walk, standard loop, timed against spec: 33s\n"
+               "target, 41s measured, three crews, three\n"
+               "stopwatches. Recalibration did not change the\n"
+               "number.\n"
+               "Second finding, filed separately and not\n"
+               "forwarded: the ring reads eight segments on the\n"
+               "schematic and eight underfoot. The step-count\n"
+               "says nine. I trust the schematic. Recalibration\n"
+               "ticket re-opened, my signature, no further\n"
+               "comment.")
+    b.terminal(phantom, wall_pos(b, phantom, 3, 0.5, 15.0),
+               "TAG, PARTIALLY LEGIBLE, STUCK TO THE FAR WALL\n"
+               "Serial prefix does not match MIRIAD stock\n"
+               "numbering — no dash, no cycle digit, twelve\n"
+               "characters where ours run nine. 'Property of\n"
+               "outpost engineering,' penciled underneath in a\n"
+               "hand nobody has claimed.\n"
+               "Best guess, filed and closed: depot shipped a\n"
+               "batch with someone else's stickers already on the\n"
+               "boxes. Not worth a ticket.")
     b.radio(f"enter_room:{ring_w}", "Ratio: West segment. Motion grid says "
                                     "you're the only thing moving in there. "
                                     "It has said that before, and been wrong.")
@@ -265,6 +306,30 @@ def l02():
                "212 measured, 209 after the bend.\n"
                "Where do three liters a minute GO?\n"
                "Status: closed. Reason: rounding.")
+    b.terminal(pump_a, wall_pos(b, pump_a, 0, 0.5, 15.0),
+               "MAINT LOG, PUMP BAY ONE\n"
+               "Coolant pressure holds steady at spec, checked\n"
+               "at the gauge. Flow rate does not match the\n"
+               "pressure. It should. The math connecting the two\n"
+               "numbers has not changed since the pumps were\n"
+               "rated. Checked that too.\n"
+               "Filed under: recalibrate flow sensor. Sensor\n"
+               "recalibrated. Numbers held.")
+    b.terminal(pump_b, wall_pos(b, pump_b, 0, 0.85, 15.0),
+               "MAINT TICKET 4488 — FOLLOW-UP TO OSEI'S LOG\n"
+               "Re-walked Coolant Row end to end, count taken\n"
+               "twice. Five hatches, both times, both directions.\n"
+               "Schematic on file: five hatches. Schematic\n"
+               "checksum does not match the schematic filed\n"
+               "eleven months ago. Nobody has edited this file.\n"
+               "Status: closed, no fault found. Recommend against\n"
+               "opening it again.")
+    b.terminal(stub, wall_pos(b, stub, 0, 0.5, 15.0),
+               "SCRATCHED NEAR THE FLOOR VENT\n"
+               "tally marks, forty-one of them, then nothing\n"
+               "someone was counting seconds. or minutes. or\n"
+               "hatches. whoever it was stopped at forty-one and\n"
+               "left the chalk on the ledge.")
     squad(b, row, "mite mite mite mite")
     squad(b, pump_a, "husk mite mite")
     squad(b, pump_b, "husk husk")
@@ -351,6 +416,32 @@ def l03():
     b.radio(f"enter_room:{ring[1]}", "Ratio: Feeder pressure is nominal in "
                                      "sector two. First nominal reading I've "
                                      "had all month. Enjoy it.")
+    b.terminal(entry, wall_pos(b, entry, 3, 0.5, 15.0),
+               "SURVEY LOG — WEEK SIXTEEN\n"
+               "Nutrient uptake within tolerance. Torus rotation\n"
+               "nominal. Site One's gravitational signature\n"
+               "remains the whole of this posting's interest, and\n"
+               "it has not changed in sixteen weeks.\n"
+               "Request denied: additional survey time. Reason\n"
+               "given: 'the anomaly does not need more looking\n"
+               "at. It needs a name.' We have not been told what\n"
+               "name.")
+    b.terminal(ring[0], wall_pos(b, ring[0], 0, 0.5, 15.0),
+               "BENCH TAG, SECTOR ONE\n"
+               "Control group. No treatment applied. For\n"
+               "comparison only. Yield tracked weekly, entered by\n"
+               "hand because the automatic logger keeps entering\n"
+               "yields for a sector two rows over. Someone keeps\n"
+               "correcting the logger. The correction keeps\n"
+               "needing to happen again.")
+    b.terminal(ring[3], wall_pos(b, ring[3], 0, 0.5, 15.0),
+               "SHIPPING TAG, ZIP-TIED TO A FERTILIZER DRUM\n"
+               "Contents: fertilizer, 1 of 2.\n"
+               "Second tag, zip-tied to the same drum, underneath\n"
+               "the first:\n"
+               "Contents: fertilizer, 1 of 2.\n"
+               "Both tags are dated the same day. Neither one is\n"
+               "wrong.")
     squad(b, ring[1], "husk husk")
     squad(b, ring[2], "mite mite mite husk")
     squad(b, ring[4], "spitter husk")
@@ -425,6 +516,36 @@ def l04():
                "Implant of unknown design fused to left arm.\n"
                "Patient states the implant 'came through the wall.'\n"
                "Patient discharged. Implant retained. Vault, blue seal.")
+    b.terminal(entry, wall_pos(b, entry, 3, 0.5, 15.0),
+               "POSTED NOTICE, GALLERY ENTRANCE\n"
+               "GALLERY CLOSED PENDING STRUCTURAL REVIEW.\n"
+               "[handwritten beneath, several different hands]\n"
+               "— review complete, corridor safe, opening today.\n"
+               "— then why does it still say four on the\n"
+               "  manifest and I count three.\n"
+               "— because you walked it the way everyone walks\n"
+               "  it. Try backward.\n"
+               "— did. still three. still four. going to log it\n"
+               "  and go get lunch.")
+    b.terminal(crossings[3], wall_pos(b, crossings[3], 0, 0.5, 15.0),
+               "BREAK LOG, CROSSING FOUR\n"
+               "Nothing to report. Nothing to report. Nothing to\n"
+               "report. Relief crew: bring cards.\n"
+               "[later, different hand]\n"
+               "Something to report. See crossing one. Do not\n"
+               "linger here either, just in case whatever's wrong\n"
+               "with one isn't done counting.")
+    b.terminal(north, wall_pos(b, north, 3, 0.5, 15.0),
+               "STRUCTURAL NOTE, GALLERY MIDPOINT\n"
+               "Four load-bearing crossings, per the original\n"
+               "drawings. Fieldwork confirms three, walking\n"
+               "north.\n"
+               "Recommendation: trust the drawings; they were\n"
+               "made before anyone walked it drunk on double\n"
+               "shifts.\n"
+               "Second recommendation, struck through but still\n"
+               "legible: the walking is probably right. Filed\n"
+               "under morale. Moving on.")
     squad(b, south, "husk husk mite mite")
     squad(b, crossings[1], "shrieker")
     squad(b, crossings[2], "husk husk husk")
@@ -500,6 +621,27 @@ def l05():
                "and my walls touch neither of yours.\n"
                "I stopped filing complaints. Enjoy the cache. — F")
     cache(b, bunk_f, "ammo_cell ammo_cell medkit ammo_shell")
+    b.terminal(lobby, wall_pos(b, lobby, 3, 0.5, 15.0),
+               "WING DIRECTORY, POSTED AT THE LOBBY DOOR\n"
+               "WEST WING: bunks 10 through 15, common room,\n"
+               "chapel access.\n"
+               "EAST WING: bunks 10 through 15, common room,\n"
+               "chapel access.\n"
+               "Directory printed once. Read twice by mistake,\n"
+               "corrected, read twice again. Facilities notified.\n"
+               "Facilities printed a second copy, identical, and\n"
+               "hung it under the first.")
+    b.terminal(e3, wall_pos(b, e3, 3, 0.5, 15.0),
+               "FACILITIES WORK ORDER, BUNK REASSIGNMENT\n"
+               "Complaint: resident of 12-E reports resident of\n"
+               "12-W audible through shared wall. Wings do not\n"
+               "share a wall.\n"
+               "Complaint: resident of 12-W reports the same,\n"
+               "reversed.\n"
+               "Action taken: swapped both residents to bunk 14.\n"
+               "Follow-up, six days later: same complaint, new\n"
+               "bunk numbers. Action taken: closed the ticket.\n"
+               "Recommend residents adjust.")
     squad(b, w1, "husk husk")
     squad(b, w2, "husk mite mite mite")
     squad(b, w3, "brute")
@@ -567,6 +709,23 @@ def l06():
                "All organs mirrored. Situs inversus totalis.\n"
                "Subject's ID chip reads valid.\n"
                "It is the chip of a crewman standing\nguard outside.")
+    b.terminal(entry, wall_pos(b, entry, 0, 0.5, 15.0),
+               "GUARD LOG, WARD ENTRANCE\n"
+               "0600 — on post.\n"
+               "0600 — on post.\n"
+               "Same hand, same ink, two lines, no gap between\n"
+               "them. Whoever wrote it isn't answering the page.\n"
+               "Post considered staffed. Post considered.")
+    b.terminal(side, wall_pos(b, side, 0, 0.5, 15.0),
+               "ADMISSION CHART, WARD BED 1\n"
+               "Patient reports hearing own voice from an empty\n"
+               "bed. Attending's note: patient IS the only\n"
+               "occupant. Chart amended twice to reflect one (1)\n"
+               "patient, current census.\n"
+               "Census taken again at shift change: two (2) beds\n"
+               "occupied. Census not amended a third time.\n"
+               "Attending went off shift and did not return for\n"
+               "handoff.")
     squad(b, hall, "husk husk mite mite")
     squad(b, ward, "husk husk husk husk")
     squad(b, side, "spitter")
@@ -654,6 +813,27 @@ def l07():
                "Appendix: one requisition slip,\n"
                "approved, for 'one additional room'.")
     cache(b, annex, "ammo_cell ammo_cell medkit")
+    b.terminal(entry, wall_pos(b, entry, 3, 0.5, 15.0),
+               "VOICE LOG, TRANSCRIBED — OSEI\n"
+               "Going in with the tape measure this time, not\n"
+               "the laser. If the laser's reading wrong the tape\n"
+               "will tell me different, and if the tape agrees\n"
+               "with the laser I'll believe the laser about\n"
+               "everything else too.\n"
+               "Ratio wanted someone with steady hands for this.\n"
+               "I have steady hands. I also have a tape measure.\n"
+               "Belt, suspenders.")
+    b.terminal(annex, wall_pos(b, annex, 0, 0.5, 15.0),
+               "REQUISITION SLIP — APPROVED\n"
+               "Item: one (1) additional room. Justification\n"
+               "field: blank.\n"
+               "Approving signature: illegible scan, three\n"
+               "characters resolve, the rest is scanner noise.\n"
+               "The three that resolve are not initials MIRIAD\n"
+               "uses for anyone on this posting.\n"
+               "Cost center charged: Site One, pre-existing\n"
+               "allocation. Site One had no pre-existing\n"
+               "allocation. The charge went through anyway.")
     squad(b, stack, "mite mite mite mite mite mite")
     squad(b, closet, "spitter spitter")
     squad(b, deep, "brute brute shrieker")
@@ -721,6 +901,27 @@ def l08():
                "This is a place being remembered —\nby something on the other side.")
     squad(b, core, "warden")
     b.data["rooms"][core]["entities"][-1]["props"] = {"hp": 180, "tether": 1}
+    b.terminal(petals[0], wall_pos(b, petals[0], 1, 0.5, 15.0),
+               "[TRANSLATION CONFIDENCE 8%]\n"
+               "six were sent. six return, always six.\n"
+               "the seventh count is a mistake in the counting,\n"
+               "not a seventh room. we filed it that way for a\n"
+               "long time. the filing is also how the room first\n"
+               "appeared. we do not file it that way now, and\n"
+               "the room has not gone.")
+    b.terminal(petals[3], wall_pos(b, petals[3], 3, 0.5, 15.0),
+               "[TRANSLATION CONFIDENCE 19%]\n"
+               "students were walked here blind, on purpose,\n"
+               "early. counting the doors and losing the count\n"
+               "was the whole of the lesson. you cannot fear a\n"
+               "direction you have already used to find your way\n"
+               "home once.")
+    b.terminal(petals[5], wall_pos(b, petals[5], 5, 0.5, 15.0),
+               "[TRANSLATION CONFIDENCE 6%]\n"
+               "we did not name them once we understood them.\n"
+               "naming a thing is agreeing it has one shape. the\n"
+               "closest word left in any of our tongues\n"
+               "translates, roughly, as 'the un-arriving guest.'")
     petal_squads = ["husk", "spitter", "mite mite mite",
                     "brute", "shrieker", "spitter"]
     petal_caches = ["ammo_9mm ammo_shell medkit", "medkit", "medkit ammo_cell",
@@ -795,6 +996,22 @@ def l09():
                "the lesson: >>four<< is a direction.\n"
                "do not fear the direction.\n"
                "we feared it. fear did not help.")
+    b.terminal(rooms[2], wall_pos(b, rooms[2], CHAMFER, 0.5, 15.0),
+               "[TRANSLATION CONFIDENCE 33%]\n"
+               "sixteen is not the number of rooms.\n"
+               "sixteen is how many names one room accepts\n"
+               "before it stops answering to the first.\n"
+               "we did not choose one name each. the choosing\n"
+               "was the mistake the last generation made.")
+    b.terminal(rooms[11], wall_pos(b, rooms[11], CHAMFER, 0.5, 15.0),
+               "CARGO TAG, MIRIAD STOCK NUMBER — FOUND HERE,\n"
+               "HALF BURIED\n"
+               "Contents: 2x fertilizer drum.\n"
+               "This tag belongs four levels back, in a\n"
+               "storeroom that grows food. There is no food\n"
+               "here. There was no floor here, on any schematic,\n"
+               "before today.\n"
+               "Nobody has come to collect it.")
     squad(b, rooms[3], "husk husk")
     squad(b, rooms[5], "spitter spitter")
     squad(b, rooms[6], "brute")
@@ -890,6 +1107,22 @@ def l10():
                "it stood here four hundred / thousand /\n"
                "[number does not translate] years.\n"
                "it is permitted to sit.")
+    b.terminal(hexes[0], wall_pos(b, hexes[0], HEX_FREE, 0.5, 15.0),
+               "MIRIAD PRIME ARCHIVE OFFICE — NEVER TRANSMITTED\n"
+               "Site One was not discovered in survey month four.\n"
+               "Site One has been a line item since before this\n"
+               "outpost's own founding charter. The charter\n"
+               "authorized study of a 'previously catalogued\n"
+               "anomaly.'\n"
+               "Nobody assigned to the outpost was shown the\n"
+               "earlier entry. We are not shown it either. Close\n"
+               "this file; do not forward the question upward\n"
+               "again.")
+    b.terminal(hexes[3], wall_pos(b, hexes[3], HEX_FREE, 0.5, 15.0),
+               "SCRATCHED, LOW ON THE WALL, EASY TO MISS\n"
+               "tape measure, one (1), still on its reel, no\n"
+               "tape drawn out.\n"
+               "Someone set it down gently.")
     cache(b, alcove, "medkit ammo_cell", wall=0, t=0.5, inset=14.0)
     # the streamer respawns a chunk-9 death right back at this airlock at
     # floor-40 hp (stream.py's entry-snapshot restore) -- a small emergency

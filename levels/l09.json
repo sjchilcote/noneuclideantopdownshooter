@@ -888,6 +888,22 @@
      539.3933982822018
     ],
     "text": "[TRANSLATION CONFIDENCE 41%]\nwelcome / student / stranger.\nthis room is a lesson.\nthe lesson: >>four<< is a direction.\ndo not fear the direction.\nwe feared it. fear did not help."
+   },
+   {
+    "room": 2,
+    "pos": [
+     939.3933982822018,
+     139.3933982822018
+    ],
+    "text": "[TRANSLATION CONFIDENCE 33%]\nsixteen is not the number of rooms.\nsixteen is how many names one room accepts\nbefore it stops answering to the first.\nwe did not choose one name each. the choosing\nwas the mistake the last generation made."
+   },
+   {
+    "room": 11,
+    "pos": [
+     1339.3933982822018,
+     939.3933982822018
+    ],
+    "text": "CARGO TAG, MIRIAD STOCK NUMBER \u2014 FOUND HERE,\nHALF BURIED\nContents: 2x fertilizer drum.\nThis tag belongs four levels back, in a\nstoreroom that grows food. There is no food\nhere. There was no floor here, on any schematic,\nbefore today.\nNobody has come to collect it."
    }
   ]
  }

@@ -496,6 +496,30 @@
      111.84740508845398
     ],
     "text": "FEEDER SCHEDULE, SECTOR 5\n0400 nutrient, 0900 mist, 1400 nutrient,\n1900 mist, 0000 dark cycle.\nThe dying trays spiral inward, sunwise.\nThe healthy trays spiral the other way.\nBotany says plants do not have a 'way'."
+   },
+   {
+    "room": 6,
+    "pos": [
+     0.0,
+     -425.0
+    ],
+    "text": "SURVEY LOG \u2014 WEEK SIXTEEN\nNutrient uptake within tolerance. Torus rotation\nnominal. Site One's gravitational signature\nremains the whole of this posting's interest, and\nit has not changed in sixteen weeks.\nRequest denied: additional survey time. Reason\ngiven: 'the anomaly does not need more looking\nat. It needs a name.' We have not been told what\nname."
+   },
+   {
+    "room": 0,
+    "pos": [
+     48.88228567653781,
+     -182.4311737349355
+    ],
+    "text": "BENCH TAG, SECTOR ONE\nControl group. No treatment applied. For\ncomparison only. Yield tracked weekly, entered by\nhand because the automatic logger keeps entering\nyields for a sector two rows over. Someone keeps\ncorrecting the logger. The correction keeps\nneeding to happen again."
+   },
+   {
+    "room": 3,
+    "pos": [
+     182.4311737349355,
+     48.8822856765378
+    ],
+    "text": "SHIPPING TAG, ZIP-TIED TO A FERTILIZER DRUM\nContents: fertilizer, 1 of 2.\nSecond tag, zip-tied to the same drum, underneath\nthe first:\nContents: fertilizer, 1 of 2.\nBoth tags are dated the same day. Neither one is\nwrong."
    }
   ]
  }

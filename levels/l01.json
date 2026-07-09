@@ -516,6 +516,38 @@
      230.0
     ],
     "text": "SHIFT NOTE, STORAGE\nVending unit in SW segment eats chits again.\nFiled a ticket. Ticket auto-closed: unit is\nnot on the parts registry for this ring.\nIt dispenses fine. Leaving it alone."
+   },
+   {
+    "room": 0,
+    "pos": [
+     110.0,
+     165.0
+    ],
+    "text": "TRANSFER REQUEST \u2014 THIRD SUBMISSION\nRequesting party: OSEI. Posting: MIRIAD outpost,\nSite One survey. Cycles passed over: two. Grounds\ncited, verbatim: 'a once-in-a-civilization anomaly,\nand colleagues worth the transit.'\nApproved, forwarded for transit scheduling.\n\n[handwritten under the printed field]\nBring the good boots. Don't bring the mandolin, no\nroom in the crate for both, checked twice."
+   },
+   {
+    "room": 2,
+    "pos": [
+     685.0,
+     90.0
+    ],
+    "text": "WATCH LOG, JUNCTION \u2014 THIBAULT\nHatch north: sealed, pressure nominal on my side.\nHatch west: sealed, pressure reads high on my\nside, higher on the other. That number should not\nexist. Logged, not escalated.\nHatch east: sealed. No reading at all \u2014 not zero.\nAbsent. Relief in six hours. Tell relief to bring\na second gauge."
+   },
+   {
+    "room": 10,
+    "pos": [
+     435.0,
+     90.0
+    ],
+    "text": "SURVEY LOG, RING SEGMENT WEST \u2014 VESALIUS\nRing walk, standard loop, timed against spec: 33s\ntarget, 41s measured, three crews, three\nstopwatches. Recalibration did not change the\nnumber.\nSecond finding, filed separately and not\nforwarded: the ring reads eight segments on the\nschematic and eight underfoot. The step-count\nsays nine. I trust the schematic. Recalibration\nticket re-opened, my signature, no further\ncomment."
+   },
+   {
+    "room": 11,
+    "pos": [
+     1030.0,
+     -405.0
+    ],
+    "text": "TAG, PARTIALLY LEGIBLE, STUCK TO THE FAR WALL\nSerial prefix does not match MIRIAD stock\nnumbering \u2014 no dash, no cycle digit, twelve\ncharacters where ours run nine. 'Property of\noutpost engineering,' penciled underneath in a\nhand nobody has claimed.\nBest guess, filed and closed: depot shipped a\nbatch with someone else's stickers already on the\nboxes. Not worth a ticket."
    }
   ]
  }

@@ -602,6 +602,22 @@
     "text": "BUNK 12-F\nThere is no bunk 12-F on the manifest.\nDear R, dear M \u2014 you are both right.\nI hear you both through my walls,\nand my walls touch neither of yours.\nI stopped filing complaints. Enjoy the cache. \u2014 F"
    },
    {
+    "room": 0,
+    "pos": [
+     110.0,
+     15.0
+    ],
+    "text": "WING DIRECTORY, POSTED AT THE LOBBY DOOR\nWEST WING: bunks 10 through 15, common room,\nchapel access.\nEAST WING: bunks 10 through 15, common room,\nchapel access.\nDirectory printed once. Read twice by mistake,\ncorrected, read twice again. Facilities notified.\nFacilities printed a second copy, identical, and\nhung it under the first."
+   },
+   {
+    "room": 6,
+    "pos": [
+     910.0,
+     25.0
+    ],
+    "text": "FACILITIES WORK ORDER, BUNK REASSIGNMENT\nComplaint: resident of 12-E reports resident of\n12-W audible through shared wall. Wings do not\nshare a wall.\nComplaint: resident of 12-W reports the same,\nreversed.\nAction taken: swapped both residents to bunk 14.\nFollow-up, six days later: same complaint, new\nbunk numbers. Action taken: closed the ticket.\nRecommend residents adjust."
+   },
+   {
     "room": 7,
     "pos": [
      -525.0,
