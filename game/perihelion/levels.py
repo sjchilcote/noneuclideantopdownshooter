@@ -225,10 +225,11 @@ class LevelBuilder:
     def set_kind(self, room: int, kind: str) -> None:
         self.data["rooms"][room]["kind"] = kind
 
-    def rect(self, x, y, w, h, seed=None) -> int:
-        return self.room([(x, y), (x, y + h), (x + w, y + h), (x + w, y)], seed)
+    def rect(self, x, y, w, h, seed=None, kind=None) -> int:
+        return self.room([(x, y), (x, y + h), (x + w, y + h), (x + w, y)],
+                         seed, kind=kind)
 
-    def ngon(self, cx, cy, r, n, phase=0.0, seed=None) -> int:
+    def ngon(self, cx, cy, r, n, phase=0.0, seed=None, kind=None) -> int:
         import math
 
         # Angle DECREASES so the shoelace area is negative: engine-canonical
@@ -238,7 +239,7 @@ class LevelBuilder:
         for i in range(n):
             a = phase - i * 2.0 * math.pi / n
             verts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
-        return self.room(verts, seed)
+        return self.room(verts, seed, kind=kind)
 
     def poly(self, verts, seed=None) -> int:
         """Room from explicit verts; rewinds to canonical if needed (edge

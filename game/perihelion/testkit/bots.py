@@ -269,8 +269,10 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
         # gate enemies: hunt the kind holding the exit shut
         if snapshot.get("exit_gate_remaining", 0):
             kind = snapshot["exit_gate_kind"]
+            rng = snapshot.get("exit_gate_rooms")
             prey = [e for e in snapshot["enemies"]
-                    if e["kind"] == kind and e["hops"] >= 0]
+                    if e["kind"] == kind and e["hops"] >= 0
+                    and (rng is None or rng[0] <= e["room"] < rng[1])]
             if prey:
                 target = min(prey, key=lambda e: e["hops"])
                 return nav_to_room(session, snapshot, target["room"], None)

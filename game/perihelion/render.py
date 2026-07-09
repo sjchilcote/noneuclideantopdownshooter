@@ -1,4 +1,4 @@
-"""Immediate-mode renderer: necore draw lists -> a 480x270 pygame.Surface.
+"""Immediate-mode renderer: necore draw lists -> a 640x360 pygame.Surface.
 
 No pygame.display dependency anywhere in this module (fonts are OK) so it
 runs the same under a real window and under SDL_VIDEODRIVER=dummy. All
@@ -24,7 +24,7 @@ import necore
 
 from .sim import DT
 
-INTERNAL_W, INTERNAL_H = 480, 270
+INTERNAL_W, INTERNAL_H = 640, 360
 
 FLOOR_BASE = (26, 26, 33)          # ~0x1a1a21 dark grey-blue — reads clearly against the void
 WALL_COLOR = (184, 196, 204)       # 0xb8c4cc
@@ -44,6 +44,22 @@ GIB_COLOR = (94, 16, 16)
 SPARK_COLOR = (255, 230, 120)
 LIGHTNING_COLOR = (205, 242, 255)
 SCREAM_COLOR = (230, 230, 240)
+
+# -- diegetic prop palette -------------------------------------------------
+# Desaturated & dark by design: props read below the enemy-color range (the
+# brightest enemies run 200+) and above the floor (26,26,33), so furniture
+# never competes with a live threat for the eye. Hazard/screen accents are
+# the deliberate exceptions -- a lit instrument or caution stripe is meant
+# to pop, the way a door key color pops against everything else.
+PROP_COLOR = (58, 62, 72)          # structural fill: crates, cots, shelves
+PROP_RIM = (90, 96, 108)           # prop edge / rim -- one step brighter
+PROP_DARK = (38, 40, 48)           # recessed fill: slabs, lockers, cabinets
+HAZARD_COLOR = (150, 112, 40)      # dull amber hazard stripe
+HAZARD_COLOR_DIM = (98, 76, 34)
+PIPE_COLOR = (70, 80, 92)
+PUDDLE_COLOR = (32, 40, 48)
+SCREEN_COLOR = (110, 235, 165)     # lit phosphor screen (lab consoles, terminals)
+SCREEN_DIM = (46, 96, 78)          # unlit / already-read screen
 
 PLAYER_SHAPE = [(1.3, 0.0), (-0.8, 0.85), (-0.35, 0.0), (-0.8, -0.85)]
 PLAYER_COLOR = (205, 248, 255)
@@ -169,10 +185,479 @@ def _pts(poly):
     return [(int(round(x)), int(round(y))) for x, y in poly]
 
 
+# ---------------------------------------------------------------------------
+# diegetic prop geometry -- room-local coordinate helpers and per-room-kind
+# prop-set generators. Everything below is pure geometry (no pygame, no
+# necore): it produces the same `_get_detail` primitive tuples the old
+# grime generator did ("line"/"dot"/"stain"), plus three new kinds
+# ("poly", "polyline", "screenglow") that `Renderer._draw_detail` knows how
+# to clip and paint. Room-local coords are always centroid-at-origin (the
+# Level contract), which is what makes "toward the room interior" always
+# just mean "toward (0, 0)".
+# ---------------------------------------------------------------------------
+
+
+def _rect_local(cx, cy, w, h, ang=0.0):
+    hw, hh = w / 2.0, h / 2.0
+    ca, sa = math.cos(ang), math.sin(ang)
+    corners = [(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]
+    return [(cx + x * ca - y * sa, cy + x * sa + y * ca) for x, y in corners]
+
+
+def _ring_local(cx, cy, r, n=16):
+    return [(cx + r * math.cos(2.0 * math.pi * i / n),
+             cy + r * math.sin(2.0 * math.pi * i / n)) for i in range(n)]
+
+
+def _arc_local(cx, cy, r, a0, a1, n=10):
+    return [(cx + r * math.cos(a0 + (a1 - a0) * i / n),
+             cy + r * math.sin(a0 + (a1 - a0) * i / n)) for i in range(n + 1)]
+
+
+def _basis_arc_local(cx, cy, r, tx, ty, nx, ny, a0=-math.pi / 2, a1=math.pi / 2, n=8):
+    """Arc in the (tangent, normal) basis of a wall: a=0 sits `r` along
+    (nx,ny) from (cx,cy); a=+-pi/2 sits `r` along +-(tx,ty). Lets callers
+    place a bulge "into the room" without caring which way the wall faces
+    in world coordinates."""
+    pts = []
+    for i in range(n + 1):
+        a = a0 + (a1 - a0) * i / n
+        pts.append((cx + (tx * math.sin(a) + nx * math.cos(a)) * r,
+                     cy + (ty * math.sin(a) + ny * math.cos(a)) * r))
+    return pts
+
+
+def _edge_inward_normal(x0, y0, x1, y1):
+    """Unit normal of edge (x0,y0)->(x1,y1) pointing toward the room
+    interior (room-local origin)."""
+    dx, dy = x1 - x0, y1 - y0
+    length = math.hypot(dx, dy) or 1.0
+    nx, ny = -dy / length, dx / length
+    mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    if (-mx) * nx + (-my) * ny < 0:
+        nx, ny = -nx, -ny
+    return nx, ny
+
+
+def _wall_edges(verts, portal_edges, min_len=16.0):
+    """Non-portal edges of `verts` long enough to hang a prop on: dicts with
+    endpoints, length, tangent, and inward normal, longest first. Portal
+    (and pending-door) edges are excluded so static furniture never blocks
+    a passage that is -- or will become, once a door unlocks -- open."""
+    n = len(verts)
+    out = []
+    for i in range(n):
+        if i in portal_edges:
+            continue
+        x0, y0 = verts[i]
+        x1, y1 = verts[(i + 1) % n]
+        dx, dy = x1 - x0, y1 - y0
+        length = math.hypot(dx, dy)
+        if length < min_len:
+            continue
+        tx, ty = dx / length, dy / length
+        nx, ny = _edge_inward_normal(x0, y0, x1, y1)
+        out.append(dict(i=i, p0=(x0, y0), p1=(x1, y1), len=length,
+                         tx=tx, ty=ty, nx=nx, ny=ny,
+                         mx=(x0 + x1) / 2.0, my=(y0 + y1) / 2.0))
+    out.sort(key=lambda e: -e["len"])
+    return out
+
+
+def _place_along_wall(wall, item_w, gap, inset, margin=6.0):
+    """Evenly spaced item centers along `wall`, offset `inset` inward from
+    the wall line, each `(cx, cy, ang)` with `ang` = the wall's tangent
+    angle (so a rect built at that angle sits flush against the wall)."""
+    usable = wall["len"] - 2 * margin
+    if usable <= item_w:
+        return []
+    n = max(1, int((usable + gap) // (item_w + gap)))
+    span = n * item_w + (n - 1) * gap
+    start = (wall["len"] - span) / 2.0
+    ang = math.atan2(wall["ty"], wall["tx"])
+    out = []
+    for k in range(n):
+        t = start + item_w / 2.0 + k * (item_w + gap)
+        bx = wall["p0"][0] + wall["tx"] * t
+        by = wall["p0"][1] + wall["ty"] * t
+        out.append((bx + wall["nx"] * inset, by + wall["ny"] * inset, ang))
+    return out
+
+
+def _crate(cx, cy, w, h, ang, rng, fill=PROP_COLOR, rim=PROP_RIM):
+    pts = _rect_local(cx, cy, w, h, ang)
+    prims = [("poly", pts, fill, rim, 1)]
+    strap = tuple(max(0, c - 16) for c in rim)
+    if rng.random() < 0.85:
+        prims.append(("line", pts[0], pts[2], strap, 1))
+    if w > 7 and h > 7 and rng.random() < 0.6:
+        prims.append(("line", pts[1], pts[3], strap, 1))
+    return prims
+
+
+def _vent_grate(cx, cy, ang, wall, w=8.0, h=5.0):
+    pts = _rect_local(cx, cy, w, h, ang)
+    prims = [("poly", pts, PROP_DARK, PROP_RIM, 1)]
+    for k in range(1, 4):
+        t = -w / 2.0 + k * (w / 4.0)
+        lx = cx + wall["tx"] * t
+        ly = cy + wall["ty"] * t
+        hx = lx + wall["nx"] * (h * 0.4)
+        hy = ly + wall["ny"] * (h * 0.4)
+        lx2 = lx - wall["nx"] * (h * 0.4)
+        ly2 = ly - wall["ny"] * (h * 0.4)
+        prims.append(("line", (lx2, ly2), (hx, hy), PROP_RIM, 1))
+    return prims
+
+
+def _props_dock(rng, verts, walls, x0, y0, x1, y1):
+    """Cargo crates in corner stacks, a hazard-striped strip near one wall,
+    mooring rings along another."""
+    prims = []
+    corners = list(verts)
+    rng.shuffle(corners)
+    for cx0, cy0 in corners[:2]:
+        length = math.hypot(cx0, cy0) or 1.0
+        ux, uy = -cx0 / length, -cy0 / length
+        base = 10.0
+        for k in range(rng.randint(3, 5)):
+            w = rng.uniform(9, 15)
+            h = rng.uniform(9, 15)
+            off = base + k * rng.uniform(6, 9)
+            jitter = rng.uniform(-4, 4)
+            cx = cx0 + ux * off + uy * jitter
+            cy = cy0 + uy * off - ux * jitter
+            prims.extend(_crate(cx, cy, w, h, rng.uniform(-0.15, 0.15), rng))
+    if walls:
+        wall = rng.choice(walls)
+        strip_w = min(wall["len"] * 0.6, 60.0)
+        strip_d = 10.0
+        steps = max(4, int(strip_w / 7))
+        t0 = (wall["len"] - strip_w) / 2.0
+        for k in range(steps):
+            t = t0 + k * (strip_w / steps)
+            bx = wall["p0"][0] + wall["tx"] * t
+            by = wall["p0"][1] + wall["ty"] * t
+            ex = bx + wall["nx"] * strip_d
+            ey = by + wall["ny"] * strip_d
+            color = HAZARD_COLOR if k % 2 == 0 else HAZARD_COLOR_DIM
+            prims.append(("line", (bx, by), (ex, ey), color, 2))
+        ring_wall = rng.choice(walls)
+        for cx, cy, ang in _place_along_wall(ring_wall, 6.0, 22.0, 6.0):
+            prims.append(("polyline", _ring_local(cx, cy, 2.4, 10), PROP_RIM, 1, True))
+            hx = cx - ring_wall["nx"] * 4.0
+            hy = cy - ring_wall["ny"] * 4.0
+            prims.append(("line", (cx, cy), (hx, hy), PROP_RIM, 1))
+    return prims
+
+
+def _props_corridor(rng, verts, walls, x0, y0, x1, y1):
+    """Wall-hugging pipe runs with elbow joints, floor lane chevrons, vent
+    grates. Shared by "corridor" and "transit"."""
+    prims = []
+    for wall in walls[:2]:
+        inset = 5.0
+        margin = 8.0
+        if wall["len"] <= 2 * margin:
+            continue
+        a = (wall["p0"][0] + wall["nx"] * inset + wall["tx"] * margin,
+             wall["p0"][1] + wall["ny"] * inset + wall["ty"] * margin)
+        b = (wall["p1"][0] + wall["nx"] * inset - wall["tx"] * margin,
+             wall["p1"][1] + wall["ny"] * inset - wall["ty"] * margin)
+        prims.append(("line", a, b, PIPE_COLOR, 1))
+        run = wall["len"] - 2 * margin
+        n_joints = max(1, int(run // 26))
+        for k in range(1, n_joints + 1):
+            t = margin + k * (run / (n_joints + 1))
+            jx = wall["p0"][0] + wall["tx"] * t + wall["nx"] * inset
+            jy = wall["p0"][1] + wall["ty"] * t + wall["ny"] * inset
+            prims.append(("line", (jx, jy),
+                          (jx + wall["nx"] * 3.5, jy + wall["ny"] * 3.5), PIPE_COLOR, 1))
+        if rng.random() < 0.7:
+            spots = _place_along_wall(wall, 8.0, 20.0, 8.0)
+            if spots:
+                gx, gy, gang = rng.choice(spots)
+                prims.extend(_vent_grate(gx, gy, gang, wall))
+    axis_dx, axis_dy = x1 - x0, y1 - y0
+    horiz = abs(axis_dx) >= abs(axis_dy)
+    for frac in (0.28, 0.72):
+        if horiz:
+            lx, ly = x0 + axis_dx * frac, (y0 + y1) / 2.0
+            tip = (lx + 5, ly)
+            prims.append(("line", (lx - 5, ly), tip, PROP_DARK, 1))
+            prims.append(("line", tip, (lx, ly - 3), PROP_DARK, 1))
+            prims.append(("line", tip, (lx, ly + 3), PROP_DARK, 1))
+        else:
+            lx, ly = (x0 + x1) / 2.0, y0 + axis_dy * frac
+            tip = (lx, ly + 5)
+            prims.append(("line", (lx, ly - 5), tip, PROP_DARK, 1))
+            prims.append(("line", tip, (lx - 3, ly), PROP_DARK, 1))
+            prims.append(("line", tip, (lx + 3, ly), PROP_DARK, 1))
+    return prims
+
+
+def _props_storage(rng, verts, walls, x0, y0, x1, y1):
+    """Dense crate rows with a walkable aisle, shelf lines along the walls."""
+    prims = []
+    w_span, h_span = x1 - x0, y1 - y0
+    horiz = w_span >= h_span
+    n_rows = rng.randint(2, 3)
+    budget = 70
+    if horiz:
+        rows_y = [y0 + h_span * (0.22 + 0.56 * k / max(1, n_rows - 1)) for k in range(n_rows)]
+        aisle_lo, aisle_hi = x0 + w_span * 0.42, x0 + w_span * 0.58
+        for ry in rows_y:
+            cx_ = x0 + w_span * 0.12
+            limit = x1 - w_span * 0.12
+            while cx_ < limit and len(prims) < budget:
+                w = rng.uniform(10, 16)
+                if not (aisle_lo - w < cx_ < aisle_hi + w):
+                    prims.extend(_crate(cx_, ry + rng.uniform(-3, 3), w,
+                                        rng.uniform(10, 16), rng.uniform(-0.08, 0.08), rng))
+                cx_ += w + rng.uniform(3, 6)
+    else:
+        cols_x = [x0 + w_span * (0.22 + 0.56 * k / max(1, n_rows - 1)) for k in range(n_rows)]
+        aisle_lo, aisle_hi = y0 + h_span * 0.42, y0 + h_span * 0.58
+        for rx in cols_x:
+            cy_ = y0 + h_span * 0.12
+            limit = y1 - h_span * 0.12
+            while cy_ < limit and len(prims) < budget:
+                h = rng.uniform(10, 16)
+                if not (aisle_lo - h < cy_ < aisle_hi + h):
+                    prims.extend(_crate(rx + rng.uniform(-3, 3), cy_, rng.uniform(10, 16),
+                                        h, rng.uniform(-0.08, 0.08), rng))
+                cy_ += h + rng.uniform(3, 6)
+    for wall in walls[:3]:
+        inset = 5.0
+        a = (wall["p0"][0] + wall["nx"] * inset, wall["p0"][1] + wall["ny"] * inset)
+        b = (wall["p1"][0] + wall["nx"] * inset, wall["p1"][1] + wall["ny"] * inset)
+        prims.append(("line", a, b, PROP_RIM, 1))
+        a2 = (a[0] + wall["nx"] * 3, a[1] + wall["ny"] * 3)
+        b2 = (b[0] + wall["nx"] * 3, b[1] + wall["ny"] * 3)
+        prims.append(("line", a2, b2, PROP_COLOR, 1))
+    return prims
+
+
+def _props_pump(rng, verts, walls, x0, y0, x1, y1):
+    """A large tank ring (sometimes two) with an inflow pipe from the
+    nearest wall, plus floor puddle stains."""
+    prims = []
+    w_span, h_span = x1 - x0, y1 - y0
+    r = min(w_span, h_span) * 0.28
+    ox = (x0 + x1) / 2.0 + rng.uniform(-w_span, w_span) * 0.08
+    oy = (y0 + y1) / 2.0 + rng.uniform(-h_span, h_span) * 0.08
+    prims.append(("polyline", _ring_local(ox, oy, r, 20), PROP_RIM, 2, True))
+    prims.append(("polyline", _ring_local(ox, oy, r * 0.78, 18), PROP_COLOR, 1, True))
+    if walls:
+        wall = min(walls, key=lambda w: (w["mx"] - ox) ** 2 + (w["my"] - oy) ** 2)
+        elbow = (wall["mx"] + wall["nx"] * (r * 0.6), wall["my"] + wall["ny"] * (r * 0.6))
+        # aim at the rim point facing the wall (+ jitter), not a random
+        # point on the ring -- otherwise the pipe can land on the far side
+        # and visually skewer straight through the tank
+        base_a = math.atan2(wall["my"] - oy, wall["mx"] - ox)
+        a = base_a + rng.uniform(-0.3, 0.3)
+        target = (ox + math.cos(a) * r, oy + math.sin(a) * r)
+        prims.append(("polyline", [(wall["mx"], wall["my"]), elbow, target], PIPE_COLOR, 2, False))
+    if rng.random() < 0.5:
+        r2 = r * rng.uniform(0.35, 0.5)
+        a = rng.uniform(0, 2 * math.pi)
+        ox2, oy2 = ox + math.cos(a) * r * 1.6, oy + math.sin(a) * r * 1.6
+        if x0 + r2 < ox2 < x1 - r2 and y0 + r2 < oy2 < y1 - r2:
+            prims.append(("polyline", _ring_local(ox2, oy2, r2, 14), PROP_RIM, 1, True))
+    for _ in range(rng.randint(2, 4)):
+        pcx, pcy = rng.uniform(x0 + 6, x1 - 6), rng.uniform(y0 + 6, y1 - 6)
+        rad = rng.uniform(5, 11)
+        n = rng.randint(6, 8)
+        poly = [(pcx + math.cos(2 * math.pi * i / n + rng.uniform(-0.2, 0.2)) * rad * rng.uniform(0.6, 1.0),
+                 pcy + math.sin(2 * math.pi * i / n + rng.uniform(-0.2, 0.2)) * rad * rng.uniform(0.6, 1.0))
+                for i in range(n)]
+        prims.append(("stain", poly, PUDDLE_COLOR))
+    return prims
+
+
+def _props_lab(rng, verts, walls, x0, y0, x1, y1):
+    """Console blocks (bright screens on dark slabs) along the walls, a
+    specimen table center-adjacent."""
+    prims = []
+    for wall in walls[:3]:
+        for cx, cy, ang in _place_along_wall(wall, 12.0, 6.0, 5.0):
+            prims.append(("poly", _rect_local(cx, cy, 12.0, 7.0, ang), PROP_DARK, PROP_RIM, 1))
+            scr_cx, scr_cy = cx + wall["nx"], cy + wall["ny"]
+            bright = rng.random() < 0.8
+            prims.append(("poly", _rect_local(scr_cx, scr_cy, 6.5, 4.0, ang),
+                          SCREEN_COLOR if bright else SCREEN_DIM, None, 0))
+            if bright:
+                prims.append(("screenglow", scr_cx, scr_cy, 7.0))
+    off = rng.uniform(10, 18)
+    a0 = rng.uniform(0, 2 * math.pi)
+    tcx = (x0 + x1) / 2.0 + math.cos(a0) * off
+    tcy = (y0 + y1) / 2.0 + math.sin(a0) * off
+    prims.append(("poly", _rect_local(tcx, tcy, 16.0, 9.0, rng.uniform(-0.2, 0.2)),
+                  PROP_COLOR, PROP_RIM, 1))
+    prims.append(("dot", (tcx, tcy), PROP_DARK, 2))
+    return prims
+
+
+def _props_quarters(rng, verts, walls, x0, y0, x1, y1):
+    """Cot bays along the walls, each with a pillow and a footlocker."""
+    prims = []
+    for wall in walls[:3]:
+        for cx, cy, ang in _place_along_wall(wall, 16.0, 8.0, 7.0):
+            prims.append(("poly", _rect_local(cx, cy, 16.0, 8.0, ang), PROP_COLOR, PROP_RIM, 1))
+            pcx, pcy = cx + wall["tx"] * 5.5, cy + wall["ty"] * 5.5
+            prims.append(("poly", _rect_local(pcx, pcy, 4.0, 5.5, ang), PROP_RIM, None, 0))
+            lcx = cx - wall["tx"] * 9.5 + wall["nx"] * 1.0
+            lcy = cy - wall["ty"] * 9.5 + wall["ny"] * 1.0
+            prims.append(("poly", _rect_local(lcx, lcy, 5.0, 4.0, ang), PROP_DARK, PROP_RIM, 1))
+    return prims
+
+
+def _props_chapel(rng, verts, walls, x0, y0, x1, y1):
+    """Pew rows facing one wall (the "front"), a dais arc against it."""
+    prims = []
+    if not walls:
+        return prims
+    front = walls[0]
+    pew_half = front["len"] * 0.32
+    for k in range(rng.randint(4, 6)):
+        d = 14.0 + k * 9.0
+        cx = front["mx"] + front["nx"] * d
+        cy = front["my"] + front["ny"] * d
+        a = (cx - front["tx"] * pew_half, cy - front["ty"] * pew_half)
+        b = (cx + front["tx"] * pew_half, cy + front["ty"] * pew_half)
+        prims.append(("line", a, b, PROP_COLOR, 1))
+    dcx, dcy = front["mx"] + front["nx"] * 6.0, front["my"] + front["ny"] * 6.0
+    prims.append(("polyline",
+                  _basis_arc_local(dcx, dcy, pew_half * 0.75, front["tx"], front["ty"],
+                                   front["nx"], front["ny"], -1.0, 1.0, 10),
+                  PROP_RIM, 1, False))
+    return prims
+
+
+def _props_records(rng, verts, walls, x0, y0, x1, y1):
+    """Shelf stacks: long parallel double-lines filling the room in rows."""
+    prims = []
+    w_span, h_span = x1 - x0, y1 - y0
+    horiz = w_span >= h_span
+    n_rows = rng.randint(3, 5)
+    for k in range(n_rows):
+        frac = 0.14 + 0.72 * k / max(1, n_rows - 1)
+        if horiz:
+            ry = y0 + h_span * frac
+            a1, b1 = (x0 + w_span * 0.08, ry), (x1 - w_span * 0.08, ry)
+            a2, b2 = (a1[0], ry + 2.4), (b1[0], ry + 2.4)
+        else:
+            rx = x0 + w_span * frac
+            a1, b1 = (rx, y0 + h_span * 0.08), (rx, y1 - h_span * 0.08)
+            a2, b2 = (rx + 2.4, a1[1]), (rx + 2.4, b1[1])
+        prims.append(("line", a1, b1, PROP_RIM, 1))
+        prims.append(("line", a2, b2, PROP_COLOR, 1))
+    return prims
+
+
+def _props_medbay(rng, verts, walls, x0, y0, x1, y1):
+    """Cots with curtain arcs, a cross-marked cabinet."""
+    prims = []
+    cabinet_done = False
+    for wall in walls[:2]:
+        for cx, cy, ang in _place_along_wall(wall, 15.0, 10.0, 7.5)[:2]:
+            prims.append(("poly", _rect_local(cx, cy, 15.0, 7.5, ang), PROP_COLOR, PROP_RIM, 1))
+            prims.append(("polyline",
+                          _basis_arc_local(cx, cy, 11.0, wall["tx"], wall["ty"],
+                                           wall["nx"], wall["ny"]),
+                          PROP_DARK, 1, False))
+        if not cabinet_done and wall["len"] > 30:
+            cbx = wall["mx"] + wall["nx"] * 6.0 - wall["tx"] * (wall["len"] * 0.32)
+            cby = wall["my"] + wall["ny"] * 6.0 - wall["ty"] * (wall["len"] * 0.32)
+            cab_ang = math.atan2(wall["ty"], wall["tx"])
+            prims.append(("poly", _rect_local(cbx, cby, 7.0, 6.0, cab_ang), PROP_DARK, PROP_RIM, 1))
+            prims.append(("line", (cbx - 2.2, cby), (cbx + 2.2, cby), (200, 90, 90), 1))
+            prims.append(("line", (cbx, cby - 2.2), (cbx, cby + 2.2), (200, 90, 90), 1))
+            cabinet_done = True
+    return prims
+
+
+def _props_core(rng, verts, walls, x0, y0, x1, y1):
+    """Concentric ring inlays, radial conduit spokes, an amber warning ring."""
+    prims = []
+    r_max = min(x1 - x0, y1 - y0) * 0.42
+    n_rings = rng.randint(2, 3)
+    for k in range(n_rings):
+        r = r_max * (0.35 + 0.6 * k / max(1, n_rings - 1))
+        prims.append(("polyline", _ring_local(0.0, 0.0, r, 20), PROP_RIM, 1, True))
+    inner = r_max * 0.3
+    n_spokes = rng.randint(6, 10)
+    for i in range(n_spokes):
+        a = 2 * math.pi * i / n_spokes + rng.uniform(-0.05, 0.05)
+        p0 = (math.cos(a) * inner, math.sin(a) * inner)
+        p1 = (math.cos(a) * r_max * 0.95, math.sin(a) * r_max * 0.95)
+        prims.append(("line", p0, p1, PROP_COLOR, 1))
+    wr = r_max * 1.05
+    prims.append(("polyline", _ring_local(0.0, 0.0, wr, 24), HAZARD_COLOR, 1, True))
+    for i in range(0, 24, 2):
+        a = 2 * math.pi * i / 24
+        ix, iy = math.cos(a) * (wr - 2.5), math.sin(a) * (wr - 2.5)
+        ox, oy = math.cos(a) * (wr + 2.5), math.sin(a) * (wr + 2.5)
+        prims.append(("line", (ix, iy), (ox, oy), HAZARD_COLOR_DIM, 1))
+    return prims
+
+
+def _props_generic(rng, verts, walls, x0, y0, x1, y1):
+    """Untagged room: subtle plates/rivets + grime, toned down from the old
+    always-on abstract-lines-and-dots generator."""
+    prims = []
+    for _ in range(rng.randint(2, 5)):
+        if rng.random() < 0.5:
+            yy = rng.uniform(y0, y1)
+            prims.append(("line", (rng.uniform(x0, x1), yy), (rng.uniform(x0, x1), yy)))
+        else:
+            xx = rng.uniform(x0, x1)
+            prims.append(("line", (xx, rng.uniform(y0, y1)), (xx, rng.uniform(y0, y1))))
+    for _ in range(rng.randint(4, 9)):
+        prims.append(("dot", (rng.uniform(x0, x1), rng.uniform(y0, y1))))
+    for _ in range(rng.randint(1, 2)):
+        cx, cy = rng.uniform(x0, x1), rng.uniform(y0, y1)
+        rad = rng.uniform(5, 13)
+        n = rng.randint(6, 9)
+        poly = [(cx + math.cos(2 * math.pi * i / n + rng.uniform(-0.2, 0.2)) * rad * rng.uniform(0.6, 1.0),
+                 cy + math.sin(2 * math.pi * i / n + rng.uniform(-0.2, 0.2)) * rad * rng.uniform(0.6, 1.0))
+                for i in range(n)]
+        prims.append(("stain", poly))
+    for wall in walls[:4]:
+        inset, margin = 4.0, 6.0
+        if wall["len"] <= 2 * margin + 4:
+            continue
+        a = (wall["p0"][0] + wall["nx"] * inset + wall["tx"] * margin,
+             wall["p0"][1] + wall["ny"] * inset + wall["ty"] * margin)
+        b = (wall["p1"][0] + wall["nx"] * inset - wall["tx"] * margin,
+             wall["p1"][1] + wall["ny"] * inset - wall["ty"] * margin)
+        prims.append(("line", a, b))
+        if rng.random() < 0.7:
+            prims.append(("dot", a))
+            prims.append(("dot", b))
+    return prims
+
+
+_ROOM_PROP_GENERATORS = {
+    "dock": _props_dock,
+    "corridor": _props_corridor,
+    "transit": _props_corridor,
+    "storage": _props_storage,
+    "pump": _props_pump,
+    "lab": _props_lab,
+    "quarters": _props_quarters,
+    "chapel": _props_chapel,
+    "records": _props_records,
+    "medbay": _props_medbay,
+    "core": _props_core,
+    "generic": _props_generic,
+}
+
+
 class Renderer:
     """`Renderer(session).draw(surf, debug=False)` paints one frame.
 
-    `surf` must be a 480x270 pygame.Surface. Immediate-mode: nothing is
+    `surf` must be a 640x360 pygame.Surface. Immediate-mode: nothing is
     retained across frames except the effect pools and the per-room detail
     cache (both intentionally persistent — grime is stable per room, decals
     live in `session.decals`).
@@ -184,6 +669,7 @@ class Renderer:
         self.max_instances = max_instances
 
         self._detail_cache: dict[int, list] = {}
+        self._portal_edges: "dict[int, set[int]] | None" = None
 
         self._gibs: list[dict] = []
         self._sparks: list[dict] = []
@@ -202,6 +688,7 @@ class Renderer:
         self._darkness: "pygame.Surface | None" = None
         self._deferred_glows: list = []
         self._deferred_bolts: list = []
+        self._deferred_screen_glows: list = []
         self._bake_overlays()
 
     # ------------------------------------------------------------------
@@ -227,6 +714,26 @@ class Renderer:
                         aa = a * a
                         s.set_at((xx, yy), (int(235 * aa), int(212 * aa), int(164 * aa)))
             self._glow_cache[r] = s
+
+        # A second, smaller, green-phosphor-tinted glow for lit instruments
+        # (lab consoles, wall terminals) -- a separate palette from the warm
+        # muzzle/lightning glow above so a screen reads as its own light
+        # source, not a gunshot afterimage.
+        screen_sizes = [6, 10, 16]
+        self._screen_glow_sizes = screen_sizes
+        self._screen_glow_cache = {}
+        for r in screen_sizes:
+            d = r * 2 + 4
+            s = pygame.Surface((d, d))
+            cx = cy = d / 2.0
+            for yy in range(d):
+                for xx in range(d):
+                    dist = math.hypot(xx - cx, yy - cy)
+                    if dist <= r:
+                        a = max(0.0, 1.0 - dist / r)
+                        aa = a * a
+                        s.set_at((xx, yy), (int(70 * aa), int(200 * aa), int(150 * aa)))
+            self._screen_glow_cache[r] = s
 
     def _bake_vignette(self):
         w, h = INTERNAL_W, INTERNAL_H
@@ -365,6 +872,7 @@ class Renderer:
         session = self.session
         self._deferred_glows = []
         self._deferred_bolts = []
+        self._deferred_screen_glows = []
         instances = session.visible(self.max_depth, self.max_instances)
         for room, xform, depth, clip_screen, walls, entry_edge, ents in instances:
             if len(clip_screen) < 3:
@@ -381,6 +889,11 @@ class Renderer:
         # light sources punch through the dark: muzzle glows and bolts
         for sx, sy, radius, clip_screen in self._deferred_glows:
             self._blit_glow(surf, sx, sy, radius, clip_screen)
+        # lit instruments (lab consoles, wall terminals) punch through too —
+        # a screen glowing in the dark is exactly what makes a room read as
+        # inhabited/functional rather than merely lit for the player's sake
+        for sx, sy, radius, clip_screen in self._deferred_screen_glows:
+            self._blit_screen_glow(surf, sx, sy, radius, clip_screen)
         for color, pieces, glow in self._deferred_bolts:
             for piece in pieces:
                 pygame.draw.lines(surf, color, False, _pts(piece), 1)
@@ -423,6 +936,27 @@ class Renderer:
 
     # -- (2) room detail --------------------------------------------------
 
+    def _portal_edges_for(self, room: int) -> set:
+        """(room, edge) pairs that are an open connection, a connect_x
+        mirror, or a pending (locked-or-not) door -- computed once for the
+        whole level and cached. Room verts/edge indices come from the same
+        post-doorway-split geometry the engine itself connects, so this
+        lines up exactly with what `necore` considers a portal."""
+        if self._portal_edges is None:
+            level = self.session.level
+            edges: dict[int, set] = {}
+            for a, ea, b, eb in level.connects:
+                edges.setdefault(a, set()).add(ea)
+                edges.setdefault(b, set()).add(eb)
+            for a, ea, b, eb, _m in level.connects_x:
+                edges.setdefault(a, set()).add(ea)
+                edges.setdefault(b, set()).add(eb)
+            for d in level.doors:
+                edges.setdefault(d.a, set()).add(d.ea)
+                edges.setdefault(d.b, set()).add(d.eb)
+            self._portal_edges = edges
+        return self._portal_edges.get(room, set())
+
     def _get_detail(self, room: int):
         cached = self._detail_cache.get(room)
         if cached is not None:
@@ -433,30 +967,14 @@ class Renderer:
         verts = level.room_verts[room]
         seed = level.room_seeds[room] if room < len(level.room_seeds) else room * 7919 + 13
         rng = random.Random(seed)
+        kind = level.room_kinds[room] if room < len(level.room_kinds) else "generic"
         xs = [v[0] for v in verts]
         ys = [v[1] for v in verts]
         x0, x1 = min(xs), max(xs)
         y0, y1 = min(ys), max(ys)
-        prims = []
-        for _ in range(rng.randint(3, 8)):
-            if rng.random() < 0.5:
-                yy = rng.uniform(y0, y1)
-                prims.append(("line", (rng.uniform(x0, x1), yy), (rng.uniform(x0, x1), yy)))
-            else:
-                xx = rng.uniform(x0, x1)
-                prims.append(("line", (xx, rng.uniform(y0, y1)), (xx, rng.uniform(y0, y1))))
-        for _ in range(rng.randint(6, 14)):
-            prims.append(("dot", (rng.uniform(x0, x1), rng.uniform(y0, y1))))
-        for _ in range(rng.randint(1, 2)):
-            cx, cy = rng.uniform(x0, x1), rng.uniform(y0, y1)
-            rad = rng.uniform(6, 16)
-            n = rng.randint(6, 9)
-            poly = []
-            for i in range(n):
-                a = i * 2.0 * math.pi / n + rng.uniform(-0.2, 0.2)
-                r = rad * rng.uniform(0.6, 1.0)
-                poly.append((cx + math.cos(a) * r, cy + math.sin(a) * r))
-            prims.append(("stain", poly))
+        walls = _wall_edges(verts, self._portal_edges_for(room))
+        gen = _ROOM_PROP_GENERATORS.get(kind, _props_generic)
+        prims = gen(rng, verts, walls, x0, y0, x1, y1)
         self._detail_cache[room] = prims
         return prims
 
@@ -466,26 +984,61 @@ class Renderer:
             return
         dim = _floor_dim(depth)
         tint = _room_tint(room)
-        color = _shade(FLOOR_BASE, dim, (tint[0] + 18, tint[1] + 18, tint[2] + 18))
+        default_color = _shade(FLOOR_BASE, dim, (tint[0] + 18, tint[1] + 18, tint[2] + 18))
+        scale = None
         for prim in prims:
             kind = prim[0]
             if kind == "line":
                 (ax, ay), (bx, by) = prim[1], prim[2]
+                color = prim[3] if len(prim) > 3 and prim[3] is not None else default_color
+                width = prim[4] if len(prim) > 4 else 1
                 sx1, sy1 = necore.mat_apply(xform, ax, ay)
                 sx2, sy2 = necore.mat_apply(xform, bx, by)
                 for seg in necore.clip_polyline([(sx1, sy1), (sx2, sy2)], clip_screen):
                     if len(seg) >= 2:
-                        pygame.draw.line(surf, color, _pt(seg[0]), _pt(seg[-1]), 1)
+                        pygame.draw.line(surf, color, _pt(seg[0]), _pt(seg[-1]), width)
             elif kind == "dot":
                 x, y = prim[1]
+                color = prim[2] if len(prim) > 2 and prim[2] is not None else default_color
+                radius = prim[3] if len(prim) > 3 else 1
                 sx, sy = necore.mat_apply(xform, x, y)
                 if _point_in_poly(sx, sy, clip_screen):
-                    pygame.draw.circle(surf, color, _pt((sx, sy)), 1)
+                    pygame.draw.circle(surf, color, _pt((sx, sy)), radius)
             elif kind == "stain":
+                color = prim[2] if len(prim) > 2 and prim[2] is not None else default_color
                 spoly = [necore.mat_apply(xform, x, y) for x, y in prim[1]]
                 clipped = necore.clip_polygon(spoly, clip_screen)
                 if len(clipped) >= 3:
                     pygame.draw.polygon(surf, color, _pts(clipped))
+            elif kind == "poly":
+                # ("poly", local_pts, fill_or_None, outline_or_None, outline_width)
+                _, pts_local, fill, outline, ow = prim
+                spoly = [necore.mat_apply(xform, x, y) for x, y in pts_local]
+                clipped = necore.clip_polygon(spoly, clip_screen)
+                if len(clipped) >= 3:
+                    cpts = _pts(clipped)
+                    if fill is not None:
+                        pygame.draw.polygon(surf, fill, cpts)
+                    if outline is not None and ow > 0:
+                        pygame.draw.polygon(surf, outline, cpts, ow)
+            elif kind == "polyline":
+                # ("polyline", local_pts, color, width, closed)
+                _, pts_local, color, width, closed = prim
+                spts = [necore.mat_apply(xform, x, y) for x, y in pts_local]
+                if closed and spts:
+                    spts = spts + [spts[0]]
+                for seg in necore.clip_polyline(spts, clip_screen):
+                    if len(seg) >= 2:
+                        pygame.draw.lines(surf, color, False, _pts(seg), width)
+            elif kind == "screenglow":
+                # ("screenglow", x, y, radius) -- registered for the
+                # post-darkness punch-through pass, like flashes/bolts
+                _, x, y, radius = prim
+                sx, sy = necore.mat_apply(xform, x, y)
+                if _point_in_poly(sx, sy, clip_screen):
+                    if scale is None:
+                        scale = _xform_scale(xform)
+                    self._deferred_screen_glows.append((sx, sy, radius * scale, clip_screen))
 
     # -- (3) decals -------------------------------------------------------
 
@@ -550,16 +1103,81 @@ class Renderer:
         for t in session.terminals:
             if t["room"] != room:
                 continue
+            self._draw_terminal(surf, room, xform, clip_screen, t)
+
+    def _nearest_wall_point(self, room: int, pos):
+        """Nearest point on a room's wall to `pos` (room-local), for
+        flush-mounting a fixture. Strongly prefers non-portal edges (a
+        console can't hang in a doorway) but falls back to any edge rather
+        than returning nothing, since a level always has *some* wall."""
+        level = self.session.level
+        if room >= len(level.room_verts):
+            return None
+        verts = level.room_verts[room]
+        portals = self._portal_edges_for(room)
+        n = len(verts)
+        px, py = pos
+        best = None
+        best_score = 1e18
+        for i in range(n):
+            x0, y0 = verts[i]
+            x1, y1 = verts[(i + 1) % n]
+            dx, dy = x1 - x0, y1 - y0
+            length2 = dx * dx + dy * dy
+            if length2 < 1e-6:
+                continue
+            t = max(0.08, min(0.92, ((px - x0) * dx + (py - y0) * dy) / length2))
+            cx, cy = x0 + dx * t, y0 + dy * t
+            d = (cx - px) ** 2 + (cy - py) ** 2
+            score = d * (6.0 if i in portals else 1.0)
+            if score < best_score:
+                best_score = score
+                length = math.sqrt(length2)
+                nx, ny = _edge_inward_normal(x0, y0, x1, y1)
+                best = dict(cx=cx, cy=cy, nx=nx, ny=ny, tx=dx / length, ty=dy / length)
+        return best
+
+    def _draw_terminal(self, surf, room, xform, clip_screen, t):
+        """A wall-mounted console slab with an inset phosphor screen
+        (Marathon-style wall terminal), flush against the nearest wall
+        edge -- not a free-standing glyph."""
+        bright = not t["read"]
+        screen_color = (100, 255, 140) if bright else (55, 110, 75)
+        wall = self._nearest_wall_point(room, t["pos"])
+        if wall is None:
+            # degenerate room (no usable edge) -- keep the old free-standing
+            # glyph rather than dropping the terminal entirely
             sx, sy = necore.mat_apply(xform, *t["pos"])
             if not _point_in_poly(sx, sy, clip_screen):
-                continue
-            ix, iy = _pt((sx, sy))
-            bright = not t["read"]
-            color = (100, 255, 140) if bright else (55, 110, 75)
+                return
             rect = pygame.Rect(0, 0, 6, 8)
-            rect.center = (ix, iy)
+            rect.center = _pt((sx, sy))
             pygame.draw.rect(surf, (20, 30, 24), rect)
-            pygame.draw.rect(surf, color, rect, 1)
+            pygame.draw.rect(surf, screen_color, rect, 1)
+            return
+        cx, cy, nx, ny = wall["cx"], wall["cy"], wall["nx"], wall["ny"]
+        ang = math.atan2(wall["ty"], wall["tx"])
+        slab_w, slab_d = 13.0, 6.0
+        slab_pts = _rect_local(cx + nx * slab_d * 0.5, cy + ny * slab_d * 0.5,
+                                slab_w, slab_d, ang)
+        spoly = [necore.mat_apply(xform, x, y) for x, y in slab_pts]
+        clipped = necore.clip_polygon(spoly, clip_screen)
+        if len(clipped) < 3:
+            return
+        cpts = _pts(clipped)
+        pygame.draw.polygon(surf, PROP_DARK, cpts)
+        pygame.draw.polygon(surf, PROP_RIM, cpts, 1)
+        scr_cx, scr_cy = cx + nx * slab_d * 0.62, cy + ny * slab_d * 0.62
+        scr_pts = _rect_local(scr_cx, scr_cy, slab_w * 0.5, slab_d * 0.55, ang)
+        sspoly = [necore.mat_apply(xform, x, y) for x, y in scr_pts]
+        sclipped = necore.clip_polygon(sspoly, clip_screen)
+        if len(sclipped) >= 3:
+            pygame.draw.polygon(surf, screen_color, _pts(sclipped))
+        if bright:
+            ssx, ssy = necore.mat_apply(xform, scr_cx, scr_cy)
+            if _point_in_poly(ssx, ssy, clip_screen):
+                self._deferred_screen_glows.append(
+                    (ssx, ssy, 6.0 * _xform_scale(xform), clip_screen))
 
     # -- (5) walls + doors --------------------------------------------------
 
@@ -752,6 +1370,22 @@ class Renderer:
             return
         best = min(self._glow_sizes, key=lambda r: abs(r - radius))
         img = self._glow_cache[best]
+        iw, ih = img.get_size()
+        dest = (int(sx - iw / 2), int(sy - ih / 2))
+        xs = [p[0] for p in clip_screen]
+        ys = [p[1] for p in clip_screen]
+        clip_rect = pygame.Rect(int(min(xs)), int(min(ys)),
+                                 int(max(xs) - min(xs)) + 1, int(max(ys) - min(ys)) + 1)
+        prev_clip = surf.get_clip()
+        surf.set_clip(clip_rect)
+        surf.blit(img, dest, special_flags=pygame.BLEND_RGB_ADD)
+        surf.set_clip(prev_clip)
+
+    def _blit_screen_glow(self, surf, sx, sy, radius, clip_screen):
+        if radius <= 1:
+            return
+        best = min(self._screen_glow_sizes, key=lambda r: abs(r - radius))
+        img = self._screen_glow_cache[best]
         iw, ih = img.get_size()
         dest = (int(sx - iw / 2), int(sy - ih / 2))
         xs = [p[0] for p in clip_screen]

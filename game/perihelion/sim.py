@@ -644,6 +644,70 @@ class GameSession:
         self.fx.append(("holeopen", room, hx, hy))
         self._shake(3.0)
 
+    def carve_door(self, room: int, near, width: float = 70.0) -> int | None:
+        """Split the wall nearest `near` (room-local) to make a door-width
+        sub-edge; returns its index, or None if no wall has the span."""
+        best = None
+        for e in range(len(self.sim.room_portals(room))):
+            if self.sim.room_portals(room)[e] is not None:
+                continue
+            x1, y1, x2, y2 = self.sim.edge_endpoints(room, e)
+            elen = math.hypot(x2 - x1, y2 - y1)
+            if elen < width + 8.0:
+                continue
+            ux, uy = (x2 - x1) / elen, (y2 - y1) / elen
+            along = (near[0] - x1) * ux + (near[1] - y1) * uy
+            along = max(width / 2 + 3.0, min(elen - width / 2 - 3.0, along))
+            px_, py_ = x1 + ux * along, y1 + uy * along
+            d2 = (px_ - near[0]) ** 2 + (py_ - near[1]) ** 2
+            if best is None or d2 < best[0]:
+                best = (d2, e, along, elen)
+        if best is None:
+            return None
+        _, e, along, elen = best
+        t0 = (along - width / 2) / elen
+        t1 = (along + width / 2) / elen
+        mid = self.sim.split_edge(room, e, t0, t1)
+        self._shift_edge_maps(room, e)
+        return mid
+
+    def append_chunk(self, level) -> int:
+        """Stream another level's rooms into this live world. Returns the
+        room-index offset where the chunk begins. Radio triggers, doors,
+        terminals, and entities all arrive re-indexed."""
+        offset = self.sim.num_rooms()
+        for verts in level.room_verts:
+            self.sim.add_room(verts)
+        for a, ea, b, eb in level.connects:
+            self.sim.connect(a + offset, ea, b + offset, eb)
+        for a, ea, b, eb, m9 in level.connects_x:
+            self.sim.connect_with_xform(a + offset, ea, b + offset, eb, m9)
+        for d in level.doors:
+            rec = dict(a=d.a + offset, ea=d.ea, b=d.b + offset, eb=d.eb,
+                       key=d.key, open=False)
+            self.doors.append(rec)
+            self.door_edges[(rec["a"], rec["ea"])] = d.key
+            self.door_edges[(rec["b"], rec["eb"])] = d.key
+        for t in level.terminals:
+            self.terminals.append(dict(room=t.room + offset, pos=t.pos,
+                                       text=t.text, read=False))
+        for room, spec in level.entities:
+            self._spawn_from_spec(room + offset, spec)
+        for line in level.radio:
+            trig = line.trigger
+            if trig.startswith("enter_room:"):
+                trig = f"enter_room:{int(trig.split(':')[1]) + offset}"
+            elif trig in ("start", "exit") or trig.startswith("kills:"):
+                # chunk-relative triggers get a namespace so chunk N's
+                # 'start' doesn't collide with chunk 0's
+                trig = f"chunk{offset}:{trig}"
+            self.level.radio.append(type(line)(trig, line.text))
+        self.level.room_seeds.extend(level.room_seeds)
+        self.level.room_kinds.extend(level.room_kinds)
+        self.level.room_verts.extend(level.room_verts)
+        self.level.room_centroids.extend(level.room_centroids)
+        return offset
+
     def _shift_edge_maps(self, room: int, edge: int):
         """A split inserted two edges after `edge` in `room`; every python-
         side (room, edge) reference beyond it shifts by 2."""
@@ -1219,6 +1283,8 @@ class GameSession:
                 self._snd("terminal_open", proom, t["pos"])
 
     def _exit_scan(self, proom: int):
+        if not getattr(self, "exit_enabled", True):
+            return
         if self.exit_room < 0 or proom != self.exit_room:
             return
         px, py = self.player_pos()
@@ -1233,8 +1299,18 @@ class GameSession:
                 self.radio_queue.append(text)
                 self.fx.append(("radio", text))
             return
+        gate_rooms = getattr(self, "exit_gate_rooms", None)
+
+        def _gates(eid, e):
+            if e["kind"] != lvl.exit_gate_kind:
+                return False
+            if gate_rooms is None:
+                return True
+            r = self.sim.get_room(eid)
+            return gate_rooms[0] <= r < gate_rooms[1]
+
         if lvl.exit_gate_kind and any(
-                e["kind"] == lvl.exit_gate_kind for e in self.enemies.values()):
+                _gates(eid, e) for eid, e in self.enemies.items()):
             if "exit_gated" not in self._radio_fired:
                 self._radio_fired.add("exit_gated")
                 text = ("Ratio: The way out doesn't answer. Something in "
@@ -1273,6 +1349,22 @@ class GameSession:
                                     float(self.screen_w), float(self.screen_h),
                                     max_depth, max_instances)
 
+    def _gate_count(self) -> int:
+        kind = self.level.exit_gate_kind
+        if not kind:
+            return 0
+        rng = getattr(self, "exit_gate_rooms", None)
+        n = 0
+        for eid, e in self.enemies.items():
+            if e["kind"] != kind:
+                continue
+            if rng is not None:
+                r = self.sim.get_room(eid)
+                if not (rng[0] <= r < rng[1]):
+                    continue
+            n += 1
+        return n
+
     def snapshot(self) -> dict:
         proom = self.player_room()
         px, py = self.player_pos()
@@ -1307,10 +1399,8 @@ class GameSession:
             if self.level.exit_key and self.level.exit_key not in self.keys
             else "",
             exit_gate_kind=self.level.exit_gate_kind,
-            exit_gate_remaining=sum(
-                1 for e in self.enemies.values()
-                if e["kind"] == self.level.exit_gate_kind)
-            if self.level.exit_gate_kind else 0,
+            exit_gate_remaining=self._gate_count(),
+            exit_gate_rooms=getattr(self, "exit_gate_rooms", None),
             door_keys_needed=sorted(
                 {d["key"] for d in self.doors if not d["open"] and d["key"]}
                 - self.keys),

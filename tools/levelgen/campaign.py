@@ -655,12 +655,19 @@ def l09():
     rooms = []
     for i in range(16):
         x, y = (i % 4) * 400, (i // 4) * 400
-        rooms.append(b.rect(x, y, 200, 200, seed=1000 + i))
+        # cut-corner square: one sealed diagonal face per room — the only
+        # solid wall on the deck, an anchor for the eye and the seam the
+        # world can be entered through
+        rooms.append(b.poly([(x, y), (x, y + 200), (x + 100, y + 200),
+                             (x + 200, y + 100), (x + 200, y)],
+                            seed=1000 + i))
+    # dims 0..3 live on edges [0,1,3,4]; edge 2 is the chamfer wall
+    DIM_EDGE = [0, 1, 3, 4]
     for i in range(16):
         for d in range(4):
             j = i ^ (1 << d)
             if i < j:
-                b.connect(rooms[i], d, rooms[j], d)
+                b.connect(rooms[i], DIM_EDGE[d], rooms[j], DIM_EDGE[d])
 
     c15 = center(b, rooms[15])
     c5 = center(b, rooms[5])

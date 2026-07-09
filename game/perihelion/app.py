@@ -129,6 +129,8 @@ class GameScene(menus.Scene):
         self.hud = HUD()
         self.radio = menus.RadioBar()
         self.show_hints = False
+        self.streamer = None  # WorldStreamer in seamless campaign mode
+        self.loc_title: tuple[str, int] | None = None  # (name, ticks_left)
         self.shakes: list[list[float]] = []  # [magnitude, ticks_left]
 
     def on_enter(self, app) -> None:
@@ -173,6 +175,14 @@ class GameScene(menus.Scene):
         self.renderer.draw(surf, debug=app.debug)
         mouse_internal = app.window_to_internal(pygame.mouse.get_pos())
         self.hud.draw(surf, self.session, mouse_internal)
+        if self.loc_title:
+            name, ticks = self.loc_title
+            f = menus.get_font(26)
+            alpha = 255 if ticks > 60 else max(0, int(255 * ticks / 60))
+            img = f.render(name, True, (225, 218, 200))
+            img.set_alpha(alpha)
+            surf.blit(img, (surf.get_width() // 2 - img.get_width() // 2, 26))
+            self.loc_title = (name, ticks - 1) if ticks > 1 else None
         if self.show_hints and self.session.tick_count < 60 * 14 \
                 and not self.session.dead:
             f = menus.get_font(10)
@@ -345,18 +355,47 @@ class App:
 
     def start_new_game(self, plus: bool = False) -> None:
         self.current_level_index = 0
+        state = None
         if plus and self.save_data.get("ng_plus"):
             self.settings["difficulty"] = "hard"
-            self._load_and_play(0, carried_state=self.save_data.get("ng_state"))
-        else:
-            self._load_and_play(0, carried_state=None)
+            state = self.save_data.get("ng_state")
+        self._start_streamed(0, state)
         if self.game is not None and not self.save_data.get("ng_plus"):
             self.game.show_hints = True
 
+    def _start_streamed(self, start_chunk: int, carried_state: dict | None) -> None:
+        from .stream import WorldStreamer
+        paths = self.campaign_levels()
+        if not paths:
+            self._load_and_play(0, carried_state=carried_state)
+            return
+        self.current_level_index = start_chunk
+        level = load_level(REPO_ROOT / paths[start_chunk])
+        game = GameScene(level, self.rng_seed + start_chunk,
+                         player_state=carried_state,
+                         level_path=str(paths[start_chunk]),
+                         difficulty=self.settings.get('difficulty', 'normal'))
+        game.streamer = WorldStreamer(
+            game.session, [str(REPO_ROOT / p) for p in paths],
+            start_chunk=start_chunk)
+
+        def on_entered(chunk_idx, name):
+            self.current_level_index = chunk_idx
+            self.save_data["unlocked"] = max(
+                self.save_data.get("unlocked", 1), chunk_idx + 1)
+            self.save_data.setdefault("states", {})[str(chunk_idx)] = \
+                game.streamer.entry_states[game.streamer.current]
+            self._persist_save()
+
+        game.streamer.on_chunk_entered = on_entered
+        self.game = game
+        self.scenes = [game]
+        game.on_enter(self)
+        self.push(menus.IntroCard(level.name, level.intro, level.tier))
+
     def start_level_index(self, idx: int) -> None:
-        self.current_level_index = idx
         state = self.save_data.get("states", {}).get(str(idx))
-        self._load_and_play(idx, carried_state=state)
+        self._start_streamed(idx, state)
 
     def _load_and_play(self, idx: int, carried_state: dict | None) -> None:
         level, path = self._load_level_by_index(idx)
@@ -369,6 +408,9 @@ class App:
             self.push(menus.IntroCard(level.name, level.intro, level.tier))
 
     def restart_level(self) -> None:
+        if self.game is not None and self.game.streamer is not None:
+            self.game.streamer.respawn()
+            return
         self._load_and_play(self.current_level_index, carried_state=self._level_start_state)
 
     def advance_level(self, carried_state: dict) -> None:
@@ -474,6 +516,8 @@ class App:
         was_dead = game.session.dead
         was_complete = game.session.complete
         game.session.tick(inp)
+        if game.streamer is not None:
+            game.streamer.tick()
         fx = game.session.fx
 
         game.renderer.consume_fx(fx)
@@ -486,7 +530,18 @@ class App:
             elif ev[0] == "radio":
                 game.radio.push(ev[1])
             elif ev[0] == "terminal":
-                self.push(menus.TerminalOverlay(ev[1]))
+                if ev[1].startswith("__CONV__"):
+                    from .conversations import CONVERSATIONS
+                    from .convscene import ConversationScene
+                    conv = CONVERSATIONS.get(int(ev[1][8:]))
+                    if conv:
+                        self.push(ConversationScene(conv))
+                else:
+                    self.push(menus.TerminalOverlay(ev[1]))
+            elif ev[0] == "locname":
+                game.loc_title = (ev[1], 60 * 4)
+            elif ev[0] == "ambience":
+                self.audio.ambience(ev[1])
             elif ev[0] == "weapon":
                 names = {"cloister": "THE CLOISTER", "hole": "PORTABLE HOLE",
                          "lightning": "LIGHTNING IMPLANT"}
@@ -513,6 +568,16 @@ class App:
                            holes=game.session.holes,
                            cloister=game.session.cloister is not None,
                             weapons=list(game.session.weapons), weapon=game.session.weapon)
+            if game.streamer is not None:
+                self.save_data["ng_plus"] = self.save_data.get("ng_plus", 0) + 1
+                self.save_data["ng_state"] = carried
+                self._persist_save()
+                self.replace(menus.WinScene(
+                    EPILOGUE_TEXT +
+                    "\n\nTHE WATCH CONTINUES.\n"
+                    "New Game+ unlocked: the loop begins again,\n"
+                    "harder, with everything you carry."))
+                return
             self.advance_level(carried)
 
     # ------------------------------------------------------------------
