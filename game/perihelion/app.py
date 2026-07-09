@@ -439,6 +439,11 @@ class App:
                 game.radio.push(ev[1])
             elif ev[0] == "terminal":
                 self.push(menus.TerminalOverlay(ev[1]))
+            elif ev[0] == "weapon":
+                names = {"cloister": "THE CLOISTER", "hole": "PORTABLE HOLE",
+                         "lightning": "LIGHTNING IMPLANT"}
+                label = names.get(ev[1], ev[1].upper())
+                game.radio.push(f"SUIT: acquired {label}.")
         game.shakes = [[m * 0.82, t - 1] for m, t in game.shakes if t > 1 and m > 0.05]
         game.radio.update(self)
 
