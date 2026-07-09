@@ -8,6 +8,8 @@ more than light. The game never tells you. You find out.
 
 Ten-level campaign. Cosmic horror on the radio. Every shot counts.
 
+![the records stack has no end](media/infinite_aisle.gif)
+
 ## Running
 
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and a Rust toolchain
