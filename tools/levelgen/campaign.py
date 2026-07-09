@@ -123,6 +123,21 @@ def l01():
                "WORK ORDER 7731\nGrid fault, storage ring north.\n"
                "Tech note: ring walk takes 41s. Spec says 33s.\n"
                "Re-timed twice. Logged as clock drift.")
+    b.terminal(dock, (60, 40),
+               "CARGO LOG, DOCK 4\n"
+               "In: 6x coolant drums, 1x crate PERSONAL (Osei),\n"
+               "40x ration packs, 2x replacement grid sensors.\n"
+               "Out: nothing scheduled until perihelion.\n"
+               "Note: someone keeps moving the mop.")
+    b.terminal(ring_sw, (470, 250),
+               "SHIFT NOTE, STORAGE\n"
+               "Vending unit in SW segment eats chits again.\n"
+               "Filed a ticket. Ticket auto-closed: unit is\n"
+               "not on the parts registry for this ring.\n"
+               "It dispenses fine. Leaving it alone.")
+    b.radio(f"enter_room:{ring_w}", "Ratio: West segment. Motion grid says "
+                                    "you're the only thing moving in there. "
+                                    "It has said that before, and been wrong.")
     squad(b, ring_sw, "husk")
     squad(b, ring_w, "husk husk")
     squad(b, phantom, "husk husk")
@@ -181,6 +196,15 @@ def l02():
                "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\n"
                "Counted five hatches going. Counted six coming back.\n"
                "Recommend rest rotation for Osei.")
+    b.radio(f"enter_room:{keyroom}", "Ratio: That's the filter room. The "
+                                     "things nesting in it used to be my "
+                                     "cleaning swarm. Mind the floor.")
+    b.terminal(tail, (800, 70),
+               "MAINT TICKET 4471\n"
+               "Coolant flow, east tail: 210 l/min rated,\n"
+               "212 measured, 209 after the bend.\n"
+               "Where do three liters a minute GO?\n"
+               "Status: closed. Reason: rounding.")
     squad(b, row, "mite mite mite mite")
     squad(b, pump_a, "husk mite mite")
     squad(b, pump_b, "husk husk")
@@ -249,6 +273,16 @@ def l03():
                "Four months of careful science, inverted overnight\n"
                "by three words. We cut the aperture Tuesday.\n"
                "God help whoever reads this log in order.")
+    b.terminal(ring[4], tuple(arc_mid(0, 0, 250, math.radians(35))),
+               "FEEDER SCHEDULE, SECTOR 5\n"
+               "0400 nutrient, 0900 mist, 1400 nutrient,\n"
+               "1900 mist, 0000 dark cycle.\n"
+               "The dying trays spiral inward, sunwise.\n"
+               "The healthy trays spiral the other way.\n"
+               "Botany says plants do not have a 'way'.")
+    b.radio(f"enter_room:{ring[1]}", "Ratio: Feeder pressure is nominal in "
+                                     "sector two. First nominal reading I've "
+                                     "had all month. Enjoy it.")
     squad(b, ring[1], "husk husk")
     squad(b, ring[2], "mite mite mite husk")
     squad(b, ring[4], "spitter husk")

@@ -464,6 +464,10 @@
     "text": "Ratio: ...Your beacon just left my deck plan. That was not me. Noted, Commando: it happens to you too."
    },
    {
+    "trigger": "enter_room:10",
+    "text": "Ratio: West segment. Motion grid says you're the only thing moving in there. It has said that before, and been wrong."
+   },
+   {
     "trigger": "exit",
     "text": "Ratio: You cleared my ring and stole nothing that was mine. Provisional finding: talking was correct. There is worse below. Retainer terms to follow."
    }
@@ -476,6 +480,22 @@
      130
     ],
     "text": "WORK ORDER 7731\nGrid fault, storage ring north.\nTech note: ring walk takes 41s. Spec says 33s.\nRe-timed twice. Logged as clock drift."
+   },
+   {
+    "room": 0,
+    "pos": [
+     60,
+     40
+    ],
+    "text": "CARGO LOG, DOCK 4\nIn: 6x coolant drums, 1x crate PERSONAL (Osei),\n40x ration packs, 2x replacement grid sensors.\nOut: nothing scheduled until perihelion.\nNote: someone keeps moving the mop."
+   },
+   {
+    "room": 9,
+    "pos": [
+     470,
+     250
+    ],
+    "text": "SHIFT NOTE, STORAGE\nVending unit in SW segment eats chits again.\nFiled a ticket. Ticket auto-closed: unit is\nnot on the parts registry for this ring.\nIt dispenses fine. Leaving it alone."
    }
   ]
  }

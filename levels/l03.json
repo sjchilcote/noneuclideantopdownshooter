@@ -431,6 +431,10 @@
     "text": "Ratio: Hold on. Your suit gyro says you're facing spinward. You entered anti-spinward. Say something so I know you're you."
    },
    {
+    "trigger": "enter_room:1",
+    "text": "Ratio: Feeder pressure is nominal in sector two. First nominal reading I've had all month. Enjoy it."
+   },
+   {
     "trigger": "pickup:blue",
     "text": "Ratio: Blue seal, from the end cap. The garden airlock takes it. Back the way you came \u2014 or, apparently, straight ahead. Both work. Neither should."
    },
@@ -467,6 +471,14 @@
      -176.77669529663686
     ],
     "text": "DIRECTIVE 0007 \u2014 MIRIAD PRIME\nRE: survey of gravitational anomaly, Site One\n\nRETRIEVAL SUPERSEDES SURVEY.\n\n[appended, local, unsigned]\nFour months of careful science, inverted overnight\nby three words. We cut the aperture Tuesday.\nGod help whoever reads this log in order."
+   },
+   {
+    "room": 4,
+    "pos": [
+     204.78801107224794,
+     143.3941090877615
+    ],
+    "text": "FEEDER SCHEDULE, SECTOR 5\n0400 nutrient, 0900 mist, 1400 nutrient,\n1900 mist, 0000 dark cycle.\nThe dying trays spiral inward, sunwise.\nThe healthy trays spiral the other way.\nBotany says plants do not have a 'way'."
    }
   ]
  }

@@ -482,6 +482,10 @@
     "text": "Ratio: If you're going to loot my pump bays anyway, bay two holds sealed supplies. Consider it a retainer. I want to know what you see down there."
    },
    {
+    "trigger": "enter_room:6",
+    "text": "Ratio: That's the filter room. The things nesting in it used to be my cleaning swarm. Mind the floor."
+   },
+   {
     "trigger": "exit",
     "text": "Ratio: Row's clear. The count in Osei's log... forget it. Clock drift."
    }
@@ -494,6 +498,14 @@
      -60
     ],
     "text": "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\nCounted five hatches going. Counted six coming back.\nRecommend rest rotation for Osei."
+   },
+   {
+    "room": 4,
+    "pos": [
+     800,
+     70
+    ],
+    "text": "MAINT TICKET 4471\nCoolant flow, east tail: 210 l/min rated,\n212 measured, 209 after the bend.\nWhere do three liters a minute GO?\nStatus: closed. Reason: rounding."
    }
   ]
  }
