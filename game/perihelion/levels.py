@@ -110,8 +110,8 @@ def level_from_dict(data: dict) -> Level:
         raise ValueError(f"level version {data.get('version')} != {LEVEL_VERSION}")
     room_verts: list[list[tuple[float, float]]] = []
     room_centroids: list[tuple[float, float]] = []
-    room_seeds: list[int]
-    room_kinds: list[str]  # function tags: dock, corridor, storage, lab, quarters, chapel, core, generic... = []
+    room_seeds: list[int] = []
+    room_kinds: list[str] = []
     entities: list[tuple[int, EntitySpec]] = []
 
     for ri, room in enumerate(data["rooms"]):

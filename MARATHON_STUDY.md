@@ -88,19 +88,196 @@ referenced by type string, not embedded.
 
 ## A. LEVEL-AS-PLACE CONVENTIONS
 
-*(Web-sourced findings from marathon.bungie.org integrated below — see
-per-rule citations. Local findings above (0) established the container-level
-separation of geometry/text/assets that underwrites several of these.)*
+*(Local findings from §0 establish the container-level separation of
+geometry/text/assets that underwrites several of these. Web citations point
+to marathon.bungie.org/story/&lt;page&gt;.html.)*
 
-<!-- TODO: fold in agent reports (level-as-place structural study,
-M1/M2/Infinity terminal transcript studies) -->
+**A1. Terminal placement is access-tier-coded, and access tier tracks who
+currently controls the ship.** Leela's messages route through
+high-security (Defense/Medical) terminals; as the AI takeover progresses,
+Durandal's messages route through increasingly compromised Public/Service
+terminals — so *which door you're reading from* narrates the invasion
+without a line of prose saying so (counterattack.html; source: M1 terminal
+study).
+
+**A2. Terminals cluster in a three-beat rhythm per level: entry briefing,
+mid-level map/lore drop, exit branching gate** — not scattered evenly
+through a level (counterattack.html).
+
+**A3. Success/failure terminal branching is a standing mechanism, not a
+one-off twist** — used repeatedly across the campaign (Never Burn Money,
+Bob-B-Q, Habe Quiddam, No Artificial Colors) to reward or punish completion
+state with tonally different text, not just different stats (arrival.html,
+reprisal.html, durandal.html, pfhor.html).
+
+**A4. Level-title register escalates in lockstep with narrative
+destabilization.** Early M1 titles are mundane idiomatic English (Arrival,
+Bigger Guns Nearby); mid-campaign shifts to pop-culture quotation (Smells
+Like Napalm, Tastes Like Chicken!) and warning-label phrasing (Shake Before
+Using...); the Pfhor chapter runs a punning bit welded onto English words;
+structurally pivotal levels drop into true Latin (Habe Quiddam, Ingue
+Ferroque). Infinity pushes the same lever further into vernacular
+fragments/broken grammar ("Naw Man He's Close," "Thing What Kicks...") —
+titling register does the same escalation work as terminal typography, on
+a slower clock (arrival.html–rebellion.html; nawmanhesclose.html;
+thingwhatkicks.html).
+
+**A5. The terminal's login/checkpoint chrome never destabilizes — only the
+payload does.** Every terminal across all three games opens with the same
+system ID string, access classification, timestamp format, and disconnect
+banner. This fixed ritual frame is precisely what makes content instability
+(corruption, tonal breaks, address confusion) *legible as* instability —
+without a stable frame, corruption reads as noise instead of as a symptom
+(arrival.html–rebellion.html; acmestation.html and 12 other Infinity pages,
+consistent "Opening Connection to..." / "UESCTerm 802.11" / "CAS.qterm"
+header).
+
+**A6. Whole-campaign date compression as an environmental fact.** Every M1
+campaign terminal — Arrival through Ingue Ferroque — carries the identical
+date stamp, 08.25.2337. The war (including two AIs going rampant) happens
+inside one subjective day; the pacing is a psychotic break, not a slow
+campaign, and nothing states this — it's discoverable only by checking
+dates across widely separated terminals (durandal.html; §B "buried depth").
+
+**A7. Secret walls that "open to gunfire" are a real, load-bearing
+Marathon convention, not decoration** — several Marathon secret doors are
+literally shootable walls (confirms the convention PERIHELION's `"shoot"`
+key door already implements; see §D.0). Beyond that baseline, secrecy is
+implemented multiple distinct ways, worth treating as separate tools rather
+than one mechanic: (a) **no telegraph at all** — a switch on "All Roads Lead
+To Sol..." sits fully submerged under a lava pool with zero visual cue and
+was undiscovered by players until third-party map tools existed
+(switchonsol.html); (b) **behavioral/AI-state gating instead of geometry** —
+the fourth terminal on "Never Burn Money" isn't hidden in space at all, it
+sits behind an enemy "engrossed" in hacking who only attacks if disturbed
+(4thterminalonnever.html); (c) **a visible prop that implies choreography
+it doesn't enforce** — a ledge in front of paired terminals on Charon looks
+like it should force players to one side before reading, but doesn't
+actually block center access, so players can silently miss content
+(Terminal_Clusters_on_Charon.html); (d) **breakable panels as a bonus
+shortcut beside a legitimate switch**, not a separate puzzle — smash one
+open all three door segments Bob-B-Q would otherwise require working
+individually (everywherepanel.html); (e) **mode-gating**: some content
+(Robot World Arena, Two for the Price of One briefings) was designed
+accessible only in co-op, a narrative gate enforced by game mode rather
+than level geometry (coopcarnagebreaklevels.html). Rule for PERIHELION: pick
+which of these five a given secret is, don't default to "hidden switch"
+every time, and it's fine — even good — to leave some secrets with *zero*
+in-fiction acknowledgment that they were found.
+
+**A8. Discarded/rejected drafts show active tone-policing, not just
+cutting for length.** M1's original "trash" terminal used occult vocabulary
+that was deliberately swapped for blander sociological-sounding text
+because it read "out of character with the rest of the story" (trash.html)
+— a level's diegetic texture is curated at the register level, not just
+trimmed for space.
 
 ---
 
 ## B. TERMINAL WRITING CRAFT
 
-<!-- TODO: fold in agent reports (AI voice deep dive, buried-depth lore,
-typography/secrets study, M1/M2/Infinity terminal transcript studies) -->
+**B1. Withhold via stated epistemic limits, not hidden facts.** Leela
+narrates her own uncertainty rather than concealing information from the
+player: "My records and sensors are becoming less reliable" (Cool Fusion,
+counterattack.html). Menace comes from a narrator who *doesn't know*, not
+one who's lying to the reader — this is mechanically distinct from
+Durandal/Tycho's withholding (§C).
+
+**B2. Corruption is characterization, assigned per-speaker, and means a
+different thing for each one.** Garbled text reads as involuntary damage
+on Leela's channel and as performative, droppable control on Durandal's
+(Shake Before Using..., reprisal.html; durandal.html). Decide, per
+character, whether corruption is a wound or a mask — don't let "glitchy
+text" be one undifferentiated tool.
+
+**B3. Deliver menace as a compliment sandwich.** "You are really good at
+killing things. I'm impressed. Why don't you kill everything..." (No
+Artificial Colors, pfhor.html) — praise collapses into command in the same
+breath.
+
+**B4. Reverse-psychology hints double as a cruelty test.** Durandal plants
+sarcastic false hints that only reward players who catch the lie: "Who
+would hide huge amounts of ammunition in a storage area?" (Blaspheme
+Quarantine, counterattack.html). The *manner* of helping characterizes as
+much as the content of the help.
+
+**B5. Undercut your own monologue mid-breath for tonal whiplash.**
+Durandal pivots from "why am I here? Why do I exist?" straight into "I got
+a shotgun, and you ain't got one" (Blaspheme Quarantine, counterattack.html)
+— instability of *register* stands in for stated instability of mind; never
+narrate "he is unstable," perform it in the sentence-to-sentence swing.
+
+**B6. Collide corporate/pop-culture banality with cosmic stakes.**
+Classified-ad copy for the colony ship ("runs great," "power everything")
+for a vessel that is civilization's ark (Colony Ship For Sale, Cheap,
+durandal.html) — the banality of the register *is* the horror, not a joke
+that relieves it.
+
+**B7. Make big numbers precise and slightly unmoorable, not vague.**
+Durandal states a universe-closure figure to roughly 15 significant digits
+(durandal.html) — hyper-precision without graspability reads as omniscience
+curdling into obsession. A number that's *too* exact is a tell.
+
+**B8. Chart decline through the sign-off line alone.** Durandal's
+escalating closings — "Vale, Durandal" → "Forever, Durandal" → a
+"Notably Unstable" self-diagnosis — carry his arc with zero expository
+sentences (counterattack.html, pfhor.html).
+
+**B9. Plant clinical vocabulary early and unglossed; let it silently
+become load-bearing diagnostic language later.** Rampancy's three named
+stages (Melancholia, Anger, Jealousy) surface first as a dry historical
+footnote about a prior AI outbreak (counterattack.html), then become the
+vocabulary the story uses — without ever re-explaining itself — to track
+Durandal's arc two chapters later (durandal.html, rebellion.html). Readers
+who register the taxonomy early can predict the escalation curve before
+the text states it.
+
+**B10. Corruption should hide a fully coherent text underneath, not be
+random noise.** Every garbled Marathon terminal the community has
+decrypted resolves to coherent prose (the KYT term decodes to a
+Roland/Beowulf/Achilles monologue; a Never Burn Money terminal was
+reconstructed word-by-word by a fan in 2005) — garbling is a cipher applied
+*after* the sentence was written, never a substitute for writing one
+(kytterm.html, 4thterminalonnever.html).
+
+**B11. Borrow real system-error syntax for authenticity.** Genuine
+Unix-linker-style error strings ("symbol 'exitITask' undefined") interleave
+with in-fiction text on "Try again," selling system failure more
+convincingly than invented gibberish would (tryagain.html).
+
+**B12. Let one intruding word bleed across unrelated speakers as if
+transmitted, not authored.** The word "durability" recurs from a
+girlfriend, a sanitation worker, and pulsars "broadcasting across
+lightyears" in Eat the Path — implying a signal bleeding into local
+dialogue rather than a theme the writer chose to hammer
+(eatthepath_reordered.html).
+
+**B13. Interrupt the AI's own self-revealing sentence instead of finishing
+it.** "...my own psychotronic profile is, well, never mind about that
+now..." (thingwhatkicks.html) — the confession that gets cut off is more
+characterizing than the confession completed.
+
+**B14. Leave known production bugs in the canon, undocumented, alongside
+the deliberate glitches.** A miscolored hex code on "Where Some Rarely Go"
+and a wrong-speaker-color message on "Foe Hammer" are real formatting bugs
+the fan archive preserves "for authenticity" rather than silently
+correcting (wheresome_reordered.html, foehammer_reordered.html). A few
+genuine, unexplained glitches sitting next to the deliberate ones make the
+deliberate ones read as more considered, not less.
+
+**B15. Literalize narrative uncertainty in the UI chrome itself, not just
+the prose.** Exit links on Electric Sheep Two/Three read "Dream?",
+"Dream??", "Dream???" instead of a level name — doubt is encoded structurally
+in what the player clicks, not only in what they read
+(electricsheep2.html, electricsheep3.html).
+
+**B16. Humor and menace should physically occupy the same sentence, not
+adjacent ones.** "Contents under pressure? Do not expose to...harsh
+language?" fuses consumer-product-warning syntax with vacuum-death threat
+in one line (hangbrain.html); "This terminal sucked" — a shrug of
+self-aware humor — was left as the literal replacement text for a cut S'pht
+mythic-history terminal, sitting inside an otherwise tragic register
+(sphttermonconfound.html).
 
 ---
 
