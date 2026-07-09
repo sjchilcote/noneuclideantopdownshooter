@@ -737,6 +737,8 @@ def l10():
     sanctum = b.ngon(1600, 180, 157, 8, phase=math.radians(22.5), seed=3000)
 
     # hex edges 0/1/3/4 belong to the Cayley wiring; edge 2 (up-left) is free
+    alcove = b.rect(1240, 560, 120, 100)   # the first watcher's post
+    b.door_pts(hexes[1], (812, 90), alcove, (1300, 560), "shoot")
     b.connect_pts(airlock, (160, 70), hexes[0], (348, -90))
     # sanctum behind the void seal, off hex 3's remaining edge (2)
     b.door(a=hexes[3], ea=2, b=sanctum, eb=4, key="void")
@@ -772,6 +774,13 @@ def l10():
                "The sentence is an offer.]\n\n"
                "GUARD / ACCEPT / KNEEL / BURN\n\n"
                "[You think of Ratio. You guard.]")
+    b.terminal(alcove, (1300, 620),
+               "[TRANSLATION CONFIDENCE 22%]\n"
+               "this alcove held the first watcher.\n"
+               "it stood here four hundred / thousand /\n"
+               "[number does not translate] years.\n"
+               "it is permitted to sit.")
+    cache(b, alcove, "medkit ammo_cell")
     squad(b, hexes[1], "husk husk husk")
     squad(b, hexes[2], "spitter brute")
     squad(b, hexes[4], "brute mite")

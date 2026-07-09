@@ -447,6 +447,42 @@
     }
    ],
    "detail_seed": 3000
+  },
+  {
+   "verts": [
+    [
+     1240,
+     560
+    ],
+    [
+     1240,
+     660
+    ],
+    [
+     1360,
+     660
+    ],
+    [
+     1360,
+     560
+    ]
+   ],
+   "entities": [
+    {
+     "type": "medkit",
+     "pos": [
+      1285.0,
+      610.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      1300.0,
+      610.0
+     ]
+    }
+   ]
   }
  ],
  "connects": [
@@ -537,6 +573,13 @@
    "b": 7,
    "eb": 4,
    "key": "void"
+  },
+  {
+   "a": 2,
+   "ea": 5,
+   "b": 8,
+   "eb": 3,
+   "key": "shoot"
   }
  ],
  "player": {
@@ -602,6 +645,14 @@
      260
     ],
     "text": "[The door beneath the vault does not\nspeak in words. It rearranges the room\nuntil the room is a sentence.\nThe sentence is an offer.]\n\nGUARD / ACCEPT / KNEEL / BURN\n\n[You think of Ratio. You guard.]"
+   },
+   {
+    "room": 8,
+    "pos": [
+     1300,
+     620
+    ],
+    "text": "[TRANSLATION CONFIDENCE 22%]\nthis alcove held the first watcher.\nit stood here four hundred / thousand /\n[number does not translate] years.\nit is permitted to sit."
    }
   ]
  },
