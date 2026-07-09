@@ -29,7 +29,7 @@ class HUD:
         if getattr(session.level, "vigil", False):
             img = _font(11).render(f"WAVE {session.metrics.get('wave', 0)}",
                                    True, (200, 190, 170))
-            surf.blit(img, (6, 6))
+            surf.blit(img, (6, 24))
         self._draw_hp(surf, session, h)
         self._draw_weapon(surf, session, w, h)
         self._draw_keys(surf, session, w)
@@ -37,8 +37,10 @@ class HUD:
             self._draw_crosshair(surf, session, mouse_pos)
 
     def _draw_hp(self, surf, session, h):
+        # top-left: the RadioBar owns the bottom 40px whenever dialogue is
+        # up, which is most of the campaign — health must never sit under it
         bar_w, bar_h = 70, 5
-        x, y = 6, h - 14
+        x, y = 6, 12
         low = session.hp < 35 and not session.dead
         pulse = 0.5 + 0.5 * math.sin(session.tick_count * 0.35) if low else 1.0
         color = (int(190 * pulse) + 40, 40, 40) if low else (235, 235, 235)
@@ -47,7 +49,7 @@ class HUD:
         pygame.draw.rect(surf, color, (x, y, int(bar_w * frac), bar_h))
         pygame.draw.rect(surf, (90, 90, 90), (x, y, bar_w, bar_h), 1)
         img = _font(11).render(f"{max(0, int(session.hp))}", True, color)
-        surf.blit(img, (x, y - 12))
+        surf.blit(img, (x + bar_w + 6, y - 6))
 
     def _draw_weapon(self, surf, session, w, h):
         name = session.weapon

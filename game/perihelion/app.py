@@ -538,7 +538,10 @@ class App:
                 # soaks must test gameplay, not a press-any-key card
                 if not isinstance(top, GameScene):
                     self._autoplay_wait = getattr(self, "_autoplay_wait", 0) + 1
-                    if self._autoplay_wait > 90:
+                    # intro cards typewrite their text; give them time to
+                    # finish before dismissing or recordings cut mid-sentence
+                    dwell = 360 if type(top).__name__ == "IntroCard" else 90
+                    if self._autoplay_wait > dwell:
                         self._autoplay_wait = 0
                         top.handle_event(self, pygame.event.Event(
                             pygame.KEYDOWN, key=pygame.K_SPACE, unicode=" "))

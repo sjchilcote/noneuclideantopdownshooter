@@ -447,7 +447,7 @@ class DeathScene(Scene):
     def handle_event(self, app, event) -> None:
         if event.type != pygame.KEYDOWN:
             return
-        if event.key == pygame.K_r:
+        if event.key in (pygame.K_r, pygame.K_SPACE, pygame.K_RETURN):
             app.pop()
             app.restart_level()
         elif event.key == pygame.K_ESCAPE:
@@ -472,7 +472,7 @@ class DeathScene(Scene):
                            f"   (best: {self.best_wave})")
         img2 = mf.render(deaths_text, True, (190, 150, 150))
         surf.blit(img2, (w // 2 - img2.get_width() // 2, 140))
-        img3 = mf.render("R: retry level    ESC: title", True, (170, 130, 130))
+        img3 = mf.render("SPACE: rise again    ESC: title", True, (170, 130, 130))
         surf.blit(img3, (w // 2 - img3.get_width() // 2, 160))
         log = COMMANDO_LOGS[min(self.deaths - 1, len(COMMANDO_LOGS) - 1)] \
             if self.deaths >= 1 else COMMANDO_LOGS[0]
@@ -608,6 +608,8 @@ class RadioBar:
                 self.lines = wrapped[:2]
                 rest = " ".join(wrapped[2:])
                 self.queue.appendleft("..." + rest)
+                # mark the break, or the page reads as an abandoned sentence
+                self.lines[-1] += " ..."
                 self.current = " ".join(self.lines)
             else:
                 self.lines = wrapped
