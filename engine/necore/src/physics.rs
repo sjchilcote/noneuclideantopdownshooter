@@ -344,7 +344,32 @@ impl Sim {
                 let new_dir = inv.apply_dir(e.dir).normalized();
                 // Nudge decisively into the new interior.
                 let n_child = self.world.rooms[new_room].normals[portal.target_edge];
-                let new_pos = new_pos + n_child * TRANSFER_NUDGE;
+                let mut new_pos = new_pos + n_child * TRANSFER_NUDGE;
+                // A crowd-shoved entity can cross from a position already
+                // past the portal plane (t clamps to 0 and cross_pt IS the
+                // outside position); mapping it raw deposits the entity
+                // outside the target interior, where near-parallel motion
+                // never re-triggers wall resolution and it drifts free.
+                // Clamp into the target polygon: convex, so pushing off
+                // each violated half-plane (twice, for corners) suffices.
+                {
+                    let target_ref = &self.world.rooms[new_room];
+                    for _ in 0..2 {
+                        for i in 0..target_ref.verts.len() {
+                            let (a, _b) = target_ref.edge(i);
+                            let n = target_ref.normals[i];
+                            let d = (new_pos - a).dot(n);
+                            let min_d = if target_ref.portals[i].is_some() {
+                                0.0
+                            } else {
+                                (e.radius * 0.5).min(target_ref.edge_len[i] * 0.25)
+                            };
+                            if d < min_d {
+                                new_pos = new_pos + n * (min_d - d);
+                            }
+                        }
+                    }
+                }
                 let from = e.room;
                 {
                     let list = &mut self.world.rooms[from].entities;
@@ -518,6 +543,38 @@ mod tests {
         // rest_wall = 0: velocity into the wall is absorbed, tangential kept.
         let e = &sim.entities[&id];
         assert!(e.vel.x.abs() < 1e-6, "normal component not absorbed: {:?}", e.vel);
+    }
+
+    #[test]
+    fn transfer_from_shoved_outside_position_lands_inside_target() {
+        // A crowded fight can press an entity past the portal plane before
+        // the crossing is detected (t clamps to 0). The transfer must still
+        // deposit it INSIDE the target polygon, or it drifts unreachable
+        // (found by a 1,900-campaign soak: a fleeing shrieker escaped this
+        // way and wedged the run).
+        let (mut sim, a, b) = two_room_world();
+        let id = sim.spawn(a, v(30.0, 5.0), 6.0, 1.0, 0).unwrap();
+        // simulate the shove: already 12u past room a's east portal plane
+        sim.entities.get_mut(&id).unwrap().pos = v(62.0, 5.0);
+        sim.entities.get_mut(&id).unwrap().vel = v(80.0, 3.0);
+        let mut transferred = false;
+        for _ in 0..30 {
+            for ev in sim.step(1.0 / 60.0) {
+                if let Event::Transfer { ent, to, .. } = ev {
+                    assert_eq!(ent, id);
+                    assert_eq!(to, b);
+                    transferred = true;
+                }
+            }
+            let e = &sim.entities[&id];
+            assert!(
+                geom::depth_in_polygon(e.pos, &sim.world.rooms[e.room].verts) >= -1e-6,
+                "outside room {:?} at {:?}",
+                e.room,
+                e.pos
+            );
+        }
+        assert!(transferred, "never transferred");
     }
 
     #[test]
