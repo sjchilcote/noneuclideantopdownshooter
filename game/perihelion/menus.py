@@ -127,6 +127,7 @@ class TitleScene(Scene):
 
     def on_enter(self, app) -> None:
         self.t = 0.0
+        app.audio.ambience("amb_drone_early")  # the station is never silent
         if app.save_data.get("ng_plus") and "New Game+" not in self.items:
             self.items.insert(1, "New Game+")
         best = app.save_data.get("best_wave", 0)
