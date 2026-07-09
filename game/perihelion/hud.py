@@ -44,11 +44,15 @@ class HUD:
         low = session.hp < 35 and not session.dead
         pulse = 0.5 + 0.5 * math.sin(session.tick_count * 0.35) if low else 1.0
         color = (int(190 * pulse) + 40, 40, 40) if low else (235, 235, 235)
+        # backing plate: combat debris/glyphs behind the corner otherwise
+        # render right through the digits
+        img = _font(11).render(f"{max(0, int(session.hp))}", True, color)
+        plate_w = bar_w + 12 + img.get_width()
+        pygame.draw.rect(surf, (12, 12, 16), (x - 3, y - 8, plate_w, 18))
         pygame.draw.rect(surf, (40, 40, 40), (x, y, bar_w, bar_h))
         frac = max(0.0, min(1.0, session.hp / PLAYER_HP))
         pygame.draw.rect(surf, color, (x, y, int(bar_w * frac), bar_h))
         pygame.draw.rect(surf, (90, 90, 90), (x, y, bar_w, bar_h), 1)
-        img = _font(11).render(f"{max(0, int(session.hp))}", True, color)
         surf.blit(img, (x + bar_w + 6, y - 6))
 
     def _draw_weapon(self, surf, session, w, h):
