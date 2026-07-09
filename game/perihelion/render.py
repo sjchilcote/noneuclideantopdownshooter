@@ -549,6 +549,23 @@ class Renderer:
                 continue
             sx1, sy1 = necore.mat_apply(xform, x1, y1)
             sx2, sy2 = necore.mat_apply(xform, x2, y2)
+            if key == "shoot":
+                # a secret is a wall that keeps its secret: ordinary wall
+                # color, one hairline fissure off-center
+                for seg in necore.clip_polyline([(sx1, sy1), (sx2, sy2)],
+                                                clip_screen):
+                    if len(seg) < 2:
+                        continue
+                    a, b = seg[0], seg[-1]
+                    pygame.draw.line(surf, (184, 196, 204), _pt(a), _pt(b), 2)
+                    fx_ = a[0] + (b[0] - a[0]) * 0.62
+                    fy_ = a[1] + (b[1] - a[1]) * 0.62
+                    nx_, ny_ = (b[1] - a[1]), -(b[0] - a[0])
+                    ln = max(1e-6, (nx_ * nx_ + ny_ * ny_) ** 0.5)
+                    pygame.draw.line(surf, (90, 96, 104), _pt((fx_, fy_)),
+                                     _pt((fx_ + 3 * nx_ / ln,
+                                          fy_ + 3 * ny_ / ln)), 1)
+                continue
             color = KEY_COLORS.get(key, DOOR_COLOR)
             for seg in necore.clip_polyline([(sx1, sy1), (sx2, sy2)], clip_screen):
                 if len(seg) < 2:
