@@ -129,6 +129,12 @@ class TitleScene(Scene):
         self.t = 0.0
         if app.save_data.get("ng_plus") and "New Game+" not in self.items:
             self.items.insert(1, "New Game+")
+        best = app.save_data.get("best_wave", 0)
+        if best:
+            self.items = [
+                (f"The Vigil (endless) - best {best}"
+                 if it.startswith("The Vigil") else it)
+                for it in self.items]
 
     def update(self, app, dt: float) -> None:
         self.t += dt
@@ -149,7 +155,7 @@ class TitleScene(Scene):
             app.push(DifficultyScene())
         elif item == "New Game+":
             app.push(DifficultyScene(plus=True))
-        elif item == "The Vigil (endless)":
+        elif item.startswith("The Vigil"):
             app.start_vigil()
         elif item == "Level Select":
             app.push(LevelSelectScene())
