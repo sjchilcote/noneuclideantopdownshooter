@@ -53,7 +53,8 @@
       1.1842378929335002e-15
      ]
     }
-   ]
+   ],
+   "kind": "chapel"
   },
   {
    "verts": [
@@ -83,7 +84,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 4000
+   "detail_seed": 4000,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -113,7 +115,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 4001
+   "detail_seed": 4001,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -143,7 +146,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 4002
+   "detail_seed": 4002,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -173,7 +177,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 4003
+   "detail_seed": 4003,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -203,7 +208,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 4004
+   "detail_seed": 4004,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -233,7 +239,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 4005
+   "detail_seed": 4005,
+   "kind": "generic"
   }
  ],
  "connects": [

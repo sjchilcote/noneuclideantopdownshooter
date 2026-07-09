@@ -35,11 +35,12 @@
     {
      "type": "medkit",
      "pos": [
-      180,
-      40
+      55.0,
+      15.0
      ]
     }
-   ]
+   ],
+   "kind": "dock"
   },
   {
    "verts": [
@@ -60,7 +61,8 @@
      60
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -89,7 +91,8 @@
      20
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "transit"
   },
   {
    "verts": [
@@ -114,11 +117,12 @@
     {
      "type": "ammo_9mm",
      "pos": [
-      475.0,
+      436.0,
       -50.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -139,7 +143,8 @@
      -120
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -168,7 +173,8 @@
       -50.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -197,7 +203,8 @@
       90.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -218,7 +225,8 @@
      160
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -239,7 +247,8 @@
      160
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -271,11 +280,12 @@
     {
      "type": "ammo_9mm",
      "pos": [
-      475.0,
-      230.0
+      490.0,
+      284.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -319,7 +329,8 @@
       69.38503400839389
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   },
   {
    "verts": [
@@ -358,18 +369,19 @@
     {
      "type": "ammo_9mm",
      "pos": [
-      1015.0,
-      -350.0
+      1023.5,
+      -296.0
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      1030.0,
-      -350.0
+      1036.5,
+      -296.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   }
  ],
  "connects": [
@@ -484,24 +496,24 @@
    {
     "room": 2,
     "pos": [
-     630,
-     130
+     630.0,
+     35.0
     ],
     "text": "WORK ORDER 7731\nGrid fault, storage ring north.\nTech note: ring walk takes 41s. Spec says 33s.\nRe-timed twice. Logged as clock drift."
    },
    {
     "room": 0,
     "pos": [
-     60,
-     40
+     154.0,
+     15.0
     ],
     "text": "CARGO LOG, DOCK 4\nIn: 6x coolant drums, 1x crate PERSONAL (Osei),\n40x ration packs, 2x replacement grid sensors.\nOut: nothing scheduled until perihelion.\nNote: someone keeps moving the mop."
    },
    {
     "room": 9,
     "pos": [
-     470,
-     250
+     435.0,
+     230.0
     ],
     "text": "SHIFT NOTE, STORAGE\nVending unit in SW segment eats chits again.\nFiled a ticket. Ticket auto-closed: unit is\nnot on the parts registry for this ring.\nIt dispenses fine. Leaving it alone."
    }

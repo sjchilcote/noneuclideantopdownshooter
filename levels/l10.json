@@ -23,7 +23,23 @@
      10
     ]
    ],
-   "entities": []
+   "entities": [
+    {
+     "type": "medkit",
+     "pos": [
+      73.5,
+      116.0
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      86.5,
+      116.0
+     ]
+    }
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -53,7 +69,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 2000
+   "detail_seed": 2000,
+   "kind": "core"
   },
   {
    "verts": [
@@ -105,7 +122,8 @@
      ]
     }
    ],
-   "detail_seed": 2001
+   "detail_seed": 2001,
+   "kind": "core"
   },
   {
    "verts": [
@@ -152,33 +170,34 @@
     {
      "type": "ammo_cell",
      "pos": [
-      1105.0,
-      -4.736951571734001e-15
+      1147.0740288532697,
+      85.89359353944899
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      1120.0,
-      -4.736951571734001e-15
+      1158.3323591024675,
+      79.39359353944899
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      1135.0,
-      -4.736951571734001e-15
+      1169.590689351665,
+      72.89359353944899
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      1105.0,
-      14.999999999999995
+      1180.849019600863,
+      66.39359353944899
      ]
     }
    ],
-   "detail_seed": 2002
+   "detail_seed": 2002,
+   "kind": "core"
   },
   {
    "verts": [
@@ -216,7 +235,8 @@
      ]
     }
    ],
-   "detail_seed": 2003
+   "detail_seed": 2003,
+   "kind": "core"
   },
   {
    "verts": [
@@ -263,26 +283,27 @@
     {
      "type": "ammo_9mm",
      "pos": [
-      745.0,
-      360.0
+      792.7031939778686,
+      442.643593539449
      ]
     },
     {
      "type": "ammo_9mm",
      "pos": [
-      760.0,
-      360.0
+      803.9615242270663,
+      436.143593539449
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      775.0,
-      360.0
+      815.219854476264,
+      429.643593539449
      ]
     }
    ],
-   "detail_seed": 2004
+   "detail_seed": 2004,
+   "kind": "core"
   },
   {
    "verts": [
@@ -336,29 +357,29 @@
     {
      "type": "medkit",
      "pos": [
-      1105.0,
-      360.0
+      1147.0740288532697,
+      445.893593539449
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      1120.0,
-      360.0
+      1158.3323591024675,
+      439.393593539449
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
-      1135.0,
-      360.0
+      1169.590689351665,
+      432.893593539449
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      1105.0,
-      375.0
+      1180.849019600863,
+      426.393593539449
      ]
     },
     {
@@ -369,7 +390,8 @@
      ]
     }
    ],
-   "detail_seed": 2005
+   "detail_seed": 2005,
+   "kind": "core"
   },
   {
    "verts": [
@@ -420,26 +442,27 @@
     {
      "type": "medkit",
      "pos": [
-      1585.0,
-      180.0
+      1587.0,
+      309.049086604272
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
       1600.0,
-      180.0
+      309.049086604272
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      1615.0,
-      180.0
+      1613.0,
+      309.049086604272
      ]
     }
    ],
-   "detail_seed": 3000
+   "detail_seed": 3000,
+   "kind": "core"
   },
   {
    "verts": [
@@ -464,18 +487,19 @@
     {
      "type": "medkit",
      "pos": [
-      1285.0,
-      610.0
+      1254.0,
+      603.5
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
-      1300.0,
-      610.0
+      1254.0,
+      616.5
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   }
  ],
  "connects": [
@@ -618,32 +642,32 @@
    {
     "room": 2,
     "pos": [
-     760.0,
-     59.99999999999999
+     804.4615242270663,
+     77.00961894323342
     ],
     "text": "SITE ONE \u2014 FINAL PROTOCOL\n1. Do not bargain with the door.\n2. There is no rule two.\n\nThe vault holds our cargo.\nThe thing beneath the vault holds the door."
    },
    {
     "room": 7,
     "pos": [
-     1600,
-     290
+     1730.049086604272,
+     180.0
     ],
     "text": "[SAMPLE VESSEL \u2014 EXTERNAL DIAGNOSTIC PORT]\nHULL BREACH: +214y INTO TRANSIT\nCRYOSTASIS: FAILED / RESTORED\nPAYLOAD: NO VIABLE MATERIAL.\nMAKE NO EFFORT AT RECOVERY."
    },
    {
     "room": 7,
     "pos": [
-     1680,
-     260
+     1600.0,
+     49.95091339572798
     ],
     "text": "[The door beneath the vault does not\nspeak in words. It rearranges the room\nuntil the room is a sentence.\nThe sentence is an offer.]\n\nGUARD / ACCEPT / KNEEL / BURN\n\n[You think of Ratio. You guard.]"
    },
    {
     "room": 8,
     "pos": [
-     1300,
-     620
+     1300.0,
+     645.0
     ],
     "text": "[TRANSLATION CONFIDENCE 22%]\nthis alcove held the first watcher.\nit stood here four hundred / thousand /\n[number does not translate] years.\nit is permitted to sit."
    }

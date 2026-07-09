@@ -31,7 +31,8 @@
      0
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -88,7 +89,8 @@
       70.0
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -145,7 +147,8 @@
       108
      ]
     }
-   ]
+   ],
+   "kind": "medbay"
   },
   {
    "verts": [
@@ -177,25 +180,26 @@
     {
      "type": "weapon_tau",
      "pos": [
-      665.0,
-      -50.0
+      717.0,
+      -104.0
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
-      680.0,
-      -50.0
+      704.0,
+      -104.0
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      695.0,
-      -50.0
+      691.0,
+      -104.0
      ]
     }
-   ]
+   ],
+   "kind": "medbay"
   },
   {
    "verts": [
@@ -232,27 +236,42 @@
      ]
     },
     {
+     "type": "weapon_tau",
+     "pos": [
+      812.0,
+      63.5
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      812.0,
+      76.5
+     ]
+    },
+    {
      "type": "ammo_shell",
      "pos": [
-      875.0,
+      905.0,
       70.0
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      890.0,
+      920.0,
       70.0
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      905.0,
+      935.0,
       70.0
      ]
     }
-   ]
+   ],
+   "kind": "medbay"
   }
  ],
  "connects": [
@@ -332,16 +351,16 @@
    {
     "room": 3,
     "pos": [
-     680,
-     -50
+     680.0,
+     -105.0
     ],
     "text": "ISOLATION LOG\nDay 1: patient stares at south wall.\nDay 2: patient talks to south wall.\nDay 3: patient answers.\nDay 4: two voices. One patient.\nDay 5: [no further entries]"
    },
    {
     "room": 4,
     "pos": [
-     890,
-     70
+     890.0,
+     35.0
     ],
     "text": "PATHOLOGY\nSubject recovered from ward.\nAll organs mirrored. Situs inversus totalis.\nSubject's ID chip reads valid.\nIt is the chip of a crewman standing\nguard outside."
    }

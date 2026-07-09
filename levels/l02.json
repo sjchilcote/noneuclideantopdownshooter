@@ -31,7 +31,8 @@
      0
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -104,7 +105,8 @@
       70.0
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -150,11 +152,12 @@
     {
      "type": "ammo_9mm",
      "pos": [
-      305.0,
+      384.0,
       -85.0
      ]
     }
-   ]
+   ],
+   "kind": "pump"
   },
   {
    "verts": [
@@ -193,18 +196,19 @@
     {
      "type": "medkit",
      "pos": [
-      825.0,
-      -70.0
+      904.0,
+      -63.5
      ]
     },
     {
      "type": "ammo_9mm",
      "pos": [
-      840.0,
-      -70.0
+      904.0,
+      -76.5
      ]
     }
-   ]
+   ],
+   "kind": "pump"
   },
   {
    "verts": [
@@ -248,7 +252,8 @@
       49.38503400839389
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -269,7 +274,8 @@
      110
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -348,7 +354,8 @@
       270
      ]
     }
-   ]
+   ],
+   "kind": "pump"
   },
   {
    "verts": [
@@ -373,25 +380,26 @@
     {
      "type": "weapon_smg",
      "pos": [
-      995.0,
+      952.0,
+      57.0
+     ]
+    },
+    {
+     "type": "ammo_9mm",
+     "pos": [
+      952.0,
       70.0
      ]
     },
     {
      "type": "ammo_9mm",
      "pos": [
-      1010.0,
-      70.0
-     ]
-    },
-    {
-     "type": "ammo_9mm",
-     "pos": [
-      1025.0,
-      70.0
+      952.0,
+      83.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   }
  ],
  "connects": [
@@ -494,16 +502,16 @@
    {
     "room": 3,
     "pos": [
-     840,
-     -60
+     775.0,
+     -70.0
     ],
     "text": "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\nCounted five hatches going. Counted six coming back.\nRecommend rest rotation for Osei."
    },
    {
     "room": 4,
     "pos": [
-     800,
-     70
+     808.0,
+     95.0
     ],
     "text": "MAINT TICKET 4471\nCoolant flow, east tail: 210 l/min rated,\n212 measured, 209 after the bend.\nWhere do three liters a minute GO?\nStatus: closed. Reason: rounding."
    }

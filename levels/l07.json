@@ -23,7 +23,8 @@
      0
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -101,7 +102,8 @@
       100.0
      ]
     }
-   ]
+   ],
+   "kind": "records"
   },
   {
    "verts": [
@@ -140,22 +142,22 @@
     {
      "type": "medkit",
      "pos": [
-      745.0,
-      370.0
+      761.0,
+      316.0
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
-      760.0,
-      370.0
+      748.0,
+      316.0
      ]
     },
     {
      "type": "portable_hole",
      "pos": [
-      775.0,
-      370.0
+      735.0,
+      316.0
      ]
     },
     {
@@ -165,7 +167,8 @@
       335
      ]
     }
-   ]
+   ],
+   "kind": "core"
   },
   {
    "verts": [
@@ -219,25 +222,26 @@
     {
      "type": "medkit",
      "pos": [
-      785.0,
-      -230.0
+      714.0,
+      -243.0
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
-      800.0,
+      714.0,
       -230.0
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      815.0,
-      -230.0
+      714.0,
+      -217.0
      ]
     }
-   ]
+   ],
+   "kind": "records"
   },
   {
    "verts": [
@@ -280,7 +284,8 @@
       -345.0
      ]
     }
-   ]
+   ],
+   "kind": "records"
   }
  ],
  "connects": [
@@ -370,24 +375,24 @@
    {
     "room": 3,
     "pos": [
-     800,
-     -230
+     800.0,
+     -175.0
     ],
     "text": "INCIDENT FILE 0001\nFirst contact was not a signal.\nIt was an inventory discrepancy.\nWe had one more room than we built.\nWe sent Osei to measure it.\nIt measured back."
    },
    {
     "room": 2,
     "pos": [
-     735,
-     400
+     772.0,
+     315.0
     ],
     "text": "CORE RECOVERY MANIFEST\nStaff-mind cores, recovered from Records:\n  VESALIUS - damaged, held the west ring\n  THIBAULT - damaged, held the junction\n  OSEI - [NO CORE RECOVERED]\nThey held the subverted peripherals out of the\ncore ring so the administrator could seal.\nOsei walked into Aisle 9 to buy them the time."
    },
    {
     "room": 4,
     "pos": [
-     800,
-     -345
+     800.0,
+     -375.0
     ],
     "text": "INCIDENT FILE 0000\nEmpty folder. The tab reads 0000.\nSomeone filed the folder itself as\nthe incident.\nAppendix: one requisition slip,\napproved, for 'one additional room'."
    }

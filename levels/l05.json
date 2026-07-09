@@ -31,7 +31,8 @@
      0
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -89,7 +90,8 @@
       40
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   },
   {
    "verts": [
@@ -153,7 +155,8 @@
       90.0
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   },
   {
    "verts": [
@@ -189,7 +192,8 @@
       90.0
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   },
   {
    "verts": [
@@ -232,7 +236,8 @@
       40
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   },
   {
    "verts": [
@@ -282,7 +287,8 @@
       90.0
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   },
   {
    "verts": [
@@ -318,7 +324,8 @@
       69.38503400839389
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   },
   {
    "verts": [
@@ -358,38 +365,53 @@
      "type": "weapon_rail",
      "pos": [
       -445.0,
-      380.0
+      310.0
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
       -430.0,
-      380.0
-     ]
-    },
-    {
-     "type": "ammo_cell",
-     "pos": [
-      -415.0,
-      380.0
+      310.0
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      -445.0,
-      395.0
+      -415.0,
+      310.0
      ]
     },
     {
      "type": "portable_hole",
      "pos": [
-      -430.0,
-      395.0
+      -445.0,
+      325.0
+     ]
+    },
+    {
+     "type": "weapon_rail",
+     "pos": [
+      -340.0,
+      380.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      -325.0,
+      380.0
+     ]
+    },
+    {
+     "type": "portable_hole",
+     "pos": [
+      -310.0,
+      380.0
      ]
     }
-   ]
+   ],
+   "kind": "chapel"
   },
   {
    "verts": [
@@ -439,7 +461,8 @@
       -35.0
      ]
     }
-   ]
+   ],
+   "kind": "quarters"
   }
  ],
  "connects": [
@@ -549,24 +572,24 @@
    {
     "room": 1,
     "pos": [
-     -90,
-     90
+     -90.0,
+     155.0
     ],
     "text": "BUNK 12-W\nDear M \u2014 the man in 12-E snores. I hear him\nthrough the wall. 12-E is on the other side of\nthe station. \u2014 R"
    },
    {
     "room": 4,
     "pos": [
-     1270,
-     90
+     1270.0,
+     155.0
     ],
     "text": "BUNK 12-E\nDear R \u2014 I do not snore. And I hear your\nradio through the wall. Fix your wall. \u2014 M"
    },
    {
     "room": 5,
     "pos": [
-     1090,
-     130
+     1090.0,
+     155.0
     ],
     "text": "DRAFT 41 \u2014 TO: MIRIAD PRIME [UNSENT]\nProgress report. I have written this report\nforty times. Each time, the numbers describing\nthis place come out different. I cannot send my\nparent a report that lies, and I cannot make the\nnumbers stop lying. Draft 42 tomorrow. \u2014 R"
    },
@@ -581,8 +604,8 @@
    {
     "room": 7,
     "pos": [
-     -380,
-     340
+     -525.0,
+     356.0
     ],
     "text": "FIELD NOTE, TAPED TO A DEVICE\nAd-hoc connection applicator, unit 3 of 3.\nMark a wall. Mark another wall. Walk through.\nUnits 1 and 2 are why the east wing has a\ndraft. Do not tell facilities."
    }

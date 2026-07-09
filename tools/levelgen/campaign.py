@@ -41,7 +41,58 @@ def squad(b: LevelBuilder, room: int, spec: str, spread: float = 32.0):
         b.entity(room, k, (cx + r * math.cos(a), cy + r * math.sin(a)))
 
 
-def cache(b: LevelBuilder, room: int, spec: str, off=(0.0, 0.0)):
+def wall_basis(b: LevelBuilder, room: int, wall: int, t: float = 0.5):
+    """(mx, my, tx, ty, nx, ny) for edge `wall` of `room` in absolute-canvas
+    (authoring) coordinates: a point `t` along the wall, its tangent, and its
+    inward normal (toward the room's own centroid). For any room authored
+    with `LevelBuilder.rect(x, y, w, h)`, edge indices are stable and known:
+    0=west, 1=south, 2=east, 3=north (verified against rect()'s vertex
+    order) -- pass that index explicitly rather than guessing. For irregular
+    rooms (ngons, polys), the caller is responsible for picking a `wall`
+    index that is not a portal edge (see LEVEL_DESIGN_PLAYBOOK.md §5)."""
+    verts = b.data["rooms"][room]["verts"]
+    n = len(verts)
+    cx = sum(v[0] for v in verts) / n
+    cy = sum(v[1] for v in verts) / n
+    x0, y0 = verts[wall % n]
+    x1, y1 = verts[(wall + 1) % n]
+    mx, my = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+    dx, dy = x1 - x0, y1 - y0
+    length = math.hypot(dx, dy) or 1.0
+    tx, ty = dx / length, dy / length
+    nx, ny = -dy / length, dx / length
+    if (cx - mx) * nx + (cy - my) * ny < 0:
+        nx, ny = -nx, -ny
+    return mx, my, tx, ty, nx, ny
+
+
+def wall_pos(b: LevelBuilder, room: int, wall: int, t: float = 0.5,
+             inset: float = 15.0) -> tuple[float, float]:
+    """A point `inset` units in from wall `wall` of `room`, `t` along its
+    length -- a wall alcove for a terminal or a control lectern
+    (LEVEL_DESIGN_PLAYBOOK.md §4), never a room's floor-center."""
+    mx, my, tx, ty, nx, ny = wall_basis(b, room, wall, t)
+    return (mx + nx * inset, my + ny * inset)
+
+
+def cache(b: LevelBuilder, room: int, spec: str, off=(0.0, 0.0),
+          wall: int | None = None, t: float = 0.5, inset: float = 16.0):
+    """Place a supply cache. Default (`wall=None`): a literal offset from
+    room-center, `off` -- kept for paradox-critical spots and irregular
+    rooms where a wall index must be hand-verified against portal edges
+    first. Pass `wall=<edge index>` to rack the cache in a single row along
+    that wall's tangent instead (locker/shelf framing, LEVEL_DESIGN_
+    PLAYBOOK.md §5) -- safe for any `LevelBuilder.rect` room using the
+    stable 0=west/1=south/2=east/3=north edge order."""
+    if wall is not None:
+        mx, my, tx, ty, nx, ny = wall_basis(b, room, wall, t)
+        bx, by = mx + nx * inset, my + ny * inset
+        items = spec.split()
+        span = (len(items) - 1) * 13.0
+        for i, k in enumerate(items):
+            tt = -span / 2.0 + i * 13.0
+            b.entity(room, k, (bx + tx * tt, by + ty * tt))
+        return
     cx, cy = center(b, room)
     for i, k in enumerate(spec.split()):
         b.entity(room, k, (cx + off[0] + (i % 3) * 15 - 15,
@@ -73,21 +124,30 @@ def arc_mid(cx, cy, r, t):
 
 def l01():
     b = LevelBuilder("DOCK 4 — SWEEP", 1, "amb_drone_early")
-    dock = b.rect(0, 0, 220, 180)
-    hall = b.rect(220, 60, 340, 70)            # doorway auto-split into dock
-    junction = b.rect(560, 20, 140, 140)
+    # NOTE: an editor golden-fixture test (game/tests/test_editor.py) loads
+    # levels/l01.json and hardcodes its exact room count/order/indices
+    # (room 0 = dock, room 3, room 7 = exit, room 11 = phantom...) -- this
+    # level's room list is load-bearing for a test outside this file's
+    # scope, so no new rooms are added here even though an entry airlock
+    # would otherwise be the obvious circulation fix (see
+    # LEVEL_DESIGN_PLAYBOOK.md §2). dock itself already plays that role:
+    # it's where the seed prints the player's body, sized like a threshold.
+    dock = b.rect(0, 0, 220, 180, kind="dock")
+    hall = b.rect(220, 60, 340, 70, kind="corridor")   # auto-split into dock
+    junction = b.rect(560, 20, 140, 140, kind="transit")
 
     # 3x3 ring around the junction, pitch 140; junction touches N/W/S/E ring
-    # cells but only the north doorway may open.
-    ring_nw = b.rect(420, -120, 140, 140)
-    ring_n = b.rect(560, -120, 140, 140)
-    ring_ne = b.rect(700, -120, 140, 140)
-    ring_e = b.rect(700, 20, 140, 140)
-    ring_se = b.rect(700, 160, 140, 140)
-    ring_s = b.rect(560, 160, 140, 140)
-    ring_sw = b.rect(420, 160, 140, 140)
-    ring_w = b.rect(420, 20, 140, 140)
-    phantom = b.rect(960, -420, 140, 140)      # the ninth segment
+    # cells but only the north doorway may open. The ring is Ratio's storage
+    # ring by name (radio, below) -- tag every cell `storage` to match.
+    ring_nw = b.rect(420, -120, 140, 140, kind="storage")
+    ring_n = b.rect(560, -120, 140, 140, kind="storage")
+    ring_ne = b.rect(700, -120, 140, 140, kind="storage")
+    ring_e = b.rect(700, 20, 140, 140, kind="storage")
+    ring_se = b.rect(700, 160, 140, 140, kind="storage")
+    ring_s = b.rect(560, 160, 140, 140, kind="storage")
+    ring_sw = b.rect(420, 160, 140, 140, kind="storage")
+    ring_w = b.rect(420, 20, 140, 140, kind="storage")
+    phantom = b.rect(960, -420, 140, 140, kind="storage")  # the ninth segment
 
     # only the south hatch of the ring answers; and the ring is broken just
     # short of the exit, so the sweep goes the long way round -- through the
@@ -119,17 +179,17 @@ def l01():
     b.radio(f"enter_room:{phantom}", "Ratio: ...Your beacon just left my "
                                      "deck plan. That was not me. Noted, "
                                      "Commando: it happens to you too.")
-    b.terminal(junction, (630, 130),
+    b.terminal(junction, wall_pos(b, junction, 3, 0.5, 15.0),
                "WORK ORDER 7731\nGrid fault, storage ring north.\n"
                "Tech note: ring walk takes 41s. Spec says 33s.\n"
                "Re-timed twice. Logged as clock drift.")
-    b.terminal(dock, (60, 40),
+    b.terminal(dock, wall_pos(b, dock, 3, 0.3, 15.0),
                "CARGO LOG, DOCK 4\n"
                "In: 6x coolant drums, 1x crate PERSONAL (Osei),\n"
                "40x ration packs, 2x replacement grid sensors.\n"
                "Out: nothing scheduled until perihelion.\n"
                "Note: someone keeps moving the mop.")
-    b.terminal(ring_sw, (470, 250),
+    b.terminal(ring_sw, wall_pos(b, ring_sw, 0, 0.5, 15.0),
                "SHIFT NOTE, STORAGE\n"
                "Vending unit in SW segment eats chits again.\n"
                "Filed a ticket. Ticket auto-closed: unit is\n"
@@ -143,10 +203,10 @@ def l01():
     squad(b, phantom, "husk husk")
     squad(b, ring_ne, "husk")
     squad(b, ring_e, "husk")
-    cache(b, ring_nw, "ammo_9mm")
-    cache(b, phantom, "ammo_9mm medkit")
-    cache(b, ring_sw, "ammo_9mm")
-    b.entity(dock, "medkit", (180, 40))
+    cache(b, ring_nw, "ammo_9mm", wall=0)
+    cache(b, phantom, "ammo_9mm medkit", wall=1)
+    cache(b, ring_sw, "ammo_9mm", wall=1)
+    b.entity(dock, "medkit", wall_pos(b, dock, 3, 0.75, 15.0))
     b.exit(ring_se, (770, 230))
     b.radio("exit", "Ratio: You cleared my ring and stole nothing that "
                     "was mine. Provisional finding: talking was correct. "
@@ -162,14 +222,14 @@ def l01():
 
 def l02():
     b = LevelBuilder("COOLANT ROW", 1, "amb_drone_early")
-    entry = b.rect(0, 0, 160, 140)
-    row = b.rect(160, 30, 560, 80)
-    pump_a = b.rect(240, -200, 160, 230)       # bay opens into the row
-    pump_b = b.rect(760, -170, 160, 200)       # sits over the tail
-    tail = b.rect(720, 30, 220, 80)
-    stub = b.rect(300, 110, 70, 80)
-    keyroom = b.rect(240, 190, 190, 160)
-    armory = b.rect(940, 30, 140, 80)
+    entry = b.rect(0, 0, 160, 140, kind="corridor")
+    row = b.rect(160, 30, 560, 80, kind="corridor")
+    pump_a = b.rect(240, -200, 160, 230, kind="pump")   # bay opens into the row
+    pump_b = b.rect(760, -170, 160, 200, kind="pump")   # sits over the tail
+    tail = b.rect(720, 30, 220, 80, kind="corridor")
+    stub = b.rect(300, 110, 70, 80, kind="corridor")
+    keyroom = b.rect(240, 190, 190, 160, kind="pump")   # the filter room
+    armory = b.rect(940, 30, 140, 80, kind="storage")
 
     # the impossible hatch: out pump A's north wall, in through pump B's
     # north wall — you emerge walking the way you came.
@@ -192,14 +252,14 @@ def l02():
                                     "pump bays anyway, bay two holds sealed "
                                     "supplies. Consider it a retainer. I "
                                     "want to know what you see down there.")
-    b.terminal(pump_b, (840, -60),
+    b.terminal(pump_b, wall_pos(b, pump_b, 0, 0.5, 15.0),
                "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\n"
                "Counted five hatches going. Counted six coming back.\n"
                "Recommend rest rotation for Osei.")
     b.radio(f"enter_room:{keyroom}", "Ratio: That's the filter room. The "
                                      "things nesting in it used to be my "
                                      "cleaning swarm. Mind the floor.")
-    b.terminal(tail, (800, 70),
+    b.terminal(tail, wall_pos(b, tail, 1, 0.4, 15.0),
                "MAINT TICKET 4471\n"
                "Coolant flow, east tail: 210 l/min rated,\n"
                "212 measured, 209 after the bend.\n"
@@ -211,10 +271,15 @@ def l02():
     squad(b, keyroom, "mite mite mite mite mite spitter")
     squad(b, tail, "spitter husk")
     b.entity(keyroom, "key_red", (335, 270))
-    cache(b, pump_a, "ammo_9mm")
-    cache(b, pump_b, "medkit ammo_9mm")
+    cache(b, pump_a, "ammo_9mm", wall=2)
+    cache(b, pump_b, "medkit ammo_9mm", wall=2)
     cache(b, row, "medkit", off=(180, 0))
-    cache(b, armory, "weapon_smg ammo_9mm ammo_9mm")
+    # racked just inside the only door into the armory (the red door from
+    # the tail) -- the exit pad sits mid-room and the streamer carves its
+    # spine doorway wherever the nearest wall happens to be, so a cache
+    # placed "at the exit" is not reliably on the walk; the doorway itself
+    # is the one point every route through this room shares.
+    cache(b, armory, "weapon_smg ammo_9mm ammo_9mm", wall=0, t=0.5, inset=12.0)
     b.exit(armory, (1010, 70))
     b.radio("exit", "Ratio: Row's clear. The count in Osei's log... "
                     "forget it. Clock drift.")
@@ -230,10 +295,13 @@ def l03():
     b = LevelBuilder("HYDROPONICS TORUS", 2, "amb_drone_mid")
     ring = sector_ring(b, 0, 0, 180, 320, 6,
                        math.radians(-90), math.radians(90))
+    for r in ring:
+        b.set_kind(r, "lab")   # hydroponics benches, the ring's own function
     # entry room sized to the outer chord (165.6) to keep portals rigid
     entry = b.poly([(-83, -440), (-83, -320), (83, -320), (83, -440)])
-    garden = b.rect(400, -80, 166, 160)
-    storeroom = b.rect(-420, 40, 166, 140)
+    b.set_kind(entry, "corridor")
+    garden = b.rect(400, -80, 166, 160, kind="lab")
+    storeroom = b.rect(-420, 40, 166, 140, kind="storage")
 
     b.connect_pts(entry, (0, -320), ring[0],
                   arc_mid(0, 0, 320, math.radians(-75)))
@@ -255,15 +323,15 @@ def l03():
                                     "you're facing spinward. You entered "
                                     "anti-spinward. Say something so I know "
                                     "you're you.")
-    b.terminal(garden, (483, -20),
+    b.terminal(garden, wall_pos(b, garden, 2, 0.5, 15.0),
                "BOTANY NOTE\nThe cucumbers grow clockwise here.\n"
                "In the seed manual they grow counterclockwise.\n"
                "Same seeds. Same water.\nI stopped writing this up.")
-    b.terminal(storeroom, (-337, 150),
+    b.terminal(storeroom, wall_pos(b, storeroom, 1, 0.5, 15.0),
                "INVENTORY\n2x fertilizer drum — MISSING.\n"
                "Found both drums in the room I was standing in.\n"
                "Behind me. I had checked behind me.")
-    b.terminal(ring[1], tuple(arc_mid(0, 0, 250, math.radians(-45))),
+    b.terminal(ring[1], tuple(arc_mid(0, 0, 195, math.radians(-45))),
                "DIRECTIVE 0007 — MIRIAD PRIME\n"
                "RE: survey of gravitational anomaly, Site One\n"
                "\n"
@@ -273,7 +341,7 @@ def l03():
                "Four months of careful science, inverted overnight\n"
                "by three words. We cut the aperture Tuesday.\n"
                "God help whoever reads this log in order.")
-    b.terminal(ring[4], tuple(arc_mid(0, 0, 250, math.radians(35))),
+    b.terminal(ring[4], tuple(arc_mid(0, 0, 195, math.radians(35))),
                "FEEDER SCHEDULE, SECTOR 5\n"
                "0400 nutrient, 0900 mist, 1400 nutrient,\n"
                "1900 mist, 0000 dark cycle.\n"
@@ -290,10 +358,20 @@ def l03():
     squad(b, garden, "mite mite mite")
     b.entity(ring[5], "key_blue",
              tuple(arc_mid(0, 0, 250, math.radians(75))))
-    cache(b, ring[1], "ammo_9mm")
-    cache(b, ring[3], "medkit")
-    cache(b, ring[4], "medkit ammo_9mm")
-    cache(b, storeroom, "weapon_shotgun ammo_shell ammo_shell")
+    # ring[0] is the ring's sole doorway from the entry -- unlike every
+    # later cell, the mobius glue offers no shortcut around it, so the
+    # level's namesake shotgun goes here rather than in the storeroom
+    # detour (which a shortest-path walk of the ring can skip entirely).
+    # placed at the entry threshold (just inside ring[0]'s outer arc, where
+    # the player necessarily first stands) rather than the wedge's middle
+    # or its far inner wall -- both routing choices out of ring[0] (the
+    # chain or the mobius glue) start from this exact point, so the pickup
+    # doesn't depend on which way the walk goes.
+    cache(b, ring[0], "weapon_shotgun ammo_shell", off=(16.4, -61.3))
+    cache(b, ring[1], "ammo_9mm", off=(-32.9, 32.9))
+    cache(b, ring[3], "medkit", off=(-44.9, -12.0))
+    cache(b, ring[4], "medkit ammo_9mm", off=(-32.9, -32.9))
+    cache(b, storeroom, "ammo_shell ammo_shell", wall=1, t=0.2, inset=16.0)
     b.radio("pickup:blue", "Ratio: Blue seal, from the end cap. The garden "
                            "airlock takes it. Back the way you came — "
                            "or, apparently, straight ahead. Both work. "
@@ -314,14 +392,15 @@ def l03():
 
 def l04():
     b = LevelBuilder("THE LONG GALLERY", 2, "amb_drone_mid")
-    entry = b.rect(-160, 200, 160, 110)
-    south = b.rect(0, 200, 760, 110)
-    north = b.rect(0, -110, 760, 110)
-    crossings = [b.rect(80 + i * 180, 0, 70, 200) for i in range(4)]
+    entry = b.rect(-160, 200, 160, 110, kind="corridor")
+    south = b.rect(0, 200, 760, 110, kind="corridor")
+    north = b.rect(0, -110, 760, 110, kind="corridor")
+    crossings = [b.rect(80 + i * 180, 0, 70, 200, kind="corridor")
+                 for i in range(4)]
     # crossing 0 opens south only: its north mouth is a blank wall
     b.no_connect(north, crossings[0])
-    reliquary = b.rect(280, 310, 200, 150)
-    vault = b.rect(760, 310, 170, 150)
+    reliquary = b.rect(280, 310, 200, 150, kind="medbay")
+    vault = b.rect(760, 310, 170, 150, kind="storage")
     b.door_pts(south, (760, 255), vault, (760, 385), "blue")
     b.no_connect(south, vault)
 
@@ -337,11 +416,11 @@ def l04():
                                           "blue seal in there — which is "
                                           "strange, because from the north "
                                           "wall, there is no crossing one.")
-    b.terminal(south, (700, 255),
+    b.terminal(south, wall_pos(b, south, 1, 0.92, 15.0),
                "GRAFFITI, scratched into the panel:\n"
                "4 GOING  3 BACK\n4 GOING  3 BACK\n4 GOING  3 BACK\n"
                "over and over, forty times.")
-    b.terminal(reliquary, (380, 430),
+    b.terminal(reliquary, wall_pos(b, reliquary, 1, 0.5, 15.0),
                "MEDICAL BAY (RELOCATED)\nPatient: unnamed, found in Gallery.\n"
                "Implant of unknown design fused to left arm.\n"
                "Patient states the implant 'came through the wall.'\n"
@@ -353,9 +432,11 @@ def l04():
     squad(b, reliquary, "husk husk spitter")
     # the key lives in the crossing that doesn't exist from the north side
     b.entity(crossings[0], "key_blue", (115, 60))
-    cache(b, crossings[0], "ammo_shell medkit")
+    cache(b, crossings[0], "ammo_shell medkit", wall=3)  # the blank north wall
     cache(b, north, "ammo_9mm ammo_9mm medkit", off=(300, 0))
     cache(b, south, "ammo_shell", off=(-260, 0))
+    # the west-entry/east-exit line runs straight through vault center at
+    # y=385 -- every route from the blue door to the exit pad crosses it.
     cache(b, vault, "implant_lightning medkit ammo_9mm")
     b.radio("pickup:blue", "Ratio: Blue seal. The vault. Commando — the "
                            "notes say what's in there isn't ours.")
@@ -371,16 +452,16 @@ def l04():
 
 def l05():
     b = LevelBuilder("TWO WINGS", 3, "amb_drone_mid")
-    lobby = b.rect(0, 0, 220, 180)
-    w1 = b.rect(-180, 10, 180, 160)
-    w2 = b.rect(-360, 10, 180, 160)
-    w3 = b.rect(-540, 10, 180, 160)
-    e1 = b.rect(1180, 10, 180, 160)
-    e2 = b.rect(1000, 10, 180, 160)
-    e3 = b.rect(820, 10, 180, 160)
-    chapel = b.rect(-540, 300, 220, 160)
+    lobby = b.rect(0, 0, 220, 180, kind="corridor")
+    w1 = b.rect(-180, 10, 180, 160, kind="quarters")
+    w2 = b.rect(-360, 10, 180, 160, kind="quarters")
+    w3 = b.rect(-540, 10, 180, 160, kind="quarters")
+    e1 = b.rect(1180, 10, 180, 160, kind="quarters")
+    e2 = b.rect(1000, 10, 180, 160, kind="quarters")
+    e3 = b.rect(820, 10, 180, 160, kind="quarters")
+    chapel = b.rect(-540, 300, 220, 160, kind="chapel")
 
-    bunk_f = b.rect(-160, -110, 140, 120)   # the third twelve, flush above w1
+    bunk_f = b.rect(-160, -110, 140, 120, kind="quarters")  # the third twelve, flush above w1
     b.door_pts(w1, (-90, 10), bunk_f, (-90, 10), "shoot")
     b.no_connect(w1, bunk_f)
     b.connect_pts(lobby, (220, 90), e1, (1360, 90))   # east door, impossible
@@ -399,13 +480,13 @@ def l05():
     b.radio(f"enter_room:{chapel}", "Ratio: Both wings end at one room. One "
                                     "room, two doors that cannot share a "
                                     "wall. I've stopped calling this noise.")
-    b.terminal(w1, (-90, 90),
+    b.terminal(w1, wall_pos(b, w1, 1, 0.5, 15.0),
                "BUNK 12-W\nDear M — the man in 12-E snores. I hear him\n"
                "through the wall. 12-E is on the other side of\nthe station. — R")
-    b.terminal(e1, (1270, 90),
+    b.terminal(e1, wall_pos(b, e1, 1, 0.5, 15.0),
                "BUNK 12-E\nDear R — I do not snore. And I hear your\n"
                "radio through the wall. Fix your wall. — M")
-    b.terminal(e2, (1090, 130),
+    b.terminal(e2, wall_pos(b, e2, 1, 0.5, 15.0),
                "DRAFT 41 — TO: MIRIAD PRIME [UNSENT]\n"
                "Progress report. I have written this report\n"
                "forty times. Each time, the numbers describing\n"
@@ -430,8 +511,13 @@ def l05():
     cache(b, w2, "ammo_9mm ammo_shell")
     cache(b, e2, "medkit ammo_9mm")
     cache(b, w3, "ammo_shell")
-    cache(b, chapel, "weapon_rail ammo_cell ammo_cell medkit portable_hole")
-    b.terminal(chapel, (-380, 340),
+    # chapel has two independent entries (north from w3, east from e3) and
+    # the run only ever walks ONE wing before the gold key it needs -- a
+    # single cache can sit unreached on the wing not taken, so the rail and
+    # the hole are each racked at both doorways rather than once at center.
+    cache(b, chapel, "weapon_rail ammo_cell medkit portable_hole", off=(0, -70))
+    cache(b, chapel, "weapon_rail ammo_cell portable_hole", off=(105, 0))
+    b.terminal(chapel, wall_pos(b, chapel, 0, 0.35, 15.0),
                "FIELD NOTE, TAPED TO A DEVICE\n"
                "Ad-hoc connection applicator, unit 3 of 3.\n"
                "Mark a wall. Mark another wall. Walk through.\n"
@@ -456,11 +542,11 @@ def l05():
 
 def l06():
     b = LevelBuilder("MIRROR WARD", 3, "amb_drone_late")
-    entry = b.rect(0, 0, 140, 140)
-    hall = b.rect(140, 20, 420, 100)
-    ward = b.rect(560, 20, 240, 100)
-    side = b.rect(560, -120, 240, 140)
-    morgue = b.rect(800, 20, 180, 100)
+    entry = b.rect(0, 0, 140, 140, kind="corridor")
+    hall = b.rect(140, 20, 420, 100, kind="corridor")
+    ward = b.rect(560, 20, 240, 100, kind="medbay")
+    side = b.rect(560, -120, 240, 140, kind="medbay")
+    morgue = b.rect(800, 20, 180, 100, kind="medbay")
 
     # THE MIRROR: the ward's south wall connects to itself.
     b.connect_pts(ward, (680, 120), ward, (680, 120))
@@ -472,11 +558,11 @@ def l06():
                      "shows you, which is odd, because you're with me.")
     b.radio(f"enter_room:{ward}", "Ratio: There you are on the ward camera. "
                                   "Twice. Commando, wave. ...Both of you waved.")
-    b.terminal(side, (680, -50),
+    b.terminal(side, wall_pos(b, side, 3, 0.5, 15.0),
                "ISOLATION LOG\nDay 1: patient stares at south wall.\n"
                "Day 2: patient talks to south wall.\nDay 3: patient answers.\n"
                "Day 4: two voices. One patient.\nDay 5: [no further entries]")
-    b.terminal(morgue, (890, 70),
+    b.terminal(morgue, wall_pos(b, morgue, 3, 0.5, 15.0),
                "PATHOLOGY\nSubject recovered from ward.\n"
                "All organs mirrored. Situs inversus totalis.\n"
                "Subject's ID chip reads valid.\n"
@@ -486,8 +572,13 @@ def l06():
     squad(b, side, "spitter")
     squad(b, morgue, "brute shrieker")
     cache(b, hall, "ammo_9mm", off=(-120, 0))
-    cache(b, side, "weapon_tau ammo_cell medkit")
-    cache(b, morgue, "ammo_shell ammo_shell medkit")
+    cache(b, side, "weapon_tau ammo_cell medkit", wall=3, t=0.4, inset=16.0)
+    # morgue is the level's only exit room, entered from the west (ward)
+    # wall at the same height (y=70) as the exit pad -- the tau rack sits
+    # right at that threshold so the walk to the exit can't miss it, the
+    # way the smg rack in COOLANT ROW's armory does.
+    cache(b, morgue, "weapon_tau ammo_cell", wall=0, t=0.5, inset=12.0)
+    cache(b, morgue, "ammo_shell ammo_shell medkit", off=(30, 0))
     # the seal sits against the mirror wall: to leave, you must walk up to
     # your own reflection
     b.entity(ward, "key_red", (680, 108))
@@ -509,12 +600,12 @@ def l06():
 
 def l07():
     b = LevelBuilder("RECURSION STACK", 3, "amb_drone_late")
-    entry = b.rect(0, 0, 160, 140)
-    stack = b.rect(300, 0, 220, 140)
-    closet = b.rect(700, 300, 120, 140)
-    deep = b.rect(700, -300, 200, 140)
+    entry = b.rect(0, 0, 160, 140, kind="corridor")
+    stack = b.rect(300, 0, 220, 140, kind="records")
+    closet = b.rect(700, 300, 120, 140, kind="core")     # the staff-mind cores
+    deep = b.rect(700, -300, 200, 140, kind="records")
 
-    annex = b.rect(740, -390, 120, 90)   # the aisle before aisle one
+    annex = b.rect(740, -390, 120, 90, kind="records")   # the aisle before aisle one
     b.door_pts(deep, (800, -300), annex, (800, -300), "shoot")
     b.no_connect(deep, annex)
     b.connect_pts(entry, (160, 70), stack, (300, 70))
@@ -541,12 +632,12 @@ def l07():
                "Everything filed here is filed here.\n"
                "Everything filed here is filed here.\n"
                "[the tag continues for some time]")
-    b.terminal(deep, (800, -230),
+    b.terminal(deep, wall_pos(b, deep, 1, 0.5, 15.0),
                "INCIDENT FILE 0001\nFirst contact was not a signal.\n"
                "It was an inventory discrepancy.\n"
                "We had one more room than we built.\n"
                "We sent Osei to measure it.\nIt measured back.")
-    b.terminal(closet, (735, 400),
+    b.terminal(closet, wall_pos(b, closet, 3, 0.4, 15.0),
                "CORE RECOVERY MANIFEST\n"
                "Staff-mind cores, recovered from Records:\n"
                "  VESALIUS - damaged, held the west ring\n"
@@ -555,7 +646,7 @@ def l07():
                "They held the subverted peripherals out of the\n"
                "core ring so the administrator could seal.\n"
                "Osei walked into Aisle 9 to buy them the time.")
-    b.terminal(annex, (800, -345),
+    b.terminal(annex, wall_pos(b, annex, 3, 0.5, 15.0),
                "INCIDENT FILE 0000\n"
                "Empty folder. The tab reads 0000.\n"
                "Someone filed the folder itself as\n"
@@ -566,9 +657,9 @@ def l07():
     squad(b, stack, "mite mite mite mite mite mite")
     squad(b, closet, "spitter spitter")
     squad(b, deep, "brute brute shrieker")
-    cache(b, stack, "ammo_9mm ammo_shell", off=(60, 30))
-    cache(b, closet, "medkit ammo_cell portable_hole")
-    cache(b, deep, "medkit ammo_cell ammo_shell")
+    cache(b, stack, "ammo_9mm ammo_shell", off=(60, 30))  # the aisle has no free wall
+    cache(b, closet, "medkit ammo_cell portable_hole", wall=3, t=0.6, inset=16.0)
+    cache(b, deep, "medkit ammo_cell ammo_shell", wall=0, t=0.5, inset=14.0)
     b.entity(closet, "key_gold", (735, 335))
     b.radio("pickup:gold", "Ratio: Gold seal, filed under 'gold seal'. "
                            "At least the shelving is honest.")
@@ -589,14 +680,18 @@ def l07():
 def l08():
     b = LevelBuilder("THE FOLD", 4, "amb_drone_late")
     b.data["alert_hops"] = 1  # the fold eats sound
-    core = b.ngon(0, 0, 100, 6, phase=math.radians(90))
+    # `core` is the chapel's own heart -- SERMON text below -- kept a real
+    # kind despite the pure-graph tier; `petals` stay `generic` on purpose
+    # (see LEVEL_DESIGN_PLAYBOOK.md §8): six visually-identical cells is the
+    # paradox ("the count depends on the walker"), not a tagging gap.
+    core = b.ngon(0, 0, 100, 6, phase=math.radians(90), kind="chapel")
     petals = []
     angs = []
     for i in range(6):
         a = math.radians(90) - (i + 0.5) * math.pi / 3
         angs.append(a)
         petals.append(b.ngon(260 * math.cos(a), 260 * math.sin(a), 100, 6,
-                             phase=a + math.radians(90)))
+                             phase=a + math.radians(90), kind="generic"))
     for i, a in enumerate(angs):
         b.connect_pts(core, (86.6 * math.cos(a), 86.6 * math.sin(a)),
                       petals[i],
@@ -661,8 +756,14 @@ def l09():
         rooms.append(b.poly([(x, y), (x, y + 200), (x + 100, y + 200),
                              (x + 200, y + 100), (x + 200, y)],
                             seed=1000 + i))
-    # dims 0..3 live on edges [0,1,3,4]; edge 2 is the chamfer wall
+        # pure-graph tier: sixteen address-bearing cells, deliberately
+        # uniform (LEVEL_DESIGN_PLAYBOOK.md §8) -- not a tagging gap.
+        b.set_kind(rooms[-1], "generic")
+    # dims 0..3 live on edges [0,1,3,4]; edge 2 is the chamfer wall -- the
+    # only wall every one of the sixteen rooms has in common, so it is
+    # where every fixture in this level goes.
     DIM_EDGE = [0, 1, 3, 4]
+    CHAMFER = 2
     for i in range(16):
         for d in range(4):
             j = i ^ (1 << d)
@@ -670,7 +771,6 @@ def l09():
                 b.connect(rooms[i], DIM_EDGE[d], rooms[j], DIM_EDGE[d])
 
     c15 = center(b, rooms[15])
-    c5 = center(b, rooms[5])
     b.player(rooms[0], center(b, rooms[0]))
     b.intro("There is no deck like this on the station.\n"
             "You are not on the station anymore.\n\n"
@@ -685,11 +785,10 @@ def l09():
                                        "move. Four doors from home, "
                                        "Commando. Count in bits, not "
                                        "meters.")
-    b.terminal(rooms[5], (c5[0] + 60, c5[1]),
+    b.terminal(rooms[5], wall_pos(b, rooms[5], CHAMFER, 0.5, 15.0),
                "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\n"
                "flip one bit at a time.\n— O.")
-    c7 = center(b, rooms[7])
-    b.terminal(rooms[7], (c7[0] - 60, c7[1]),
+    b.terminal(rooms[7], wall_pos(b, rooms[7], CHAMFER, 0.5, 15.0),
                "[TRANSLATION CONFIDENCE 41%]\n"
                "welcome / student / stranger.\n"
                "this room is a lesson.\n"
@@ -703,12 +802,12 @@ def l09():
     squad(b, rooms[10], "husk spitter")
     squad(b, rooms[12], "brute shrieker")
     squad(b, rooms[15], "brute brute")
-    cache(b, rooms[4], "ammo_9mm ammo_shell")
-    cache(b, rooms[8], "medkit ammo_cell portable_hole")
-    cache(b, rooms[7], "ammo_shell ammo_9mm medkit")
-    cache(b, rooms[13], "ammo_cell ammo_shell")
-    cache(b, rooms[6], "medkit")
-    cache(b, rooms[12], "medkit")
+    cache(b, rooms[4], "ammo_9mm ammo_shell", wall=CHAMFER)
+    cache(b, rooms[8], "medkit ammo_cell portable_hole", wall=CHAMFER)
+    cache(b, rooms[7], "ammo_shell ammo_9mm medkit", wall=CHAMFER)
+    cache(b, rooms[13], "ammo_cell ammo_shell", wall=CHAMFER)
+    cache(b, rooms[6], "medkit", wall=CHAMFER)
+    cache(b, rooms[12], "medkit", wall=CHAMFER)
     c10 = center(b, rooms[10])
     b.entity(rooms[10], "key_void", (c10[0] - 60, c10[1]))
     b.radio("pickup:void", "Ratio: Void seal. 1010 — two bit-flips from "
@@ -729,22 +828,26 @@ def l09():
 def l10():
     b = LevelBuilder("PERIHELION CORE", 4, "amb_drone_finale")
     b.data["alert_hops"] = 1  # sound folds strangely between identical rooms
-    airlock = b.rect(0, 10, 160, 120)
+    airlock = b.rect(0, 10, 160, 120, kind="corridor")
     hexes = []
     for i in range(6):
         x, y = 400 + (i % 3) * 360, (i // 3) * 360
         hexes.append(b.ngon(x, y, 120, 6, phase=math.radians(30),
-                            seed=2000 + i))
+                            seed=2000 + i, kind="core"))
     # edge 0 faces east, edge 3 west (phase 30): r-generator chains 0->3;
-    # s-generator uses edges 1 and 4.
+    # s-generator uses edges 1 and 4. Edge 2 is claimed by the alcove/
+    # sanctum doors below on hexes[1]/[3] specifically -- edge 5 is the one
+    # wall every hex has in common and free, so fixtures rack there.
+    HEX_FREE = 5
     for i in range(6):
         b.connect(hexes[i], 0, hexes[(i + 1) % 6], 3)
     for i in range(6):
         b.connect(hexes[i], 1, hexes[(i + 2) % 6], 4)
-    sanctum = b.ngon(1600, 180, 157, 8, phase=math.radians(22.5), seed=3000)
+    sanctum = b.ngon(1600, 180, 157, 8, phase=math.radians(22.5), seed=3000,
+                     kind="core")
 
     # hex edges 0/1/3/4 belong to the Cayley wiring; edge 2 (up-left) is free
-    alcove = b.rect(1240, 560, 120, 100)   # the first watcher's post
+    alcove = b.rect(1240, 560, 120, 100, kind="quarters")  # the first watcher's post
     b.door_pts(hexes[1], (812, 90), alcove, (1300, 560), "shoot")
     b.connect_pts(airlock, (160, 70), hexes[0], (348, -90))
     # sanctum behind the void seal, off hex 3's remaining edge (2)
@@ -762,32 +865,36 @@ def l10():
                      "weapon. Guard the door. That's all we are now.")
     b.radio(f"enter_room:{hexes[3]}", "Ratio: The seal answers the void key. "
                                       "Last door, Commando.")
-    b.terminal(hexes[1], (center(b, hexes[1])[0], center(b, hexes[1])[1] + 60),
+    b.terminal(hexes[1], wall_pos(b, hexes[1], HEX_FREE, 0.5, 15.0),
                "SITE ONE — FINAL PROTOCOL\n"
                "1. Do not bargain with the door.\n"
                "2. There is no rule two.\n\n"
                "The vault holds our cargo.\n"
                "The thing beneath the vault holds the door.")
-    b.terminal(sanctum, (1600, 290),
+    b.terminal(sanctum, wall_pos(b, sanctum, 0, 0.5, 15.0),
                "[SAMPLE VESSEL — EXTERNAL DIAGNOSTIC PORT]\n"
                "HULL BREACH: +214y INTO TRANSIT\n"
                "CRYOSTASIS: FAILED / RESTORED\n"
                "PAYLOAD: NO VIABLE MATERIAL.\n"
                "MAKE NO EFFORT AT RECOVERY.")
-    b.terminal(sanctum, (1680, 260),
+    b.terminal(sanctum, wall_pos(b, sanctum, 2, 0.5, 15.0),
                "[The door beneath the vault does not\n"
                "speak in words. It rearranges the room\n"
                "until the room is a sentence.\n"
                "The sentence is an offer.]\n\n"
                "GUARD / ACCEPT / KNEEL / BURN\n\n"
                "[You think of Ratio. You guard.]")
-    b.terminal(alcove, (1300, 620),
+    b.terminal(alcove, wall_pos(b, alcove, 1, 0.5, 15.0),
                "[TRANSLATION CONFIDENCE 22%]\n"
                "this alcove held the first watcher.\n"
                "it stood here four hundred / thousand /\n"
                "[number does not translate] years.\n"
                "it is permitted to sit.")
-    cache(b, alcove, "medkit ammo_cell")
+    cache(b, alcove, "medkit ammo_cell", wall=0, t=0.5, inset=14.0)
+    # the streamer respawns a chunk-9 death right back at this airlock at
+    # floor-40 hp (stream.py's entry-snapshot restore) -- a small emergency
+    # kit at the threshold keeps a hard respawn from spiraling immediately.
+    cache(b, airlock, "medkit ammo_9mm", wall=1, t=0.5, inset=14.0)
     squad(b, hexes[1], "husk husk husk")
     squad(b, hexes[2], "spitter brute")
     squad(b, hexes[4], "brute mite")
@@ -797,15 +904,15 @@ def l10():
     for _e in b.data["rooms"][sanctum]["entities"]:
         if _e["type"] == "warden":
             _e["props"] = {"tether": 1}
-    cache(b, hexes[2], "ammo_cell ammo_shell medkit medkit")
-    cache(b, hexes[4], "ammo_9mm ammo_9mm ammo_shell")
-    cache(b, hexes[5], "medkit medkit ammo_cell medkit")
+    cache(b, hexes[2], "ammo_cell ammo_shell medkit medkit", wall=HEX_FREE)
+    cache(b, hexes[4], "ammo_9mm ammo_9mm ammo_shell", wall=HEX_FREE)
+    cache(b, hexes[5], "medkit medkit ammo_cell medkit", wall=HEX_FREE)
     b.entity(hexes[5], "key_void",
              (center(b, hexes[5])[0], center(b, hexes[5])[1] - 60))
     b.radio("pickup:void", "Ratio: The void seal. It was waiting in the far "
                            "coset. It WANTS to be found, Commando. "
                            "Remember that at the door.")
-    cache(b, sanctum, "medkit ammo_cell ammo_shell")
+    cache(b, sanctum, "medkit ammo_cell ammo_shell", wall=6)
     b.exit(sanctum, (1600, 180), gate_kind="warden")
     b.radio("kills:20", "Ratio: The Warden is the door's idea of a guard. "
                         "Show it a better one.")
@@ -830,14 +937,18 @@ def vigil():
     b = LevelBuilder("THE VIGIL", 4, "amb_drone_finale")
     b.data["vigil"] = True
     b.data["alert_hops"] = 1
-    core = b.ngon(0, 0, 110, 6, phase=math.radians(90))
+    # same fold shape as THE FOLD (L8): the heart is a real place (the
+    # watch is kept here), the petals stay uniform on purpose (see
+    # LEVEL_DESIGN_PLAYBOOK.md §8) since every wave arrives identically.
+    core = b.ngon(0, 0, 110, 6, phase=math.radians(90), kind="chapel")
     petals = []
     angs = []
     for i in range(6):
         a = math.radians(90) - (i + 0.5) * math.pi / 3
         angs.append(a)
         petals.append(b.ngon(280 * math.cos(a), 280 * math.sin(a), 110, 6,
-                             phase=a + math.radians(90), seed=4000 + i))
+                             phase=a + math.radians(90), seed=4000 + i,
+                             kind="generic"))
     for i, a in enumerate(angs):
         b.connect_pts(core, (95.3 * math.cos(a), 95.3 * math.sin(a)),
                       petals[i],

@@ -28,7 +28,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 1000
+   "detail_seed": 1000,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -54,7 +55,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 1001
+   "detail_seed": 1001,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -80,7 +82,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 1002
+   "detail_seed": 1002,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -121,7 +124,8 @@
      ]
     }
    ],
-   "detail_seed": 1003
+   "detail_seed": 1003,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -150,19 +154,20 @@
     {
      "type": "ammo_9mm",
      "pos": [
-      85.0,
-      500.0
+      134.09009742330267,
+      543.2824855787278
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      100.0,
-      500.0
+      143.2824855787278,
+      534.0900974233027
      ]
     }
    ],
-   "detail_seed": 1004
+   "detail_seed": 1004,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -203,7 +208,8 @@
      ]
     }
    ],
-   "detail_seed": 1005
+   "detail_seed": 1005,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -239,12 +245,13 @@
     {
      "type": "medkit",
      "pos": [
-      885.0,
-      500.0
+      938.6862915010153,
+      538.6862915010153
      ]
     }
    ],
-   "detail_seed": 1006
+   "detail_seed": 1006,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -273,26 +280,27 @@
     {
      "type": "ammo_shell",
      "pos": [
-      1285.0,
-      500.0
+      1329.49390334559,
+      547.8786796564403
      ]
     },
     {
      "type": "ammo_9mm",
      "pos": [
-      1300.0,
-      500.0
+      1338.6862915010151,
+      538.6862915010153
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      1315.0,
-      500.0
+      1347.8786796564402,
+      529.4939033455902
      ]
     }
    ],
-   "detail_seed": 1007
+   "detail_seed": 1007,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -321,26 +329,27 @@
     {
      "type": "medkit",
      "pos": [
-      85.0,
-      900.0
+      129.49390334559013,
+      947.8786796564403
      ]
     },
     {
      "type": "ammo_cell",
      "pos": [
-      100.0,
-      900.0
+      138.68629150101523,
+      938.6862915010153
      ]
     },
     {
      "type": "portable_hole",
      "pos": [
-      115.0,
-      900.0
+      147.87867965644034,
+      929.4939033455902
      ]
     }
    ],
-   "detail_seed": 1008
+   "detail_seed": 1008,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -388,7 +397,8 @@
      ]
     }
    ],
-   "detail_seed": 1009
+   "detail_seed": 1009,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -436,7 +446,8 @@
      ]
     }
    ],
-   "detail_seed": 1010
+   "detail_seed": 1010,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -462,7 +473,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 1011
+   "detail_seed": 1011,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -505,12 +517,13 @@
     {
      "type": "medkit",
      "pos": [
-      85.0,
-      1300.0
+      138.68629150101523,
+      1338.6862915010151
      ]
     }
    ],
-   "detail_seed": 1012
+   "detail_seed": 1012,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -539,19 +552,20 @@
     {
      "type": "ammo_cell",
      "pos": [
-      485.0,
-      1300.0
+      534.0900974233027,
+      1343.2824855787278
      ]
     },
     {
      "type": "ammo_shell",
      "pos": [
-      500.0,
-      1300.0
+      543.2824855787278,
+      1334.0900974233025
      ]
     }
    ],
-   "detail_seed": 1013
+   "detail_seed": 1013,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -577,7 +591,8 @@
     ]
    ],
    "entities": [],
-   "detail_seed": 1014
+   "detail_seed": 1014,
+   "kind": "generic"
   },
   {
    "verts": [
@@ -618,7 +633,8 @@
      ]
     }
    ],
-   "detail_seed": 1015
+   "detail_seed": 1015,
+   "kind": "generic"
   }
  ],
  "connects": [
@@ -860,16 +876,16 @@
    {
     "room": 5,
     "pos": [
-     560.0,
-     500.0
+     539.3933982822018,
+     539.3933982822018
     ],
     "text": "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\nflip one bit at a time.\n\u2014 O."
    },
    {
     "room": 7,
     "pos": [
-     1240.0,
-     500.0
+     1339.3933982822018,
+     539.3933982822018
     ],
     "text": "[TRANSLATION CONFIDENCE 41%]\nwelcome / student / stranger.\nthis room is a lesson.\nthe lesson: >>four<< is a direction.\ndo not fear the direction.\nwe feared it. fear did not help."
    }

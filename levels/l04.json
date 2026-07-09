@@ -23,7 +23,8 @@
      200
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -120,7 +121,8 @@
       255.0
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -216,7 +218,8 @@
       -55.0
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -248,18 +251,19 @@
     {
      "type": "ammo_shell",
      "pos": [
-      100.0,
-      100.0
+      121.5,
+      16.0
      ]
     },
     {
      "type": "medkit",
      "pos": [
-      115.0,
-      100.0
+      108.5,
+      16.0
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -288,7 +292,8 @@
       100.0
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -331,7 +336,8 @@
       68.49658855381543
      ]
     }
-   ]
+   ],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -352,7 +358,8 @@
      0
     ]
    ],
-   "entities": []
+   "entities": [],
+   "kind": "corridor"
   },
   {
    "verts": [
@@ -395,7 +402,8 @@
       353.4965885538154
      ]
     }
-   ]
+   ],
+   "kind": "medbay"
   },
   {
    "verts": [
@@ -438,7 +446,8 @@
       385.0
      ]
     }
-   ]
+   ],
+   "kind": "storage"
   }
  ],
  "connects": [
@@ -549,16 +558,16 @@
    {
     "room": 1,
     "pos": [
-     700,
-     255
+     699.2,
+     295.0
     ],
     "text": "GRAFFITI, scratched into the panel:\n4 GOING  3 BACK\n4 GOING  3 BACK\n4 GOING  3 BACK\nover and over, forty times."
    },
    {
     "room": 7,
     "pos": [
-     380,
-     430
+     380.0,
+     445.0
     ],
     "text": "MEDICAL BAY (RELOCATED)\nPatient: unnamed, found in Gallery.\nImplant of unknown design fused to left arm.\nPatient states the implant 'came through the wall.'\nPatient discharged. Implant retained. Vault, blue seal."
    }
