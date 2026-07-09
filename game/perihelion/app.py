@@ -128,6 +128,7 @@ class GameScene(menus.Scene):
         self.renderer = Renderer(self.session)
         self.hud = HUD()
         self.radio = menus.RadioBar()
+        self.show_hints = False
         self.shakes: list[list[float]] = []  # [magnitude, ticks_left]
 
     def on_enter(self, app) -> None:
@@ -172,6 +173,17 @@ class GameScene(menus.Scene):
         self.renderer.draw(surf, debug=app.debug)
         mouse_internal = app.window_to_internal(pygame.mouse.get_pos())
         self.hud.draw(surf, self.session, mouse_internal)
+        if self.show_hints and self.session.tick_count < 60 * 14 \
+                and not self.session.dead:
+            f = menus.get_font(10)
+            fade = 255 if self.session.tick_count < 60 * 11 else \
+                max(0, int(255 * (60 * 14 - self.session.tick_count) / (60 * 3)))
+            for i, line in enumerate(("WASD move    mouse aim    LMB fire",
+                                      "E read terminals    1-8 weapons    ESC pause")):
+                img = f.render(line, True, (200, 200, 190))
+                img.set_alpha(fade)
+                surf.blit(img, (surf.get_width() // 2 - img.get_width() // 2,
+                                surf.get_height() - 66 + i * 14))
         self.radio.draw(app, surf)
 
 
@@ -338,6 +350,8 @@ class App:
             self._load_and_play(0, carried_state=self.save_data.get("ng_state"))
         else:
             self._load_and_play(0, carried_state=None)
+        if self.game is not None and not self.save_data.get("ng_plus"):
+            self.game.show_hints = True
 
     def start_level_index(self, idx: int) -> None:
         self.current_level_index = idx

@@ -146,9 +146,9 @@ class TitleScene(Scene):
     def _activate(self, app) -> None:
         item = self.items[self.sel]
         if item == "New Game":
-            app.start_new_game()
+            app.push(DifficultyScene())
         elif item == "New Game+":
-            app.start_new_game(plus=True)
+            app.push(DifficultyScene(plus=True))
         elif item == "The Vigil (endless)":
             app.start_vigil()
         elif item == "Level Select":
@@ -187,6 +187,43 @@ class TitleScene(Scene):
             prefix = "> " if selected else "  "
             img = mf.render(prefix + item, True, color)
             surf.blit(img, (w // 2 - 60, 150 + i * 20))
+
+
+class DifficultyScene(Scene):
+    """One question between 'New Game' and the dark."""
+
+    def __init__(self, plus: bool = False):
+        self.plus = plus
+        self.sel = 0
+        self.items = [("normal", "NORMAL - the station is hostile"),
+                      ("hard", "HARD - the station is hungry")]
+
+    def handle_event(self, app, event) -> None:
+        if event.type != pygame.KEYDOWN:
+            return
+        if event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_UP, pygame.K_w):
+            self.sel = 1 - self.sel
+        elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+            app.settings["difficulty"] = self.items[self.sel][0]
+            app.pop()
+            app.start_new_game(plus=self.plus)
+        elif event.key == pygame.K_ESCAPE:
+            app.pop()
+
+    def draw(self, app, surf) -> None:
+        w, h = surf.get_size()
+        surf.fill((6, 6, 10))
+        img = get_font(18).render("HOW FAR IN ARE YOU?", True, (230, 230, 230))
+        surf.blit(img, (w // 2 - img.get_width() // 2, 70))
+        mf = get_font(12)
+        for i, (_, label) in enumerate(self.items):
+            selected = i == self.sel
+            color = (255, 255, 255) if selected else (150, 150, 150)
+            prefix = "> " if selected else "  "
+            t = mf.render(prefix + label, True, color)
+            surf.blit(t, (w // 2 - t.get_width() // 2, 130 + i * 22))
+        hint = get_font(10).render("ESC: back", True, (110, 110, 110))
+        surf.blit(hint, (10, h - 16))
 
 
 class LevelSelectScene(Scene):
