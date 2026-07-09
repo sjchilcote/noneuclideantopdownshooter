@@ -1,0 +1,28 @@
+[project]
+name = "perihelion"
+version = "0.1.0"
+description = "PERIHELION: a non-Euclidean Teleglitch-like survival shooter."
+requires-python = ">=3.11"
+dependencies = [
+    "pygame-ce>=2.5",
+    "numpy>=1.26",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "maturin",
+]
+
+[tool.setuptools]
+package-dir = {"" = "game"}
+
+[tool.setuptools.packages.find]
+where = ["game"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["game/tests"]
