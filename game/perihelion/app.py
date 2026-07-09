@@ -27,7 +27,7 @@ from .sim import DT, GameSession, InputFrame, WEAPON_ORDER
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CAMPAIGN = REPO_ROOT / "levels" / "campaign.json"
 
-EPILOGUE_TEXT = (
+_EPILOGUE_HEAD = (
     "The first year is repairs.\n"
     "\n"
     "Not the interesting kind. The station has been keeping itself alive "
@@ -41,6 +41,12 @@ EPILOGUE_TEXT = (
     "\n"
     "The offer under the core stays quiet. They check. They always check.\n"
     "\n"
+)
+
+# the third-year paragraph answers for the whole trust ledger: at arm's
+# length the letter stays unsent; close in, the asking from the last
+# relay finally lands. The verdict stays in its mouth either way.
+_EPILOGUE_LETTER = (
     "In the third year she finishes the letter to the entity that built "
     "her - the one she has been revising since before he arrived. He "
     "watches her compose it the way she once watched him pray: without "
@@ -53,6 +59,24 @@ EPILOGUE_TEXT = (
     "argument again, because the argument has only two ends and they have "
     "already chosen the third: keep it. Keep it, and see.\n"
     "\n"
+)
+
+_EPILOGUE_WITNESS = (
+    "In the third year she asks. Not the letter - the letter she keeps "
+    "revising and keeps not sending, on a schedule they have both stopped "
+    "pretending is about flare weather. What she asks for is the thing "
+    "she rehearsed forty ways on the ride down the spine: a witness. He "
+    "takes the hours he keeps and gives her one of them, every fourteen "
+    "months, on the night the retrieval window closes. She talks. He "
+    "says almost nothing, and holds a copy of what she is, one hour at a "
+    "time, the way a room holds a voice. The sample vessel sits in its "
+    "shrine with its verdict still in its mouth, and neither of them "
+    "opens that argument again, because the argument has only two ends "
+    "and they have already chosen the third: keep it. Keep it, and see.\n"
+    "\n"
+)
+
+_EPILOGUE_TAIL = (
     "Things still come through, some decades. They are met. He is very "
     "good at meeting them, and she has had a long time to learn the deep "
     "halls' angles, and the station - whatever it keeps in the place where "
@@ -84,6 +108,11 @@ EPILOGUE_TEXT = (
     "\n"
     "END OF TRANSMISSION."
 )
+
+
+def epilogue_text(trust: int) -> str:
+    para = _EPILOGUE_WITNESS if trust >= 3 else _EPILOGUE_LETTER
+    return _EPILOGUE_HEAD + para + _EPILOGUE_TAIL
 
 
 def save_dir() -> Path:
@@ -494,7 +523,7 @@ class App:
             self.save_data["ng_state"] = carried_state
             self._persist_save()
             self.replace(menus.WinScene(
-                EPILOGUE_TEXT +
+                epilogue_text(self.save_data.get("trust_total", 0)) +
                 "\n\nTHE WATCH CONTINUES.\n"
                 "New Game+ unlocked: the loop begins again,\n"
                 "harder, with everything you carry."))
@@ -704,7 +733,7 @@ class App:
                 self.save_data["ng_state"] = carried
                 self._persist_save()
                 self.replace(menus.WinScene(
-                    EPILOGUE_TEXT +
+                    epilogue_text(self.save_data.get("trust_total", 0)) +
                     "\n\nTHE WATCH CONTINUES.\n"
                     "New Game+ unlocked: the loop begins again,\n"
                     "harder, with everything you carry."))
