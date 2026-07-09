@@ -1,0 +1,12 @@
+[package]
+name = "necore-py"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "necore"
+crate-type = ["cdylib"]
+
+[dependencies]
+necore = { path = "../necore" }
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py311"] }

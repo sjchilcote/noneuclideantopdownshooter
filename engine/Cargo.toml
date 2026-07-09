@@ -1,0 +1,10 @@
+[workspace]
+members = ["necore", "necore-py"]
+resolver = "2"
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+[profile.dev]
+opt-level = 1
