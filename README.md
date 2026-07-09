@@ -37,6 +37,8 @@ uv run python -m perihelion.editor              # new level
 uv run python -m perihelion.editor levels/l03.json
 ```
 
+Full keybinding reference in [EDITOR.md](EDITOR.md).
+
 ## Architecture
 
 - `engine/necore` — Rust core: room-graph geometry, analytic portal
