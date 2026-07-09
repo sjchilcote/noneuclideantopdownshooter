@@ -135,8 +135,11 @@ class InputFrame:
 class GameSession:
     def __init__(self, level: Level, seed: int = 0,
                  screen: tuple[int, int] = (480, 270), zoom: float = 1.35,
-                 player_state: dict | None = None):
+                 player_state: dict | None = None, difficulty: str = "normal"):
         self.level = level
+        self.difficulty = difficulty
+        self._hp_mul = 1.35 if difficulty == "hard" else 1.0
+        self._dmg_mul = 1.25 if difficulty == "hard" else 1.0
         self.rng = Random(seed)
         self.seed = seed
         self.screen_w, self.screen_h = screen
@@ -248,7 +251,7 @@ class GameSession:
         d = ENEMIES[kind]
         eid = self.sim.spawn(room, pos[0], pos[1], d["radius"], d["mass"], GROUP_ENEMY)
         self.sim.set_props(eid, rest_wall=0.0, rest_ent=0.2, max_substep=8.0)
-        self.enemies[eid] = dict(kind=kind, hp=d["hp"], state="idle",
+        self.enemies[eid] = dict(kind=kind, hp=d["hp"] * self._hp_mul, state="idle",
                                  touch_cd=0, spit_cd=0, scream_cd=0,
                                  wander_cd=0, buff=0)
         return eid
@@ -691,6 +694,7 @@ class GameSession:
         if self.hurt_cd > 0 or self.dead:
             return
         self.hurt_cd = 30
+        dmg *= self._dmg_mul
         self.hp -= dmg
         self.metrics["dmg_taken"] += dmg
         px, py = self.player_pos()

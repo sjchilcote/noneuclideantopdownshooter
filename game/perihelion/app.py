@@ -119,11 +119,12 @@ def build_debug_level() -> Level:
 
 class GameScene(menus.Scene):
     def __init__(self, level: Level, seed: int, player_state: dict | None = None,
-                 level_path: str | None = None):
+                 level_path: str | None = None, difficulty: str = "normal"):
         self.level = level
         self.level_path = level_path
         self.seed = seed
-        self.session = GameSession(level, seed=seed, player_state=player_state)
+        self.session = GameSession(level, seed=seed, player_state=player_state,
+                                   difficulty=difficulty)
         self.renderer = Renderer(self.session)
         self.hud = HUD()
         self.radio = menus.RadioBar()
@@ -196,7 +197,8 @@ class App:
         self.scenes: list[menus.Scene] = []
         self.game: GameScene | None = None
         self.pending_weapon_select = 0
-        self.settings = {"shake": True}
+        self.settings = {"shake": True,
+                 "difficulty": "hard" if getattr(args, "hard", False) else "normal"}
 
         self.save_data = self._load_save()
         self._campaign_paths: list[str] | None = None
@@ -321,7 +323,7 @@ class App:
         level, path = self._load_level_by_index(idx)
         self._level_start_state = carried_state
         seed = self.rng_seed + idx
-        game = GameScene(level, seed, player_state=carried_state, level_path=path)
+        game = GameScene(level, seed, player_state=carried_state, level_path=path, difficulty=self.settings.get('difficulty', 'normal'))
         self.game = game
         self.replace(game)
         if not self.dummy and level.intro:

@@ -13,6 +13,8 @@ def main(argv=None) -> None:
     parser.add_argument("--scale", type=int, default=None,
                          help="integer pixel scale for the window (default: fit 1440x810)")
     parser.add_argument("--mute", action="store_true", help="disable all audio")
+    parser.add_argument("--hard", action="store_true",
+                        help="hard mode: tougher, meaner enemies")
     parser.add_argument("--fps", action="store_true", help="show the fps overlay")
     parser.add_argument("--autoplay", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)

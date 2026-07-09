@@ -240,6 +240,9 @@ class SettingsScene(Scene):
             app.settings["shake"] = not app.settings.get("shake", True)
         elif event.key == pygame.K_m:
             app.audio.set_mute(not app.audio.muted)
+        elif event.key == pygame.K_d:
+            cur = app.settings.get("difficulty", "normal")
+            app.settings["difficulty"] = "hard" if cur == "normal" else "normal"
 
     def draw(self, app, surf) -> None:
         w, h = surf.get_size()
@@ -251,6 +254,7 @@ class SettingsScene(Scene):
             f"Master volume: {app.audio.master_vol:.1f}   (left/right)",
             f"Muted: {'yes' if app.audio.muted else 'no'}   (m)",
             f"Screenshake: {'on' if app.settings.get('shake', True) else 'off'}   (t)",
+            f"Difficulty: {app.settings.get('difficulty', 'normal')}   (d, next new game)",
             "ESC: back",
         ]
         for i, line in enumerate(lines):
