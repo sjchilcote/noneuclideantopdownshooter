@@ -26,3 +26,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = ["game/tests"]
+markers = [
+    "slow: a slower test; deselect with '-m \"not slow\"' for a fast subset",
+]

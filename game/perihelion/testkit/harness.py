@@ -47,6 +47,7 @@ def _capture_frame(renderer_mod, session: GameSession, capture_dir: str | Path,
     every capture attempt safely no-ops via the except below."""
     try:
         os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+        os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
         import pygame
 
         pygame.init()

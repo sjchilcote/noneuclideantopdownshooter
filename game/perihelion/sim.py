@@ -610,6 +610,23 @@ class GameSession:
                 dist = math.hypot(ddx, ddy) or 1e-6
                 nx, ny = ddx / dist, ddy / dist
                 s.set_dir(eid, nx, ny)
+                # husks lunge: a sudden burst inside close range reads as an
+                # attack, not a shove
+                if kind in ("husk", "brute") and dist < 95.0 \
+                        and e.get("lunge_cd", 0) <= 0:
+                    e["lunge_cd"] = 100 if kind == "husk" else 140
+                    burst = 340.0 if kind == "husk" else 260.0
+                    s.set_vel(eid, evx + nx * burst, evy + ny * burst)
+                    self._snd(d["alert_snd"], room, (ex, ey), 0.55)
+                if e.get("lunge_cd", 0) > 0:
+                    e["lunge_cd"] -= 1
+                # warden enrage below half health
+                if kind == "warden" and not e.get("enraged") \
+                        and e["hp"] < ENEMIES["warden"]["hp"] * 0.5:
+                    e["enraged"] = True
+                    e["buff"] = 10 ** 9
+                    self._snd("shrieker_scream", room, (ex, ey), 1.0)
+                    self.fx.append(("scream", room, ex, ey))
                 keep_min = d.get("keep_min")
                 if keep_min is not None and d.get("spit_cd") is not None:
                     # ranged: hold the band, spit on cooldown
@@ -618,8 +635,15 @@ class GameSession:
                     elif dist > d["keep_max"]:
                         s.set_vel(eid, evx + nx * accel * DT, evy + ny * accel * DT)
                     if e["spit_cd"] <= 0:
-                        e["spit_cd"] = d["spit_cd"]
+                        e["spit_cd"] = d["spit_cd"] // 2 if e.get("enraged") \
+                            else d["spit_cd"]
                         self._spit(eid, room, ex, ey, nx, ny, d)
+                        if e.get("enraged"):
+                            # radial burst: the warden's room fills with spit
+                            for k in range(6):
+                                a2 = k * math.pi / 3 + self.tick_count * 0.05
+                                self._spit(eid, room, ex, ey,
+                                           math.cos(a2), math.sin(a2), d)
                     if kind != "warden":
                         continue
                 s.set_vel(eid, evx + nx * accel * DT, evy + ny * accel * DT)
