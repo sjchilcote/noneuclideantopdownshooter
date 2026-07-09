@@ -662,8 +662,8 @@ class GameSession:
     # the vigil: the wave director. Things still come through. They are met.
     # ------------------------------------------------------------------
 
-    VIGIL_COSTS = (("mite", 1), ("husk", 2), ("spitter", 4), ("shrieker", 5),
-                   ("brute", 7))
+    # no shriekers: a thing that flees forever stalls a holdout
+    VIGIL_COSTS = (("mite", 1), ("husk", 2), ("spitter", 4), ("brute", 7))
     VIGIL_LINES = (
         "Ratio: Contacts. Petal breach, multiple.",
         "Ratio: Another push. The count holds.",
@@ -677,7 +677,12 @@ class GameSession:
             self.wave_timer -= 1
             return
         if any(e for e in self.enemies.values()):
-            return  # the wave is met when the last of it falls
+            # stragglers do not stall the watch: after a grace period the
+            # next push comes through anyway
+            self.wave_stall = self.wave_stall + 1 if hasattr(self, "wave_stall") else 1
+            if self.wave_stall < 60 * 60:
+                return
+        self.wave_stall = 0
         self.wave += 1
         self.metrics["wave"] = self.wave
         budget = 3 + 2 * self.wave
