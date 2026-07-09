@@ -323,6 +323,15 @@ class GameSession:
             self.hurt_cd -= 1
         self.lightning_charge = min(LIGHTNING_RECHARGE_TICKS, self.lightning_charge + 1)
 
+        # camera follow (after physics; transfers already re-based the matrix)
+        px2, py2 = self.player_pos()
+        spx, spy = necore.mat_apply(self.cam, px2, py2)
+        k = min(1.0, 7.0 * DT)
+        self.cam = necore.mat_mul(
+            necore.mat_translate((self.screen_w / 2 - spx) * k,
+                                 (self.screen_h / 2 - spy) * k),
+            self.cam)
+
     # ------------------------------------------------------------------
 
     def _apply_friction(self, eid: int, fric: float):
