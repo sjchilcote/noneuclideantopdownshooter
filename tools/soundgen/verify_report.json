@@ -4,8 +4,8 @@
   "n_sounds": 38,
   "n_ok": 38,
   "n_error": 0,
-  "avg_p_shippable": 0.47434210526315784,
-  "min_p_shippable": 0.025,
+  "avg_p_shippable": 0.47565789473684217,
+  "min_p_shippable": 0.1,
   "results": [
     {
       "name": "pistol_fire",
@@ -1332,40 +1332,39 @@
       "p_shippable": 0.3,
       "matches_spec": false,
       "amateur_tells": [
-        "lacks the bright, zappy high-frequency energy of an experimental weapon",
-        "the decay is choked and gated rather than ringing down naturally",
-        "lacks the physical, heavy low-end weight required for the industrial aesthetic",
-        "Severe lack of low-end weight and physical body",
-        "Excessive high-frequency digital harshness",
-        "Artificial, abrupt decay that lacks natural metallic ring-down"
+        "lack of low-end weight and physical impact",
+        "unnatural, abrupt decay envelope",
+        "muffled high frequencies that lack the requested bright, zappy energy",
+        "unnatural, abrupt decay that feels digitally truncated rather than a natural ring-down",
+        "muffled high frequencies that prevent it from sounding like a bright, zappy energy weapon"
       ],
-      "summary": "While the initial transient has a decent snap, the sound is far too dark, boxy, and choked to meet the spec of a bright, zappy energy weapon. It lacks both the metallic ring-down and the heavy, physical weight needed for a Teleglitch-style industrial aesthetic. It feels more like a muffled, synthetic impact than an experimental high-tech firearm. | While the sound has a sharp, zappy attack, it completely misses the physical, heavy, and gritty analog-industrial dread required for the game's aesthetic. It sounds like a generic, thin digital UI click or a highly high-passed laser rather than a weighty, experimental energy weapon. To make this usable, it needs a significant injection of sub/low-end punch and a longer, more resonant metallic tail.",
+      "summary": "While the sound has a decent initial transient, it fails to deliver the bright, electric 'zap' or the heavy, industrial weight required by the spec. The decay is choked rather than ringing out naturally, making it feel small and synthetic rather than like a powerful experimental weapon. It lacks the gritty, analog-industrial dread of a Teleglitch-style universe. | While the initial transient has a decent snap, the sound lacks the bright, electric 'zap' and the metallic ring-down required by the spec. It feels too muffled and choked to fit the heavy, industrial dread of a Teleglitch-style cosmic horror shooter. To make this usable, it needs a much wider frequency response, specifically a heavier sub-bass thump and a brighter, more sizzling high-end tail.",
       "n_passes": 2,
       "n_ok": 2,
       "n_error": 0,
       "errors": [],
       "raw_passes": [
         {
-          "heard": "I hear a single, highly compressed impact event with a sharp, instantaneous transient attack. The frequency balance is heavily weighted in the low-mids and mids, with a distinct lack of high-end sizzle and no sub-bass weight. The texture is a combination of a digital, synthetic pop and a short, highly damped metallic resonance that decays rapidly into silence with a gated, abrupt finish.",
+          "heard": "I hear a single, highly compressed impact event with a sharp, instantaneous transient attack. The frequency balance is heavily weighted in the low-mid and mid-range, with a distinct lack of sub-bass weight and a rolled-off high end. The texture is a mix of a digital, synthetic pop and a short, highly damped metallic resonance that decays rapidly and unnaturally, ending in a sudden gate-like silence.",
           "matches_spec": false,
           "p_shippable": 0.3,
           "amateur_tells": [
-            "lacks the bright, zappy high-frequency energy of an experimental weapon",
-            "the decay is choked and gated rather than ringing down naturally",
-            "lacks the physical, heavy low-end weight required for the industrial aesthetic"
+            "lack of low-end weight and physical impact",
+            "unnatural, abrupt decay envelope",
+            "muffled high frequencies that lack the requested bright, zappy energy"
           ],
-          "summary": "While the initial transient has a decent snap, the sound is far too dark, boxy, and choked to meet the spec of a bright, zappy energy weapon. It lacks both the metallic ring-down and the heavy, physical weight needed for a Teleglitch-style industrial aesthetic. It feels more like a muffled, synthetic impact than an experimental high-tech firearm."
+          "summary": "While the sound has a decent initial transient, it fails to deliver the bright, electric 'zap' or the heavy, industrial weight required by the spec. The decay is choked rather than ringing out naturally, making it feel small and synthetic rather than like a powerful experimental weapon. It lacks the gritty, analog-industrial dread of a Teleglitch-style universe."
         },
         {
-          "heard": "I hear a single, highly compressed impact event with a very sharp, instantaneous transient attack. The frequency balance is heavily weighted in the high-mids and highs, with a distinct lack of low-end weight or sub-bass. The texture is extremely digital, bright, and noisy, decaying rapidly into a short, synthetic, gated-sounding tail with no natural acoustic or metallic resonance.",
+          "heard": "I hear a single, highly compressed impact event with a sharp, instantaneous transient attack. The frequency balance is heavily weighted in the low-mids and mids, with a distinct lack of sub-bass weight and a rolled-off high end. The texture is a mix of a digital, synthetic pop and a short, highly dampened metallic resonance that decays rapidly and unnaturally, almost like a gated reverb or a truncated sample.",
           "matches_spec": false,
           "p_shippable": 0.3,
           "amateur_tells": [
-            "Severe lack of low-end weight and physical body",
-            "Excessive high-frequency digital harshness",
-            "Artificial, abrupt decay that lacks natural metallic ring-down"
+            "lack of low-end weight and physical impact",
+            "unnatural, abrupt decay that feels digitally truncated rather than a natural ring-down",
+            "muffled high frequencies that prevent it from sounding like a bright, zappy energy weapon"
           ],
-          "summary": "While the sound has a sharp, zappy attack, it completely misses the physical, heavy, and gritty analog-industrial dread required for the game's aesthetic. It sounds like a generic, thin digital UI click or a highly high-passed laser rather than a weighty, experimental energy weapon. To make this usable, it needs a significant injection of sub/low-end punch and a longer, more resonant metallic tail."
+          "summary": "While the initial transient has a decent snap, the sound lacks the bright, electric 'zap' and the metallic ring-down required by the spec. It feels too muffled and choked to fit the heavy, industrial dread of a Teleglitch-style cosmic horror shooter. To make this usable, it needs a much wider frequency response, specifically a heavier sub-bass thump and a brighter, more sizzling high-end tail."
         }
       ],
       "category": "gun"
@@ -1376,40 +1375,42 @@
       "p_shippable": 0.3,
       "matches_spec": false,
       "amateur_tells": [
-        "Lacks any low-end weight or physical cabinet resonance",
-        "No audible electrical crackle or gritty distortion",
-        "The pitch sweep sounds like a clean digital test generator rather than a physical, analog capacitor",
-        "Lacks the requested electrical crackle and tremolo modulation entirely",
-        "Frequency balance is far too bright and thin, lacking the heavy, dark, analog-industrial weight required for the game's aesthetic",
-        "The rise sounds like a clean, generic synthesizer test tone rather than a physical, gritty capacitor whine"
+        "Severe lack of low-frequency weight and physical body",
+        "Absence of the specified tremolo and electrical crackle textures",
+        "Too clean, sterile, and digitally perfect for a lo-fi analog-industrial aesthetic",
+        "severe lack of low-end weight and physical body",
+        "absence of any gritty electrical crackle or analog noise texture",
+        "overly clean, digital-sounding synthesizer sweep that lacks lo-fi industrial character",
+        "abrupt digital click at the end of the file"
       ],
-      "summary": "While the sound successfully executes the rising pitch sweep and ends abruptly to hand off to a shot, it completely misses the aesthetic brief. It sounds like a clean, sterile digital synthesizer rather than a heavy, gritty, lo-fi industrial capacitor. To fit the game, it needs significant saturation, low-end weight, and textured electrical crackle. | While the sound successfully performs a rising pitch sweep that ends abruptly to hand off to a shot, it completely misses the aesthetic and textural requirements of the spec. It lacks the gritty electrical crackle, tremolo, and heavy low-end weight needed for a lo-fi cosmic-horror setting, sounding instead like a clean, modern digital synth. To be usable, it needs significant analog saturation, low-frequency reinforcement, and layered mechanical or electrical noise.",
+      "summary": "While the sound successfully executes the rising pitch sweep and ends abruptly to hand off to a shot, it completely misses the gritty, physical aesthetic of the game. It lacks the requested electrical crackle, tremolo, and low-end weight, sounding more like a clean sci-fi synth rise than a heavy, dangerous industrial capacitor. To fit the spec, it needs significant saturation, low-frequency reinforcement, and chaotic amplitude modulation. | While the sound successfully executes the rising pitch sweep of a charging weapon, it is far too clean, bright, and digital for the intended lo-fi industrial cosmic-horror aesthetic. It lacks the gritty electrical crackle, heavy low-end weight, and analog dread required to feel physical and dangerous. To fit the game, it needs significant saturation, low-frequency reinforcement, and a layer of textured, unstable distortion.",
       "n_passes": 2,
       "n_ok": 2,
       "n_error": 0,
       "errors": [],
       "raw_passes": [
         {
-          "heard": "The clip consists of a single continuous event: a rapidly rising pitch sweep with a sharp, immediate start and a sudden, abrupt cutoff at its peak. The frequency balance is heavily skewed toward the high-mids and highs, lacking any sub or low-end weight, with a highly tonal, clean, and synthetic texture. It decays instantly due to the hard cutoff, leaving a dry silence with no trailing reverb or analog noise floor.",
+          "heard": "The clip consists of a single continuous rising pitch event with a sharp, immediate start and a sudden, abrupt cutoff at its peak. It is dominated by bright, piercing high-mid and high frequencies with almost no low-end or sub-bass weight, presenting a clean, synthetic, and highly tonal texture. The sound exhibits a smooth, rapid pitch sweep upward, but lacks any noticeable amplitude modulation, tremolo, or gritty electrical crackle, ending instantly with no decay or tail.",
           "matches_spec": false,
           "p_shippable": 0.3,
           "amateur_tells": [
-            "Lacks any low-end weight or physical cabinet resonance",
-            "No audible electrical crackle or gritty distortion",
-            "The pitch sweep sounds like a clean digital test generator rather than a physical, analog capacitor"
+            "Severe lack of low-frequency weight and physical body",
+            "Absence of the specified tremolo and electrical crackle textures",
+            "Too clean, sterile, and digitally perfect for a lo-fi analog-industrial aesthetic"
           ],
-          "summary": "While the sound successfully executes the rising pitch sweep and ends abruptly to hand off to a shot, it completely misses the aesthetic brief. It sounds like a clean, sterile digital synthesizer rather than a heavy, gritty, lo-fi industrial capacitor. To fit the game, it needs significant saturation, low-end weight, and textured electrical crackle."
+          "summary": "While the sound successfully executes the rising pitch sweep and ends abruptly to hand off to a shot, it completely misses the gritty, physical aesthetic of the game. It lacks the requested electrical crackle, tremolo, and low-end weight, sounding more like a clean sci-fi synth rise than a heavy, dangerous industrial capacitor. To fit the spec, it needs significant saturation, low-frequency reinforcement, and chaotic amplitude modulation."
         },
         {
-          "heard": "The clip consists of a single continuous rising pitch event with a very sharp, sudden start and an abrupt, clipped termination. It is dominated by bright, piercing high-mid and high frequencies with almost no low-end or sub-bass weight, presenting a clean, synthetic, and highly tonal texture. The pitch sweeps upward smoothly without any audible amplitude modulation, tremolo, or electrical crackle, ending instantly with a harsh digital gate.",
+          "heard": "The clip consists of a single continuous rising pitch event with a sharp, immediate start and a sudden, abrupt cutoff at its peak. It is dominated by bright, piercing high-mid and high frequencies with almost no low-end or sub-bass weight, presenting a clean, synthetic, and highly tonal texture. The sound exhibits a rapid, smooth pitch sweep with a subtle, fast vibrato/tremolo, but lacks any gritty, noisy, or physical crackle, and ends with a tiny, abrupt click at the cutoff.",
           "matches_spec": false,
           "p_shippable": 0.3,
           "amateur_tells": [
-            "Lacks the requested electrical crackle and tremolo modulation entirely",
-            "Frequency balance is far too bright and thin, lacking the heavy, dark, analog-industrial weight required for the game's aesthetic",
-            "The rise sounds like a clean, generic synthesizer test tone rather than a physical, gritty capacitor whine"
+            "severe lack of low-end weight and physical body",
+            "absence of any gritty electrical crackle or analog noise texture",
+            "overly clean, digital-sounding synthesizer sweep that lacks lo-fi industrial character",
+            "abrupt digital click at the end of the file"
           ],
-          "summary": "While the sound successfully performs a rising pitch sweep that ends abruptly to hand off to a shot, it completely misses the aesthetic and textural requirements of the spec. It lacks the gritty electrical crackle, tremolo, and heavy low-end weight needed for a lo-fi cosmic-horror setting, sounding instead like a clean, modern digital synth. To be usable, it needs significant analog saturation, low-frequency reinforcement, and layered mechanical or electrical noise."
+          "summary": "While the sound successfully executes the rising pitch sweep of a charging weapon, it is far too clean, bright, and digital for the intended lo-fi industrial cosmic-horror aesthetic. It lacks the gritty electrical crackle, heavy low-end weight, and analog dread required to feel physical and dangerous. To fit the game, it needs significant saturation, low-frequency reinforcement, and a layer of textured, unstable distortion."
         }
       ],
       "category": "gun"
@@ -1417,44 +1418,45 @@
     {
       "name": "tau_charged_fire",
       "spec": "big energy discharge: deep concussion plus a long electric arc tail with a descending metallic ring",
-      "p_shippable": 0.025,
+      "p_shippable": 0.1,
       "matches_spec": false,
       "amateur_tells": [
-        "Complete lack of low-end concussion or sub bass",
-        "No electric arc tail or descending metallic ring present",
-        "Sounds like a pitch-shifted human scream rather than a mechanical or industrial energy discharge",
-        "Severe digital clipping/harshness on the initial transient",
-        "No electrical arc texture or metallic ring present in the decay",
-        "Vocal/organic character that sounds like a cartoon scream rather than an industrial energy discharge"
+        "Severe digital clipping on the transient instead of analog-style saturation",
+        "Complete lack of low-end concussion or sub-bass weight",
+        "Abrupt, unnatural decay gate that cuts off the tail",
+        "No discernible descending metallic ring or distinct electric arc texture",
+        "Severe lack of low-end and sub-bass weight for a 'deep concussion'",
+        "No descending metallic ring or long electric arc tail present in the decay",
+        "Harsh, digital clipping on the transient instead of a heavy, analog-style saturation"
       ],
-      "summary": "This sound is completely wrong for the spec, presenting as a high-pitched organic scream rather than a heavy industrial energy discharge. It lacks the required physical weight, low-end concussion, and metallic/electric textures necessary for the game's analog-industrial dread aesthetic. It cannot be used for this event and reads as a placeholder asset. | This sound is completely wrong for the spec and the game's aesthetic, presenting as a high-pitched organic yelp or scream instead of a heavy industrial discharge. It lacks the physical weight, metallic resonance, and electrical grit required for a Teleglitch-style cosmic horror setting. It cannot be used for this event and needs to be completely redesigned from scratch.",
+      "summary": "This sound completely misses the mark for a heavy, physical energy discharge, sounding more like a blown-out digital glitch or a generic UI error. It lacks the deep, concussive low-end and the detailed, metallic tail required by the spec. For a Teleglitch-inspired aesthetic, it needs massive analog weight and a much more organic, sizzling decay rather than this harsh, choked digital burst. | This sound completely misses the mark for a heavy, cosmic-horror energy discharge, lacking both the deep physical concussion and the detailed electric/metallic tail specified. It sounds like a generic, high-passed UI click or a placeholder sci-fi gun pop rather than a weighty, dread-inducing industrial event. The abrupt decay and lack of low-end make it unusable for the intended aesthetic.",
       "n_passes": 2,
       "n_ok": 2,
       "n_error": 0,
       "errors": [],
       "raw_passes": [
         {
-          "heard": "I hear a single, highly compressed vocal-like scream or high-pitched organic shriek with a very sharp, sudden attack. The frequency balance is heavily skewed toward the high-mids and highs, completely lacking any sub or low-end weight. The texture is organic and wet rather than synthetic or metallic, decaying rapidly into a short, abrupt reverb tail with noticeable digital clipping at the transient peak.",
+          "heard": "I hear a single, highly compressed impact event with a sharp, digital-clipping attack that immediately chokes into a short, static-heavy tail. The frequency balance is heavily skewed toward the harsh high-mids and highs, with almost no sub-bass or low-end weight. The texture is extremely noisy and digitally distorted, decaying abruptly with a noticeable gate-like truncation rather than a natural fade.",
           "matches_spec": false,
-          "p_shippable": 0.05,
+          "p_shippable": 0.1,
           "amateur_tells": [
-            "Complete lack of low-end concussion or sub bass",
-            "No electric arc tail or descending metallic ring present",
-            "Sounds like a pitch-shifted human scream rather than a mechanical or industrial energy discharge",
-            "Severe digital clipping/harshness on the initial transient"
+            "Severe digital clipping on the transient instead of analog-style saturation",
+            "Complete lack of low-end concussion or sub-bass weight",
+            "Abrupt, unnatural decay gate that cuts off the tail",
+            "No discernible descending metallic ring or distinct electric arc texture"
           ],
-          "summary": "This sound is completely wrong for the spec, presenting as a high-pitched organic scream rather than a heavy industrial energy discharge. It lacks the required physical weight, low-end concussion, and metallic/electric textures necessary for the game's analog-industrial dread aesthetic. It cannot be used for this event and reads as a placeholder asset."
+          "summary": "This sound completely misses the mark for a heavy, physical energy discharge, sounding more like a blown-out digital glitch or a generic UI error. It lacks the deep, concussive low-end and the detailed, metallic tail required by the spec. For a Teleglitch-inspired aesthetic, it needs massive analog weight and a much more organic, sizzling decay rather than this harsh, choked digital burst."
         },
         {
-          "heard": "I hear a single, highly synthetic event starting with a sharp, high-frequency transient that immediately transitions into a pitch-sliding, cartoonish vocal-like screech. The frequency balance is heavily skewed toward the high-mids and highs with almost no sub or low-end weight, decaying rapidly into a clean, abrupt silence. The texture is entirely organic and vocal, resembling a pitched-up human scream or a stylized creature yelp rather than any mechanical or electrical process.",
+          "heard": "I hear a single, highly compressed impact event with a sharp, digital-clipping attack that immediately transitions into a short, static-like noise burst. The frequency balance is heavily skewed toward the high-mids and highs, with almost no sub-bass or low-end weight. The texture is harsh, digital, and white-noise-like, decaying abruptly with a gated, unnatural silence.",
           "matches_spec": false,
-          "p_shippable": 0.0,
+          "p_shippable": 0.1,
           "amateur_tells": [
-            "Complete lack of low-end concussion or sub bass",
-            "No electrical arc texture or metallic ring present in the decay",
-            "Vocal/organic character that sounds like a cartoon scream rather than an industrial energy discharge"
+            "Severe lack of low-end and sub-bass weight for a 'deep concussion'",
+            "No descending metallic ring or long electric arc tail present in the decay",
+            "Harsh, digital clipping on the transient instead of a heavy, analog-style saturation"
           ],
-          "summary": "This sound is completely wrong for the spec and the game's aesthetic, presenting as a high-pitched organic yelp or scream instead of a heavy industrial discharge. It lacks the physical weight, metallic resonance, and electrical grit required for a Teleglitch-style cosmic horror setting. It cannot be used for this event and needs to be completely redesigned from scratch."
+          "summary": "This sound completely misses the mark for a heavy, cosmic-horror energy discharge, lacking both the deep physical concussion and the detailed electric/metallic tail specified. It sounds like a generic, high-passed UI click or a placeholder sci-fi gun pop rather than a weighty, dread-inducing industrial event. The abrupt decay and lack of low-end make it unusable for the intended aesthetic."
         }
       ],
       "category": "gun"
@@ -1462,45 +1464,47 @@
     {
       "name": "tau_overcharge_hurt",
       "spec": "painful electric zap plus an urgent dark two-tone warning blip, weapon overcharge feedback",
-      "p_shippable": 0.125,
+      "p_shippable": 0.1,
       "matches_spec": false,
       "amateur_tells": [
-        "Complete lack of low-end weight or sub-bass, making it feel thin rather than heavy",
-        "Texture is overly clean, plastic, and digital, lacking any gritty, analog, or industrial character",
-        "The warning element is a single high-pitched chirp rather than an urgent dark two-tone blip",
-        "Abrupt, unnatural decay that lacks physical resonance",
-        "Lacks any low-end weight or physical presence",
-        "Extremely sterile, clean digital synthesis with no grit, saturation, or analog character",
-        "Abrupt, unnatural decay that sounds gated rather than fading out naturally"
+        "Complete lack of low-end weight or sub frequencies",
+        "Purely digital, clean synthesizer tones instead of gritty, analog, or industrial textures",
+        "No physical or painful 'electric zap' character",
+        "Abrupt, unnatural decay that lacks any environmental space or analog tail",
+        "complete lack of low-end weight or sub frequencies",
+        "sterile digital synthesis lacking analog grit or industrial texture",
+        "no physical or painful 'zap' character",
+        "abrupt and unnatural decay"
       ],
-      "summary": "While the sound functions as a generic sci-fi UI chirp, it completely misses the mark for the gritty, lo-fi industrial cosmic-horror aesthetic. It lacks the physical weight, analog distortion, and dark two-tone warning structure required by the spec. To work in this context, it needs a massive injection of low-end saturation, a dirtier transient, and a much darker, more threatening tonal character. | While the sound technically follows the structural sequence of a zap and a two-tone blip, its aesthetic execution is entirely wrong for a gritty cosmic-horror shooter. It sounds like a lightweight, sterile 8-bit UI asset rather than a heavy, threatening weapon overcharge. To fix this, it needs massive saturation, low-end weight, metallic resonance, and a more natural, dirty decay.",
+      "summary": "While the clip technically attempts a two-tone warning, it completely misses the aesthetic and physical requirements of the spec. Instead of a painful, gritty, industrial electric zap with heavy low-end dread, it presents as a sterile, lightweight, 8-bit digital system alert. It lacks the analog dirt, weight, and texture required to fit into a Teleglitch-inspired cosmic horror universe. | While the sound technically attempts a two-tone warning, it completely misses the aesthetic spec of a painful, gritty, lo-fi industrial overcharge. It sounds like a generic, clean 8-bit UI bleep rather than a heavy, physical cosmic-horror event. To work in this context, it needs massive saturation, a heavy low-end thud, and a noisy, distorted tail.",
       "n_passes": 2,
       "n_ok": 2,
       "n_error": 0,
       "errors": [],
       "raw_passes": [
         {
-          "heard": "I hear a single, highly compressed event consisting of a sharp, synthetic transient that immediately transitions into a high-pitched, descending digital chirp. The frequency balance is heavily skewed toward the high-mids and highs, with almost no low-end weight or sub-bass presence. The texture is entirely digital, clean, and plastic, decaying abruptly with a synthetic gate-like cutoff.",
+          "heard": "The clip consists of two distinct events: a sharp, high-frequency synthetic chirp followed immediately by a lower, two-tone electronic beep. The attack of both sounds is extremely abrupt and sharp, with a frequency balance heavily weighted toward the high-mids and highs, lacking any sub or low-end weight. The texture is purely digital, clean, and tonal, decaying instantly with a harsh, truncated gate and no natural tail or analog warmth.",
           "matches_spec": false,
           "p_shippable": 0.1,
           "amateur_tells": [
-            "Complete lack of low-end weight or sub-bass, making it feel thin rather than heavy",
-            "Texture is overly clean, plastic, and digital, lacking any gritty, analog, or industrial character",
-            "The warning element is a single high-pitched chirp rather than an urgent dark two-tone blip",
-            "Abrupt, unnatural decay that lacks physical resonance"
+            "Complete lack of low-end weight or sub frequencies",
+            "Purely digital, clean synthesizer tones instead of gritty, analog, or industrial textures",
+            "No physical or painful 'electric zap' character",
+            "Abrupt, unnatural decay that lacks any environmental space or analog tail"
           ],
-          "summary": "While the sound functions as a generic sci-fi UI chirp, it completely misses the mark for the gritty, lo-fi industrial cosmic-horror aesthetic. It lacks the physical weight, analog distortion, and dark two-tone warning structure required by the spec. To work in this context, it needs a massive injection of low-end saturation, a dirtier transient, and a much darker, more threatening tonal character."
+          "summary": "While the clip technically attempts a two-tone warning, it completely misses the aesthetic and physical requirements of the spec. Instead of a painful, gritty, industrial electric zap with heavy low-end dread, it presents as a sterile, lightweight, 8-bit digital system alert. It lacks the analog dirt, weight, and texture required to fit into a Teleglitch-inspired cosmic horror universe."
         },
         {
-          "heard": "Two distinct events: a sharp, high-frequency digital click/zap with a very fast attack, followed immediately by a clean, two-tone electronic beep. The frequency balance is heavily skewed toward the high-mids and highs, completely lacking sub or low-end weight. The texture is sterile, clean, and purely tonal/synthetic rather than gritty or metallic, ending with an abrupt, unnatural decay.",
+          "heard": "The clip consists of two distinct events: a sharp, high-frequency synthetic chirp followed immediately by a lower-pitched, two-tone electronic beep. The attack of both sounds is extremely sharp and digital, with a frequency balance heavily biased toward the high-mids and highs, lacking any sub or low-end weight. The texture is purely digital, clean, and tonal, decaying abruptly with a sterile, gated silence and no natural acoustic or analog tail.",
           "matches_spec": false,
-          "p_shippable": 0.15,
+          "p_shippable": 0.1,
           "amateur_tells": [
-            "Lacks any low-end weight or physical presence",
-            "Extremely sterile, clean digital synthesis with no grit, saturation, or analog character",
-            "Abrupt, unnatural decay that sounds gated rather than fading out naturally"
+            "complete lack of low-end weight or sub frequencies",
+            "sterile digital synthesis lacking analog grit or industrial texture",
+            "no physical or painful 'zap' character",
+            "abrupt and unnatural decay"
           ],
-          "summary": "While the sound technically follows the structural sequence of a zap and a two-tone blip, its aesthetic execution is entirely wrong for a gritty cosmic-horror shooter. It sounds like a lightweight, sterile 8-bit UI asset rather than a heavy, threatening weapon overcharge. To fix this, it needs massive saturation, low-end weight, metallic resonance, and a more natural, dirty decay."
+          "summary": "While the sound technically attempts a two-tone warning, it completely misses the aesthetic spec of a painful, gritty, lo-fi industrial overcharge. It sounds like a generic, clean 8-bit UI bleep rather than a heavy, physical cosmic-horror event. To work in this context, it needs massive saturation, a heavy low-end thud, and a noisy, distorted tail."
         }
       ],
       "category": "gun"
