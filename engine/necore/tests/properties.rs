@@ -1,7 +1,7 @@
 //! Property-based verification suite for necore (ENGINE_DESIGN.md §2.6).
 //! Added incrementally; each property is a separate `proptest!` block below.
 
-use necore::{geom, v, Event, Mat3, Sim, Vec2, World};
+use necore::{geom, raycast, v, Event, Mat3, RayHit, Sim, Vec2, World};
 use proptest::prelude::*;
 
 // ---------------------------------------------------------------------
@@ -327,5 +327,105 @@ proptest! {
 
         let prod = xform1.mul(xform2);
         prop_assert!(mat_max_abs_diff(prod, Mat3::IDENTITY) < 1e-9, "{:?}", prod);
+    }
+}
+
+// ---------------------------------------------------------------------
+// 6. Euclidean raycast oracle: a 3x2 grid of 100-unit square rooms glued
+//    by pure-translation portals must agree exactly with flat-rectangle
+//    ray/boundary intersection in world coordinates.
+// ---------------------------------------------------------------------
+
+/// World-space true center of grid room (i, j): rooms are 100x100, tiled
+/// with no gaps across a 300x200 rectangle (i in 0..3, j in 0..2).
+fn true_center(i: usize, j: usize) -> Vec2 {
+    v(i as f64 * 100.0 + 50.0, j as f64 * 100.0 + 50.0)
+}
+
+/// 3x2 grid of 100-unit squares glued edge-to-edge by `connect` (rigid).
+/// Identically-oriented squares glued this way produce pure translations
+/// (no rotation), which is asserted below before returning.
+fn build_translation_grid() -> (World, Vec<Vec<usize>>) {
+    let mut w = World::new();
+    let mut ids = vec![vec![0usize; 2]; 3];
+    for (i, col) in ids.iter_mut().enumerate() {
+        for (j, id) in col.iter_mut().enumerate() {
+            let _ = (i, j);
+            *id = w.add_room(&square100(0.0, 0.0)).unwrap();
+        }
+    }
+    for j in 0..2 {
+        for i in 0..2 {
+            w.connect(ids[i][j], 2, ids[i + 1][j], 0).unwrap();
+        }
+    }
+    for i in 0..3 {
+        w.connect(ids[i][0], 1, ids[i][1], 3).unwrap();
+    }
+    for room in &w.rooms {
+        for p in room.portals.iter().flatten() {
+            let m = &p.xform.m;
+            assert!(
+                (m[0] - 1.0).abs() < 1e-12 && m[1].abs() < 1e-12
+                    && m[3].abs() < 1e-12 && (m[4] - 1.0).abs() < 1e-12,
+                "grid portal xform is not a pure translation: {:?}", p.xform
+            );
+        }
+    }
+    (w, ids)
+}
+
+/// Analytic ray-vs-boundary hit for a ray starting strictly inside
+/// [0,w]x[0,h], via the slab method (dir must be non-degenerate).
+fn analytic_rect_hit(origin: Vec2, dir: Vec2, w: f64, h: f64) -> (Vec2, f64) {
+    let mut t = f64::INFINITY;
+    if dir.x > 1e-15 {
+        t = t.min((w - origin.x) / dir.x);
+    } else if dir.x < -1e-15 {
+        t = t.min((0.0 - origin.x) / dir.x);
+    }
+    if dir.y > 1e-15 {
+        t = t.min((h - origin.y) / dir.y);
+    } else if dir.y < -1e-15 {
+        t = t.min((0.0 - origin.y) / dir.y);
+    }
+    (origin + dir * t, t)
+}
+
+proptest! {
+    #[test]
+    fn euclidean_raycast_oracle(
+        i0 in 0usize..3,
+        j0 in 0usize..2,
+        ox in -45.0f64..45.0,
+        oy in -45.0f64..45.0,
+        theta in 0.0f64..std::f64::consts::TAU,
+    ) {
+        let (w, ids) = build_translation_grid();
+        let sim = Sim::new(w);
+        let start_room = ids[i0][j0];
+        let origin_local = v(ox, oy);
+        let dir = v(theta.cos(), theta.sin());
+
+        let hit = raycast(&sim, start_room, origin_local, dir, 10, 1000.0, 0, None);
+        let (world_hit, hit_dist) = match hit {
+            RayHit::Wall { pos, xform, dist, .. } => {
+                (true_center(i0, j0) + xform.apply(pos), dist)
+            }
+            other => {
+                prop_assert!(false, "expected a wall hit, got {:?}", other);
+                unreachable!()
+            }
+        };
+
+        let world_origin = true_center(i0, j0) + origin_local;
+        let (analytic_hit, analytic_dist) = analytic_rect_hit(world_origin, dir, 300.0, 200.0);
+
+        prop_assert!(
+            world_hit.dist(analytic_hit) < 1e-6,
+            "engine {:?} vs analytic {:?} dir={:?} start=({},{})",
+            world_hit, analytic_hit, dir, i0, j0
+        );
+        prop_assert!((hit_dist - analytic_dist).abs() < 1e-6, "{} vs {}", hit_dist, analytic_dist);
     }
 }

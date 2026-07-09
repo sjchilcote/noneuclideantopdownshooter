@@ -64,11 +64,26 @@ def place(total_s: float, *events) -> np.ndarray:
     return out.astype(np.float32)
 
 
-def hot_transient(dur_s: float = 0.008, seed=None, gain: float = 1.2) -> np.ndarray:
-    """0-8ms full-band white-noise click, very hot."""
+def hot_transient(dur_s: float = 0.008, seed=None, gain: float = 1.2,
+                  lp_hz: float | None = None) -> np.ndarray:
+    """0-8ms full-band white-noise click, very hot. Optionally darkened with
+    a lowpass so it reads as physical impact rather than digital click."""
     n = sy.white_noise(dur_s, seed=seed)
+    if lp_hz is not None:
+        n = sy.lowpass(n, lp_hz)
     env = sy.env_exp_decay(dur_s, tau=dur_s / 3.0, start=1.0, end=0.001)
     return (sy.apply_env(n, env).astype(np.float64) * gain).astype(np.float32)
+
+
+def body_knock(dur_s: float = 0.12, center_hz: float = 200.0, q: float = 1.1,
+               seed=None, drive: float = 1.6) -> np.ndarray:
+    """Low-mid 'knock' -- bandpassed noise burst in the 120-400Hz region.
+    This is the part of an impact the ear reads as physical weight (fast pure
+    sub-sine thumps are nearly inaudible perceptually)."""
+    n = sy.white_noise(dur_s, seed=seed)
+    n = sy.bandpass(n, center_hz, q=q)
+    env = sy.env_exp_decay(dur_s, tau=dur_s / 3.5, end=0.001)
+    return sy.soft_clip(sy.apply_env(n, env), drive)
 
 
 def gun_thump(f0: float = 160.0, f1: float = 55.0, pitch_s: float = 0.03,

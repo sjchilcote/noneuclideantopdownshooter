@@ -51,10 +51,16 @@ def build_smoke_level() -> tuple[Level, dict]:
     b.connect(r2, 2, r3, 0)
     b.entity(r1, "husk", (400, 100))
     b.entity(r2, "husk", (700, 100))
+    # mites outrun the player and the key forces lingering: combat is
+    # genuinely mandatory, not merely present
+    b.entity(r2, "mite", (680, 120))
+    b.entity(r2, "mite", (720, 80))
+    b.entity(r2, "mite", (700, 140))
+    b.entity(r2, "key_red", (700, 100))
     b.entity(r1, "ammo_9mm", (450, 150))
     b.entity(r2, "ammo_9mm", (650, 50))
     b.player(r0, (100, 100))
-    b.exit(r3, (1000, 100))
+    b.exit(r3, (1000, 100), key="red")
     return b.build(), b.to_dict()
 
 
@@ -162,7 +168,7 @@ def test_aggro_bot_completes_smoke_level():
     res = run_bot(level, AggroBot(3), 3, max_ticks=SMOKE_MAX_TICKS)
     assert res.outcome == "complete"
     assert res.ticks_alive <= SMOKE_MAX_TICKS
-    assert res.metrics["kills"] == 2
+    assert res.metrics["kills"] >= 2
 
 
 def test_pacifist_bot_survives_empty_level_and_reaches_exit():
