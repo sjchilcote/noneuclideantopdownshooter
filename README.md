@@ -10,6 +10,8 @@ Ten-level campaign. Cosmic horror on the radio. Every shot counts.
 
 ![the records stack has no end](media/infinite_aisle.gif)
 
+![never shoot a mirror head-on](media/the_mirror_lesson.gif)
+
 ## Running
 
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and a Rust toolchain
