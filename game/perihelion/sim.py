@@ -166,6 +166,8 @@ class GameSession:
         s.set_collision_pair(GROUP_ENEMY, GROUP_ENEMY, True)
         s.set_collision_pair(GROUP_PBULLET, GROUP_ENEMY, True)
         s.set_collision_pair(GROUP_EBULLET, GROUP_PLAYER, True)
+        # your own rounds CAN come back: mirrors and ricochets are honest
+        s.set_collision_pair(GROUP_PBULLET, GROUP_PLAYER, True)
 
         # --- doors (pending connections) ---
         self.doors: list[dict] = []
@@ -906,9 +908,17 @@ class GameSession:
                 self.sim.remove(x)
                 self.bullets.pop(x, None)
                 return
-            if bx is not None and y == self.pid and bx["kind"] == "spit":
+            if bx is not None and y == self.pid:
                 room = self.sim.get_room(y)
-                self._damage_player(bx["dmg"], room)
+                if bx["kind"] == "spit":
+                    self._damage_player(bx["dmg"], room)
+                elif bx["kind"] == "dart":
+                    self._detonate_dart(x, room, cx, cy)
+                    px_, py_ = self.player_pos()
+                    self._damage_player(WEAPONS["lightning"]["dmg"] * 0.6, room)
+                else:
+                    # a round you fired found its way back through the fold
+                    self._damage_player(bx["dmg"] * 0.75, room)
                 self.sim.remove(x)
                 self.bullets.pop(x, None)
                 return
