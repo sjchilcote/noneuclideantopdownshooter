@@ -225,6 +225,7 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
         super().__init__(seed)
         self._init_combat()
         self._init_unstick()
+        self._med_target = None
 
     def step(self, snapshot: dict, session: GameSession) -> InputFrame:
         proom = snapshot["room"]
@@ -238,14 +239,25 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
             medkits = [p for p in snapshot["pickups"]
                        if p["kind"] == "medkit" and 0 <= p["hops"] <= 3]
             if snapshot["hp"] < 60 and medkits:
-                target = min(medkits, key=lambda p: (p["hops"],
-                             _dist(p["pos"], (px, py))))
+                # Commit to one medkit until it's gone: a per-tick pick can
+                # tie-break between medkits behind opposite portals and
+                # oscillate forever. Positions from different rooms are in
+                # different local frames, so distance is not a valid key.
+                target = None
+                if self._med_target is not None:
+                    target = next((p for p in medkits
+                                   if (p["room"], p["pos"]) == self._med_target),
+                                  None)
+                if target is None:
+                    target = min(medkits, key=lambda p: (p["hops"], p["room"]))
+                    self._med_target = (target["room"], target["pos"])
                 if target["room"] == proom:
                     inp.mx, inp.my = nav_to_point(session, px, py, target["pos"])
                 else:
                     inp.mx, inp.my = nav_to_room(session, snapshot,
                                                  target["room"], None)
             else:
+                self._med_target = None
                 inp.mx, inp.my = self._navigate(session, snapshot)
             inp.ax, inp.ay = session.screen_w / 2.0, session.screen_h / 2.0
 

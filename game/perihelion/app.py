@@ -124,7 +124,8 @@ class GameScene(menus.Scene):
         self.level_path = level_path
         self.seed = seed
         self.session = GameSession(level, seed=seed, player_state=player_state,
-                                   difficulty=difficulty)
+                                   difficulty=difficulty,
+                                   screen=(INTERNAL_W, INTERNAL_H))
         self.renderer = Renderer(self.session)
         self.hud = HUD()
         self.radio = menus.RadioBar()
