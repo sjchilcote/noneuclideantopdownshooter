@@ -237,6 +237,7 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
         self._init_combat()
         self._init_unstick()
         self._med_target = None
+        self._combat_streak = 0
 
     def step(self, snapshot: dict, session: GameSession) -> InputFrame:
         proom = snapshot["room"]
@@ -244,8 +245,21 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
         enemies_in_room = [e for e in snapshot["enemies"] if e["room"] == proom]
 
         if enemies_in_room:
+            self._combat_streak += 1
             inp = self._combat_input(session, snapshot, enemies_in_room, mobile=True)
+            # fighting retreat: pure strafe never leaves a room, and a
+            # chunk that restocks on death can feed enemies in forever.
+            # Pressure DECAYS rather than resets out of combat: a doorway
+            # ping-pong (strafe shoves the bot back through the portal,
+            # combat drops, nav walks it back in — soak seed 1993 spent 37
+            # minutes doing this against one spine camper) must still
+            # accumulate. Past ~10s net pressure, shoot while walking out.
+            if self._combat_streak > 60 * 10:
+                mx, my = nav_to_exit(session, snapshot)
+                if mx or my:
+                    inp.mx, inp.my = mx, my
         else:
+            self._combat_streak = max(0, self._combat_streak - 2)
             inp = InputFrame()
             medkits = [p for p in snapshot["pickups"]
                        if p["kind"] == "medkit" and 0 <= p["hops"] <= 3]

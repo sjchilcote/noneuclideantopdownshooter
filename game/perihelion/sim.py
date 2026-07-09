@@ -348,6 +348,9 @@ class GameSession:
         proom = self.player_room()
         s.set_active_within(proom, ACTIVE_HOPS)
 
+        if self.tick_count % 30 == 0:
+            self._containment_sweep(proom)
+
         self._player_control(inp, proom)
         self._enemy_ai(proom)
 
@@ -1209,6 +1212,60 @@ class GameSession:
                     self._damage_player(d["touch_dmg"], self.sim.get_room(self.pid))
 
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _outside_by(px: float, py: float, verts) -> float:
+        """Signed clearance: <= 0 inside the convex polygon, > 0 = distance
+        past the most-violated wall. Winding-independent."""
+        n = len(verts)
+        area2 = sum(verts[i][0] * verts[(i + 1) % n][1] -
+                    verts[(i + 1) % n][0] * verts[i][1] for i in range(n))
+        sgn = 1.0 if area2 > 0 else -1.0
+        worst = -1e18
+        for i in range(n):
+            ax, ay = verts[i]
+            bx, by = verts[(i + 1) % n]
+            el = math.hypot(bx - ax, by - ay) or 1e-9
+            cr = ((bx - ax) * (py - ay) - (by - ay) * (px - ax)) / el * sgn
+            worst = max(worst, -cr)
+        return worst
+
+    def _containment_sweep(self, proom: int) -> None:
+        """Entities must never exist outside their room's polygon. The
+        engine's collision guarantees this in normal play, but a crowded
+        shove at a carved door jamb can press an entity through a wall
+        (soak seed 1993: a fleeing shrieker escaped the mirror ward and
+        drifted 14k units out, untargetable, wedging the run). Recover
+        escapees to the room centroid and say so loudly -- this is
+        damage control for an engine bug, not normal flow."""
+        verts_all = self.level.room_verts
+        for eid in (self.pid, *list(self.enemies)):
+            if not self.sim.exists(eid):
+                continue
+            room, x, y, *_ = self.sim.get(eid)
+            if room >= len(verts_all):
+                continue
+            # threshold sits above transient shove depth (a warden brawl
+            # can press a center ~10u past a wall and physics recovers it);
+            # a real escape drifts far beyond this within a second or two
+            off = self._outside_by(x, y, verts_all[room])
+            if off > 25.0:
+                # recovery target MUST come from the same frame as the
+                # verts: level.room_centroids is authored-frame bookkeeping
+                # and teleporting there re-corrupts (that bug ate this
+                # sweep's first version)
+                vs = verts_all[room]
+                cx = sum(v[0] for v in vs) / len(vs)
+                cy = sum(v[1] for v in vs) / len(vs)
+                self.sim.set_pos(eid, cx, cy)
+                self.sim.set_vel(eid, 0.0, 0.0)
+                self.metrics["containment_recoveries"] = \
+                    self.metrics.get("containment_recoveries", 0) + 1
+                import sys as _sys
+                print(f"[sim] CONTAINMENT: entity {eid} "
+                      f"({'player' if eid == self.pid else self.enemies.get(eid, {}).get('kind', '?')}) "
+                      f"was {off:.1f}u outside room {room} at ({x:.0f},{y:.0f}); "
+                      f"recovered to centroid", file=_sys.stderr)
 
     def _pickup_scan(self, proom: int):
         px, py = self.player_pos()
