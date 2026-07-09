@@ -346,6 +346,33 @@ impl Sim {
                     ents.push((eid, sp.x, sp.y, sd.x, sd.y, sr, fully_inside));
                 }
             }
+            // Entities STRADDLING a portal from the neighbor's side: their
+            // circle pokes into this instance's region, so this instance
+            // must draw its share or the body is cut off at the boundary.
+            for portal in room.portals.iter().flatten() {
+                let neighbor = &self.sim.world.rooms[portal.target_room];
+                for &eid in &neighbor.entities {
+                    if let Some(e) = self.sim.entities.get(&eid) {
+                        // neighbor-local -> this-room-local
+                        let p_here = portal.xform.apply(e.pos);
+                        let r_here = e.radius * portal.xform.linear_scale();
+                        let d = geom::depth_in_polygon(p_here, &inst.clip_local);
+                        if d < -r_here || d >= 0.0 {
+                            // not reaching in, or its center is on OUR side
+                            // (then it lives in our room list pass instead)
+                            continue;
+                        }
+                        let sp = inst.xform.apply(p_here);
+                        let sd = inst
+                            .xform
+                            .apply_dir(portal.xform.apply_dir(e.dir))
+                            .normalized();
+                        let sr = r_here * inst.xform.linear_scale();
+                        // never fully_inside: force polygon clipping
+                        ents.push((eid, sp.x, sp.y, sd.x, sd.y, sr, false));
+                    }
+                }
+            }
 
             let tup = (
                 inst.room,
