@@ -29,6 +29,9 @@ class Audio:
         self.sfx_vol = 1.0
         self.ambience_vol = 0.35
         self.muted = mute
+        # optional recorder callback (kind, name, vol, pan); fires even when
+        # muted or the mixer failed, so headless captures still log audio
+        self.tap = None
 
         self._sounds: dict[str, "pygame.mixer.Sound | None"] = {}
         self._missing_logged: set[str] = set()
@@ -68,6 +71,8 @@ class Audio:
         return snd
 
     def play(self, name: str, vol: float = 1.0, pan: float = 0.5) -> None:
+        if self.tap is not None:
+            self.tap("sfx", name, vol, pan)
         if self.muted or not self._ready:
             return
         snd = self._load(name)
@@ -119,6 +124,8 @@ class Audio:
         if self._ambience_name == name:
             return
         self._ambience_name = name
+        if self.tap is not None:
+            self.tap("ambience", name, self.ambience_vol, 0.5)
         if self._ambience_channel is not None:
             self._ambience_channel.stop()
             self._ambience_channel = None
@@ -137,6 +144,9 @@ class Audio:
         if want == self._heartbeat_active:
             return
         self._heartbeat_active = want
+        if self.tap is not None:
+            self.tap("heartbeat_on" if want else "heartbeat_off",
+                     "heartbeat", 0.5, 0.5)
         if want:
             if self.muted or not self._ready:
                 return

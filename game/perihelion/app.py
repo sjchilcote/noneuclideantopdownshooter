@@ -8,6 +8,7 @@ rendering happens once per display frame. `App` owns the scene stack;
 from __future__ import annotations
 
 import json
+import math
 import os
 import random
 import sys
@@ -235,7 +236,44 @@ class App:
         self._scaled_surface = pygame.Surface((INTERNAL_W, INTERNAL_H))
         self._recompute_layout()
 
+        self.bot = None
+        if getattr(args, "bot", None):
+            from .testkit.bots import AggroBot, ExplorerBot, PacifistBot
+            cls = {"aggro": AggroBot, "explorer": ExplorerBot,
+                   "pacifist": PacifistBot}[args.bot]
+            self.bot = cls(self.rng_seed)
+
+        # frame + audio-event recording: lockstep one sim tick per drawn
+        # frame; audio taps are timestamped on the drawn-frame clock so an
+        # offline mixer can rebuild the soundtrack (tools/playtest/mkvideo.py)
+        self._rec = None
+        if getattr(args, "record", None):
+            rec_dir = Path(args.record)
+            rec_dir.mkdir(parents=True, exist_ok=True)
+            self._rec = dict(dir=rec_dir, every=max(1, int(args.record_every)),
+                             frames=0, saved=0,
+                             max_frames=int(args.record_seconds * 60),
+                             events=open(rec_dir / "events.jsonl", "w"))
+            self.audio.tap = self._audio_tap
+
         self._start_scene()
+
+    def _audio_tap(self, kind: str, name: str, vol: float, pan: float) -> None:
+        if self._rec is None:
+            return
+        self._rec["events"].write(json.dumps(
+            dict(t=self._rec["frames"] / 60.0, kind=kind, name=name,
+                 vol=round(vol, 4), pan=round(pan, 4))) + "\n")
+
+    def _record_frame(self) -> None:
+        rec = self._rec
+        if rec["frames"] % rec["every"] == 0:
+            pygame.image.save(
+                self.internal, str(rec["dir"] / f"frame_{rec['saved']:06d}.png"))
+            rec["saved"] += 1
+        rec["frames"] += 1
+        if rec["frames"] >= rec["max_frames"]:
+            self.running = False
 
     # ------------------------------------------------------------------
     # layout / coordinate mapping
@@ -464,7 +502,11 @@ class App:
 
     def _start_scene(self) -> None:
         if self.dummy or self.args.autoplay:
-            self.start_new_game()
+            start = getattr(self.args, "start_chunk", 0)
+            if start:
+                self._start_streamed(start, None)
+            else:
+                self.start_new_game()
         else:
             self.push(menus.TitleScene())
 
@@ -472,10 +514,17 @@ class App:
         accumulator = 0.0
         last = time.perf_counter()
         while self.running:
-            now = time.perf_counter()
-            frame_dt = min(0.25, now - last)
-            last = now
-            accumulator += frame_dt
+            if self._rec is not None:
+                # lockstep: exactly one 60Hz sim tick per recorded frame,
+                # decoupled from wall time so capture speed doesn't matter
+                frame_dt = DT
+                accumulator = DT
+                last = time.perf_counter()
+            else:
+                now = time.perf_counter()
+                frame_dt = min(0.25, now - last)
+                last = now
+                accumulator += frame_dt
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -509,11 +558,29 @@ class App:
                 self.scenes[-1].update(self, frame_dt)
 
             self._draw_frame()
+            if self._rec is not None:
+                self._record_frame()
             self.clock.tick(0 if self.dummy else 60)
+        if self._rec is not None:
+            self._rec["events"].close()
+            print(f"[record] {self._rec['saved']} frames + events.jsonl in "
+                  f"{self._rec['dir']}", file=sys.stderr)
         self._persist_save()
 
     def _tick_game(self, game: GameScene) -> None:
-        inp = game._input_frame(self)
+        if self.bot is not None:
+            snap = game.session.snapshot()
+            inp = self.bot.step(snap, game.session)
+            # bots don't seek terminals; read any we brush past so recorded
+            # runs still show terminal text and relay conversations
+            px, py = snap["pos"]
+            for t in game.session.terminals:
+                if not t["read"] and t["room"] == snap["room"] and \
+                        math.hypot(t["pos"][0] - px, t["pos"][1] - py) < 26.0:
+                    inp.interact = True
+                    break
+        else:
+            inp = game._input_frame(self)
         was_dead = game.session.dead
         was_complete = game.session.complete
         game.session.tick(inp)

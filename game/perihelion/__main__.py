@@ -17,7 +17,21 @@ def main(argv=None) -> None:
                         help="hard mode: tougher, meaner enemies")
     parser.add_argument("--fps", action="store_true", help="show the fps overlay")
     parser.add_argument("--autoplay", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--bot", choices=["aggro", "explorer", "pacifist"],
+                        default=None, help=argparse.SUPPRESS)
+    parser.add_argument("--record", type=str, default=None, metavar="DIR",
+                        help=argparse.SUPPRESS)
+    parser.add_argument("--record-every", type=int, default=2,
+                        help=argparse.SUPPRESS)
+    parser.add_argument("--record-seconds", type=float, default=180.0,
+                        help=argparse.SUPPRESS)
+    parser.add_argument("--start-chunk", type=int, default=0,
+                        help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args.record and not args.bot:
+        args.bot = "aggro"
+    if args.bot:
+        args.autoplay = True
 
     from .app import App
 
