@@ -85,11 +85,15 @@ class WorldStreamer:
         s.exit_gate_rooms = (c["offset"], c["offset"] + c["n_rooms"])
 
     def _snapshot_state(self) -> dict:
-        # hp floors at 70: respawning hurt into a fully restocked chunk
-        # death-spirals (die at 45, respawn at 45, die again...); the seed
-        # prints a battle-ready frame, not a copy of your wounds
+        # hp floors at 70 and 9mm at 45: respawning hurt or dry into a
+        # fully restocked chunk death-spirals — every retry replays the
+        # same doomed loadout (soak seed 2175 entered the finale with 9
+        # rounds and died 400+ times). The seed prints a battle-ready
+        # frame, not a copy of your wounds or your empty magazines.
         s = self.session
-        return dict(hp=max(int(s.hp), 70), ammo=dict(s.ammo),
+        ammo = dict(s.ammo)
+        ammo["9mm"] = max(ammo.get("9mm", 0), 45)
+        return dict(hp=max(int(s.hp), 70), ammo=ammo,
                     weapons=list(s.weapons), weapon=s.weapon,
                     holes=s.holes, cloister=s.cloister is not None)
 
