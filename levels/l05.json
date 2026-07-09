@@ -66,6 +66,20 @@
       -114.47494999310362,
       69.38503400839389
      ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      -105.0,
+      90.0
+     ]
+    },
+    {
+     "type": "key_gold",
+     "pos": [
+      -90,
+      40
+     ]
     }
    ]
   },
@@ -202,6 +216,13 @@
       1245.5250500068964,
       69.38503400839389
      ]
+    },
+    {
+     "type": "key_gold",
+     "pos": [
+      1270,
+      40
+     ]
     }
    ]
   },
@@ -235,15 +256,8 @@
     {
      "type": "husk",
      "pos": [
-      1059.9094407565651,
-      100.88844545457847
-     ]
-    },
-    {
-     "type": "husk",
-     "pos": [
-      1095.6156092503313,
-      58.49658855381543
+      1065.5250500068964,
+      69.38503400839389
      ]
     },
     {
@@ -290,7 +304,7 @@
      ]
     },
     {
-     "type": "brute",
+     "type": "husk",
      "pos": [
       885.5250500068963,
       69.38503400839389
@@ -319,7 +333,7 @@
    ],
    "entities": [
     {
-     "type": "shrieker",
+     "type": "spitter",
      "pos": [
       -405.5250500068964,
       400.61496599160614
@@ -328,15 +342,8 @@
     {
      "type": "husk",
      "pos": [
-      -460.09055924343494,
-      390.88844545457846
-     ]
-    },
-    {
-     "type": "husk",
-     "pos": [
-      -424.3843907496687,
-      348.4965885538154
+      -454.4749499931036,
+      359.38503400839386
      ]
     },
     {
@@ -434,7 +441,8 @@
   "pos": [
    -430,
    420
-  ]
+  ],
+  "key": "gold"
  },
  "lore": {
   "intro": "Crew quarters. West wing and east wing.\nThe station schematic shows one wing.\nIt is drawn twice, in two colors.",
@@ -454,6 +462,10 @@
    {
     "trigger": "enter_room:7",
     "text": "Ratio: Both wings end at one room. One room, two doors that cannot share a wall. I've stopped calling this noise."
+   },
+   {
+    "trigger": "pickup:gold",
+    "text": "Ratio: Gold seal. Manifest lists exactly one, in bunk 12. It doesn't say which 12."
    },
    {
     "trigger": "exit",

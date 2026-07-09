@@ -32,26 +32,36 @@ MODEL = "google/gemini-3.5-flash"  # OpenRouter model id
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_CONTEXT = "lo-fi industrial cosmic-horror top-down shooter, Teleglitch-adjacent"
 
-PROMPT_TEMPLATE = """You are a veteran sound designer for video games, reviewing a \
-procedurally generated sound effect before it ships.
+PROMPT_TEMPLATE = """You are a veteran game sound designer doing a listening review.
 
 Game context: {context}
 
-Intended spec for this sound (what it is supposed to be/do): {spec}
+FIRST, listen and describe what you actually hear in this clip, factually: \
+number of events, attack character (sharp/soft), frequency balance \
+(sub/low/mid/high), texture (noisy/tonal/metallic/organic), how it decays, \
+and any artifacts you are certain you heard.
 
-Listen carefully and describe what you actually hear. Judge whether it \
-matches the spec, and whether a professional sound designer would call it \
-shippable for THIS specific game -- lo-fi, gritty, industrial, dread-heavy \
-horror, NOT arcadey or chiptune. Call out any amateur tells: harsh \
-aliasing/digital nastiness that isn't intentional, abrupt or clicky cutoffs, \
-muddiness, flat/unconvincing dynamics, or sounding like a generic UI beep \
-rather than the described real-world sound.
+THEN judge it against the intended spec for this sound: {spec}
+
+The game's aesthetic is lo-fi, gritty, analog-industrial dread; sounds should \
+feel physical and heavy. A great sound here reads instantly as the physical \
+event in the spec, sits dark and weighty, and ends naturally.
+
+Rate p_shippable = P(a professional sound designer would ship this clip for \
+that spec in this game). Use the full range: 0.9+ ready as-is; 0.6 usable \
+with minor tweaks; 0.4 wrong in one important way; below 0.2 reads as a \
+different sound entirely or has severe audible artifacts.
+
+Report a flaw ONLY if it is present in your own description above -- if the \
+clip decays cleanly do not report a click; if the low end is strong do not \
+report thinness. It is fine to report no flaws.
 
 Return STRICT JSON only, no markdown code fences, matching exactly this \
 schema:
-{{"matches_spec": true|false,
+{{"heard": "2-3 factual sentences describing the audio",
+  "matches_spec": true|false,
   "p_shippable": 0.x,
-  "amateur_tells": ["..."],
+  "amateur_tells": ["only flaws actually audible in this clip"],
   "summary": "2-3 sentences"}}"""
 
 
@@ -98,13 +108,27 @@ def _ensure_ffmpeg() -> None:
 # audio transcode + request plumbing
 # --------------------------------------------------------------------------
 
+def _wav_duration_s(path: Path) -> float:
+    import wave
+    with wave.open(str(path), "rb") as f:
+        return f.getnframes() / f.getframerate()
+
+
 def to_mp3(src: Path, out: Path, max_s: float = 50.0) -> None:
     _ensure_ffmpeg()
-    subprocess.run(
-        ["ffmpeg", "-y", "-v", "error", "-i", str(src), "-vn",
-         "-t", str(max_s), "-ac", "1", "-codec:a", "libmp3lame", "-q:a", "2", str(out)],
-        check=True,
-    )
+    cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(src), "-vn",
+           "-t", str(max_s), "-ac", "1"]
+    # If we're excerpting (source longer than max_s), fade the excerpt tail so
+    # the judge doesn't penalize the measurement's own hard cut as an "abrupt
+    # cutoff" in the asset (loopable drones never end in-game).
+    try:
+        src_dur = _wav_duration_s(src)
+    except Exception:
+        src_dur = None
+    if src_dur is not None and src_dur > max_s:
+        cmd += ["-af", f"afade=t=out:st={max_s - 1.0:.2f}:d=1.0"]
+    cmd += ["-codec:a", "libmp3lame", "-q:a", "2", str(out)]
+    subprocess.run(cmd, check=True)
 
 
 def _audio_block(mp3_path: Path) -> dict:

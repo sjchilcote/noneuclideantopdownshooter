@@ -37,7 +37,10 @@
      "pos": [
       7.105427357601002e-15,
       -1.1842378929335002e-15
-     ]
+     ],
+     "props": {
+      "hp": 220
+     }
     },
     {
      "type": "medkit",
@@ -165,15 +168,15 @@
     {
      "type": "spitter",
      "pos": [
-      284.4749499931036,
-      20.614965991606113
+      260.0,
+      -1.1842378929335002e-15
      ]
     },
     {
-     "type": "husk",
+     "type": "medkit",
      "pos": [
-      235.52505000689638,
-      -20.614965991606116
+      245.0,
+      -1.1842378929335002e-15
      ]
     }
    ]
@@ -216,22 +219,15 @@
     {
      "type": "mite",
      "pos": [
-      109.38503400839386,
-      -200.69165499085048
+      99.909440756565,
+      -214.2781595293756
      ]
     },
     {
      "type": "mite",
      "pos": [
-      105.52505000689635,
-      -245.78157097556021
-     ]
-    },
-    {
-     "type": "mite",
-     "pos": [
-      150.61496599160608,
-      -249.64155497705772
+      135.61560925033132,
+      -256.6700164301387
      ]
     },
     {
@@ -284,6 +280,20 @@
       -129.99999999999994,
       -225.1666049839541
      ]
+    },
+    {
+     "type": "ammo_shell",
+     "pos": [
+      -144.99999999999994,
+      -225.1666049839541
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      -129.99999999999994,
+      -225.1666049839541
+     ]
     }
    ]
   },
@@ -318,15 +328,8 @@
     {
      "type": "shrieker",
      "pos": [
-      -235.52505000689638,
-      20.61496599160608
-     ]
-    },
-    {
-     "type": "husk",
-     "pos": [
-      -284.4749499931036,
-      -20.614965991606148
+      -260.0,
+      -3.0790185216271006e-14
      ]
     },
     {
@@ -485,7 +488,8 @@
   "pos": [
    0,
    40
-  ]
+  ],
+  "gate_kind": "warden"
  },
  "lore": {
   "intro": "The chapel deck. Folded.\nSix rooms around one. Or one room\naround six. The count depends on the walker.",
@@ -496,7 +500,7 @@
    },
    {
     "trigger": "kills:14",
-    "text": "Ratio: Readings say the big one didn't die there. It relocated. Somewhere with more of them."
+    "text": "Ratio: That was a Warden. The Container prints them, like the station prints spare parts. There will be a fresh one at the door."
    },
    {
     "trigger": "exit",

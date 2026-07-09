@@ -176,15 +176,20 @@ class _CombatMixin:
         dist = math.hypot(dx, dy) or 1e-6
         true_angle = math.atan2(dy, dx)
 
-        self._aim_jitter += self.rng.uniform(-0.06, 0.06)
-        self._aim_jitter = max(-0.35, min(0.35, self._aim_jitter))
+        self._aim_jitter += self.rng.uniform(-0.05, 0.05)
+        self._aim_jitter = max(-0.22, min(0.22, self._aim_jitter))
         aim_angle = true_angle + self._aim_jitter
         adx, ady = math.cos(aim_angle), math.sin(aim_angle)
         tx, ty = px + adx * dist, py + ady * dist
 
         inp = InputFrame()
         inp.ax, inp.ay = necore.mat_apply(session.cam, tx, ty)
-        inp.fire = abs(self._aim_jitter) < AIM_ERR_FIRE
+        # fire discipline scales with range: only shoot when the current
+        # error would actually land on the target's silhouette
+        target_r = session.sim.get_radius(nearest["id"]) \
+            if session.sim.exists(nearest["id"]) else 8.0
+        allowed = max(math.radians(3.0), math.atan2(target_r * 0.9, dist))
+        inp.fire = abs(self._aim_jitter) < max(allowed, AIM_ERR_FIRE * 0.4)
         inp.weapon = choose_weapon(snapshot, dist, len(enemies_in_room))
         inp.alt = (len(enemies_in_room) >= 3 and snapshot["lightning_ready"]
                    and "lightning" in snapshot["weapons"])
@@ -244,6 +249,26 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
     def _navigate(self, session: GameSession, snapshot: dict) -> tuple[float, float]:
         proom = snapshot["room"]
         ammo = snapshot["ammo"]
+        # keys first: a locked exit or door outranks everything but survival
+        needed = set(snapshot.get("door_keys_needed", []))
+        if snapshot.get("exit_key_needed"):
+            needed.add(snapshot["exit_key_needed"])
+        if needed:
+            wanted = {f"key_{k}" for k in needed}
+            keys = [p for p in snapshot["pickups"]
+                    if p["kind"] in wanted and p["hops"] >= 0]
+            if keys:
+                target = min(keys, key=lambda p: p["hops"])
+                target_point = target["pos"] if target["room"] == proom else None
+                return nav_to_room(session, snapshot, target["room"], target_point)
+        # gate enemies: hunt the kind holding the exit shut
+        if snapshot.get("exit_gate_remaining", 0):
+            kind = snapshot["exit_gate_kind"]
+            prey = [e for e in snapshot["enemies"]
+                    if e["kind"] == kind and e["hops"] >= 0]
+            if prey:
+                target = min(prey, key=lambda e: e["hops"])
+                return nav_to_room(session, snapshot, target["room"], None)
         if sum(ammo.values()) <= 6:
             candidates = [p for p in snapshot["pickups"]
                           if p["kind"].startswith("ammo_") and p["hops"] >= 0]

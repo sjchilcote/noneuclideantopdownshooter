@@ -89,9 +89,12 @@ def l01():
     ring_w = b.rect(420, 20, 140, 140)
     phantom = b.rect(960, -420, 140, 140)      # the ninth segment
 
-    for r in (ring_w, ring_e, ring_s):
+    # only the south hatch of the ring answers; and the ring is broken just
+    # short of the exit, so the sweep goes the long way round -- through the
+    # segment that is not on any deck plan.
+    for r in (ring_n, ring_w, ring_e):
         b.no_connect(junction, r)
-    # ring order NW -> N -> NE ... but N is reached from NW via the phantom
+    b.no_connect(ring_s, ring_se)
     b.no_connect(ring_nw, ring_n)
     b.connect_pts(ring_nw, (560, -50), phantom, (960, -350))
     b.connect_pts(phantom, (1100, -350), ring_n, (560, -50))
@@ -103,7 +106,8 @@ def l01():
     b.radio("start", "Ratio: Comms check. It's a maintenance sweep, Commando. "
                      "The scariest thing down there is the paperwork.")
     b.radio(f"enter_room:{junction}", "Ratio: Storage ring ahead. Eight "
-                                      "segments, one loop. In and out.")
+                                      "segments, one loop. South hatch is "
+                                      "the only one answering. In and out.")
     b.radio(f"enter_room:{phantom}", "Ratio: ...huh. Your beacon just jumped "
                                      "clean off the deck plan. Bad relay. "
                                      "Has to be.")
@@ -111,11 +115,11 @@ def l01():
                "WORK ORDER 7731\nGrid fault, storage ring north.\n"
                "Tech note: ring walk takes 41s. Spec says 33s.\n"
                "Re-timed twice. Logged as clock drift.")
-    squad(b, ring_w, "husk")
-    squad(b, ring_n, "husk")
+    squad(b, ring_sw, "husk")
+    squad(b, ring_w, "husk husk")
     squad(b, phantom, "husk husk")
-    squad(b, ring_s, "husk")
-    squad(b, ring_se, "husk")
+    squad(b, ring_ne, "husk")
+    squad(b, ring_e, "husk")
     cache(b, ring_nw, "ammo_9mm")
     cache(b, phantom, "ammo_9mm medkit")
     cache(b, ring_sw, "ammo_9mm")
@@ -155,7 +159,10 @@ def l02():
     b.radio(f"enter_room:{pump_b}", "Ratio: That's pump bay two. Except you "
                                     "went in through bay one. I'm marking a "
                                     "relay fault. Again.")
-    b.radio("pickup:red", "Ratio: Red access. Armory annex, east end.")
+    b.radio("pickup:red", "Ratio: Red access. Armory annex, east end — "
+                          "and the lift out is inside it.")
+    b.radio(f"enter_room:{pump_a}", "Ratio: If you're sweeping the pump "
+                                    "bays, the crews left supplies in two.")
     b.terminal(pump_b, (840, -60),
                "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\n"
                "Counted five hatches going. Counted six coming back.\n"
@@ -163,13 +170,14 @@ def l02():
     squad(b, row, "mite mite mite mite")
     squad(b, pump_a, "husk mite mite")
     squad(b, pump_b, "husk husk")
-    squad(b, keyroom, "mite mite mite mite mite")
-    squad(b, tail, "spitter")
+    squad(b, keyroom, "mite mite mite mite mite spitter")
+    squad(b, tail, "spitter husk")
     b.entity(keyroom, "key_red", (335, 270))
     cache(b, pump_a, "ammo_9mm")
+    cache(b, pump_b, "medkit ammo_9mm")
     cache(b, row, "medkit", off=(180, 0))
     cache(b, armory, "weapon_smg ammo_9mm ammo_9mm")
-    b.exit(tail, (860, 70))
+    b.exit(armory, (1010, 70))
     b.radio("exit", "Ratio: Row's clear. The count in Osei's log... "
                     "forget it. Clock drift.")
     return b
@@ -194,8 +202,8 @@ def l03():
     # the mobius glue: end face to start face
     b.connect_pts(ring[5], arc_mid(0, 0, 250, math.radians(90)),
                   ring[0], arc_mid(0, 0, 250, math.radians(-90)))
-    b.connect_pts(ring[2], arc_mid(0, 0, 320, math.radians(-15)),
-                  garden, (400, 0))
+    b.door_pts(ring[2], arc_mid(0, 0, 320, math.radians(-15)),
+               garden, (400, 0), "blue")
     b.connect_pts(ring[3], arc_mid(0, 0, 320, math.radians(15)),
                   storeroom, (-254, 110))
 
@@ -222,9 +230,16 @@ def l03():
     squad(b, ring[4], "spitter husk")
     squad(b, ring[5], "brute")
     squad(b, garden, "mite mite mite")
+    b.entity(ring[5], "key_blue",
+             tuple(arc_mid(0, 0, 250, math.radians(75))))
     cache(b, ring[1], "ammo_9mm")
+    cache(b, ring[3], "medkit")
     cache(b, ring[4], "medkit ammo_9mm")
     cache(b, storeroom, "weapon_shotgun ammo_shell ammo_shell")
+    b.radio("pickup:blue", "Ratio: Blue seal, from the end cap. The garden "
+                           "airlock takes it. Back the way you came — "
+                           "or, apparently, straight ahead. Both work. "
+                           "Neither should.")
     b.radio("kills:8", "Ratio: That big one read twice your mass. The "
                        "station manifest has nothing that shape.")
     b.exit(garden, (483, 40))
@@ -260,7 +275,10 @@ def l04():
                      "come back along the north.")
     b.radio(f"enter_room:{north}", "Ratio: North side. Count the crossings "
                                    "for me, would you? I have four on file.")
-    b.radio(f"enter_room:{crossings[0]}", "Ratio: Crossing one. Three left.")
+    b.radio(f"enter_room:{crossings[0]}", "Ratio: Crossing one. There's a "
+                                          "blue seal in there — which is "
+                                          "strange, because from the north "
+                                          "wall, there is no crossing one.")
     b.terminal(south, (700, 255),
                "GRAFFITI, scratched into the panel:\n"
                "4 GOING  3 BACK\n4 GOING  3 BACK\n4 GOING  3 BACK\n"
@@ -275,9 +293,10 @@ def l04():
     squad(b, crossings[2], "husk husk husk")
     squad(b, north, "spitter spitter brute")
     squad(b, reliquary, "husk husk spitter")
-    b.entity(north, "key_blue", (420, -70))
+    # the key lives in the crossing that doesn't exist from the north side
+    b.entity(crossings[0], "key_blue", (115, 60))
     cache(b, crossings[0], "ammo_shell medkit")
-    cache(b, north, "ammo_9mm ammo_9mm", off=(300, 0))
+    cache(b, north, "ammo_9mm ammo_9mm medkit", off=(300, 0))
     cache(b, south, "ammo_shell", off=(-260, 0))
     cache(b, vault, "implant_lightning medkit ammo_9mm")
     b.radio("pickup:blue", "Ratio: Blue seal. The vault. Commando — the "
@@ -328,15 +347,21 @@ def l05():
     squad(b, w1, "husk husk")
     squad(b, w2, "husk mite mite mite")
     squad(b, w3, "brute")
+    cache(b, w1, "medkit")
     squad(b, e1, "spitter husk")
-    squad(b, e2, "husk husk husk")
-    squad(b, e3, "spitter brute")
-    squad(b, chapel, "shrieker husk husk")
+    squad(b, e2, "husk husk")
+    squad(b, e3, "spitter husk")
+    squad(b, chapel, "spitter husk")
     cache(b, w2, "ammo_9mm ammo_shell")
     cache(b, e2, "medkit ammo_9mm")
     cache(b, w3, "ammo_shell")
     cache(b, chapel, "weapon_rail ammo_cell ammo_cell medkit")
-    b.exit(chapel, (-430, 420))
+    # two identical gold keys, in the same bunk, in both wings
+    b.entity(w1, "key_gold", (-90, 40))
+    b.entity(e1, "key_gold", (1270, 40))
+    b.radio("pickup:gold", "Ratio: Gold seal. Manifest lists exactly one, "
+                           "in bunk 12. It doesn't say which 12.")
+    b.exit(chapel, (-430, 420), key="gold")
     b.radio("exit", "Ratio: I overlaid the wings. They occupy the same cubic "
                     "meters. Both are real. I checked nine times. The math "
                     "is fine. The station is not.")
@@ -381,10 +406,15 @@ def l06():
     cache(b, hall, "ammo_9mm", off=(-120, 0))
     cache(b, side, "ammo_cell medkit")
     cache(b, morgue, "ammo_shell ammo_shell medkit")
+    # the seal sits against the mirror wall: to leave, you must walk up to
+    # your own reflection
+    b.entity(ward, "key_red", (680, 108))
+    b.radio("pickup:red", "Ratio: You saw it, didn't you. The other one "
+                          "picked its key up at the same time.")
     b.radio("kills:10", "Ratio: The ones coming out of that wall — their "
                         "wounds are on the wrong side. You're shooting the "
                         "same things twice.")
-    b.exit(morgue, (930, 70))
+    b.exit(morgue, (930, 70), key="red")
     b.radio("exit", "Ratio: Theory. The station's connected to somewhere "
                     "that folds back on itself. Corollary: somewhere can "
                     "see us.")
@@ -432,12 +462,14 @@ def l07():
     cache(b, stack, "ammo_9mm ammo_shell", off=(60, 30))
     cache(b, closet, "medkit ammo_cell")
     cache(b, deep, "medkit ammo_cell ammo_shell")
-    b.radio("kills:9", "Ratio: The incident files check out. Core approach "
-                       "is next. That's where the Container is. That's "
-                       "where it's always been — even before we built it.")
-    b.exit(deep, (860, -230))
+    b.entity(closet, "key_gold", (735, 335))
+    b.radio("pickup:gold", "Ratio: Gold seal, filed under 'gold seal'. "
+                           "At least the shelving is honest.")
+    b.exit(deep, (860, -230), key="gold")
     b.radio("exit", "Ratio: You walked out of a room that has no end. "
-                    "Remember that, next time something chases you.")
+                    "Remember that, next time something chases you. "
+                    "Core approach is next — where the Container is. Where "
+                    "it's always been, even before we built it.")
     return b
 
 
@@ -484,18 +516,20 @@ def l08():
                "No. A haunting is a place remembering.\n"
                "This is a place being remembered —\nby something on the other side.")
     squad(b, core, "warden")
-    petal_squads = ["husk husk", "spitter husk", "mite mite mite mite",
-                    "brute", "shrieker husk", "husk spitter"]
-    petal_caches = ["ammo_9mm ammo_shell", "", "medkit ammo_cell",
-                    "", "ammo_shell ammo_9mm", "medkit"]
+    b.data["rooms"][core]["entities"][-1]["props"] = {"hp": 220}
+    petal_squads = ["husk husk", "spitter", "mite mite mite",
+                    "brute", "shrieker", "husk spitter"]
+    petal_caches = ["ammo_9mm ammo_shell", "medkit", "medkit ammo_cell",
+                    "ammo_shell medkit", "ammo_shell ammo_9mm", "medkit"]
     for i, p in enumerate(petals):
         squad(b, p, petal_squads[i])
         if petal_caches[i]:
             cache(b, p, petal_caches[i])
     cache(b, core, "medkit medkit ammo_cell ammo_shell ammo_9mm")
-    b.exit(core, (0, 40))
-    b.radio("kills:14", "Ratio: Readings say the big one didn't die there. "
-                        "It relocated. Somewhere with more of them.")
+    b.exit(core, (0, 40), gate_kind="warden")
+    b.radio("kills:14", "Ratio: That was a Warden. The Container prints "
+                        "them, like the station prints spare parts. "
+                        "There will be a fresh one at the door.")
     b.radio("exit", "Ratio: Core approach is open. Commando — the Container. "
                     "If I'm right about it, don't listen to it. Listen to me.")
     return b
@@ -535,18 +569,25 @@ def l09():
     b.terminal(rooms[5], (c5[0] + 60, c5[1]),
                "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\n"
                "flip one bit at a time.\n— O.")
-    squad(b, rooms[3], "husk husk husk")
+    squad(b, rooms[3], "husk husk")
     squad(b, rooms[5], "spitter spitter")
     squad(b, rooms[6], "brute")
-    squad(b, rooms[9], "shrieker mite mite mite")
-    squad(b, rooms[10], "husk husk spitter")
+    squad(b, rooms[9], "shrieker mite mite")
+    squad(b, rooms[10], "husk spitter")
     squad(b, rooms[12], "brute shrieker")
     squad(b, rooms[15], "brute brute")
     cache(b, rooms[4], "ammo_9mm ammo_shell")
     cache(b, rooms[8], "medkit ammo_cell")
     cache(b, rooms[7], "ammo_shell ammo_9mm medkit")
     cache(b, rooms[13], "ammo_cell ammo_shell")
-    b.exit(rooms[15], (c15[0] + 60, c15[1]))
+    cache(b, rooms[6], "medkit")
+    cache(b, rooms[12], "medkit")
+    c10 = center(b, rooms[10])
+    b.entity(rooms[10], "key_void", (c10[0] - 60, c10[1]))
+    b.radio("pickup:void", "Ratio: Void seal. 1010 — two bit-flips from "
+                           "the spike. You're learning to read this place. "
+                           "I'm not sure that's good.")
+    b.exit(rooms[15], (c15[0] + 60, c15[1]), key="void")
     b.radio("exit", "Ratio: You crossed a four-dimensional cube on foot. "
                     "When we get home I'm never telling anyone this, and "
                     "neither are you.")
@@ -560,6 +601,7 @@ def l09():
 
 def l10():
     b = LevelBuilder("PERIHELION CORE", 4, "amb_drone_finale")
+    b.data["alert_hops"] = 1  # sound folds strangely between identical rooms
     airlock = b.rect(0, 10, 160, 120)
     hexes = []
     for i in range(6):
@@ -599,12 +641,12 @@ def l10():
                "It rearranges the room until the room\nis a sentence.\n"
                "The sentence is an offer.]\n\n"
                "GUARD / ACCEPT / KNEEL / BURN\n\n[You think of Ratio. You guard.]")
-    squad(b, hexes[1], "husk husk husk husk")
+    squad(b, hexes[1], "husk husk husk")
     squad(b, hexes[2], "spitter spitter brute")
-    squad(b, hexes[4], "shrieker brute mite mite mite")
-    squad(b, hexes[5], "husk husk spitter spitter")
-    squad(b, hexes[3], "brute brute")
-    squad(b, sanctum, "warden shrieker shrieker")
+    squad(b, hexes[4], "brute mite mite")
+    squad(b, hexes[5], "husk husk spitter")
+    squad(b, hexes[3], "brute")
+    squad(b, sanctum, "warden shrieker")
     cache(b, hexes[2], "ammo_cell ammo_shell medkit")
     cache(b, hexes[4], "ammo_9mm ammo_9mm ammo_shell")
     cache(b, hexes[5], "medkit medkit ammo_cell")
@@ -614,7 +656,7 @@ def l10():
                            "coset. It WANTS to be found, Commando. "
                            "Remember that at the door.")
     cache(b, sanctum, "medkit ammo_cell ammo_shell")
-    b.exit(sanctum, (1600, 180))
+    b.exit(sanctum, (1600, 180), gate_kind="warden")
     b.radio("kills:20", "Ratio: The Warden is the door's idea of a guard. "
                         "Show it a better one.")
     b.radio("exit", "Ratio: It's quiet. It'll stay quiet a thousand years, "

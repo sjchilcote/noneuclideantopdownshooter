@@ -61,6 +61,9 @@ class Level:
     player_pos: tuple[float, float]
     exit_room: int
     exit_pos: tuple[float, float]
+    exit_key: str  # "" = none; else a key id the player must hold
+    alert_hops: int  # gunshot alert radius in room-hops
+    exit_gate_kind: str  # "" = none; else all enemies of this kind must die
     intro: str
     radio: list[RadioLine]
     terminals: list[TerminalSpec]
@@ -162,6 +165,9 @@ def level_from_dict(data: dict) -> Level:
         player_pos=local(player["room"], player["pos"]),
         exit_room=int(exit_["room"]) if exit_ else -1,
         exit_pos=local(exit_["room"], exit_["pos"]) if exit_ else (0.0, 0.0),
+        exit_key=(exit_ or {}).get("key", ""),
+        exit_gate_kind=(exit_ or {}).get("gate_kind", ""),
+        alert_hops=int(data.get("alert_hops", 2)),
         intro=lore.get("intro", ""),
         radio=radio,
         terminals=terminals,
@@ -399,8 +405,12 @@ class LevelBuilder:
     def player(self, room: int, pos):
         self.data["player"] = {"room": room, "pos": list(pos)}
 
-    def exit(self, room: int, pos):
+    def exit(self, room: int, pos, key: str = "", gate_kind: str = ""):
         self.data["exit"] = {"room": room, "pos": list(pos)}
+        if key:
+            self.data["exit"]["key"] = key
+        if gate_kind:
+            self.data["exit"]["gate_kind"] = gate_kind
 
     def intro(self, text: str):
         self.data["lore"]["intro"] = text

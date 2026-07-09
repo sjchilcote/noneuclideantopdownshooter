@@ -150,6 +150,13 @@
       760.0,
       370.0
      ]
+    },
+    {
+     "type": "key_gold",
+     "pos": [
+      735,
+      335
+     ]
     }
    ]
   },
@@ -258,7 +265,8 @@
   "pos": [
    860,
    -230
-  ]
+  ],
+  "key": "gold"
  },
  "lore": {
   "intro": "Records. Aisle 9 is missing.\nAisle 9 is where the missing things go.",
@@ -272,12 +280,12 @@
     "text": "Ratio: Your depth gauge is counting. You're walking north in a room forty meters long and you've made three hundred. Stop walking north."
    },
    {
-    "trigger": "kills:9",
-    "text": "Ratio: The incident files check out. Core approach is next. That's where the Container is. That's where it's always been \u2014 even before we built it."
+    "trigger": "pickup:gold",
+    "text": "Ratio: Gold seal, filed under 'gold seal'. At least the shelving is honest."
    },
    {
     "trigger": "exit",
-    "text": "Ratio: You walked out of a room that has no end. Remember that, next time something chases you."
+    "text": "Ratio: You walked out of a room that has no end. Remember that, next time something chases you. Core approach is next \u2014 where the Container is. Where it's always been, even before we built it."
    }
   ],
   "terminals": [

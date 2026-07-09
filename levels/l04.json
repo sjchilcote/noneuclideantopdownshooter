@@ -188,13 +188,6 @@
      ]
     },
     {
-     "type": "key_blue",
-     "pos": [
-      420,
-      -70
-     ]
-    },
-    {
      "type": "ammo_9mm",
      "pos": [
       665.0,
@@ -205,6 +198,13 @@
      "type": "ammo_9mm",
      "pos": [
       680.0,
+      -55.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      695.0,
       -55.0
      ]
     }
@@ -230,6 +230,13 @@
     ]
    ],
    "entities": [
+    {
+     "type": "key_blue",
+     "pos": [
+      115,
+      60
+     ]
+    },
     {
      "type": "ammo_shell",
      "pos": [
@@ -519,7 +526,7 @@
    },
    {
     "trigger": "enter_room:3",
-    "text": "Ratio: Crossing one. Three left."
+    "text": "Ratio: Crossing one. There's a blue seal in there \u2014 which is strange, because from the north wall, there is no crossing one."
    },
    {
     "trigger": "pickup:blue",

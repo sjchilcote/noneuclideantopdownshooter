@@ -137,7 +137,15 @@
      0.0
     ]
    ],
-   "entities": []
+   "entities": [
+    {
+     "type": "medkit",
+     "pos": [
+      218.25317547305485,
+      62.49999999999998
+     ]
+    }
+   ]
   },
   {
    "verts": [
@@ -214,6 +222,13 @@
      "pos": [
       62.5,
       233.25317547305485
+     ]
+    },
+    {
+     "type": "key_blue",
+     "pos": [
+      64.70476127563019,
+      241.4814565722671
      ]
     }
    ]
@@ -340,12 +355,6 @@
    3
   ],
   [
-   2,
-   2,
-   7,
-   0
-  ],
-  [
    3,
    2,
    8,
@@ -383,7 +392,15 @@
   ]
  ],
  "connects_x": [],
- "doors": [],
+ "doors": [
+  {
+   "a": 2,
+   "ea": 2,
+   "b": 7,
+   "eb": 0,
+   "key": "blue"
+  }
+ ],
  "player": {
   "room": 6,
   "pos": [
@@ -412,6 +429,10 @@
    {
     "trigger": "enter_room:7",
     "text": "Ratio: Hold on. Your suit gyro says you're facing spinward. You entered anti-spinward. Say something so I know you're you."
+   },
+   {
+    "trigger": "pickup:blue",
+    "text": "Ratio: Blue seal, from the end cap. The garden airlock takes it. Back the way you came \u2014 or, apparently, straight ahead. Both work. Neither should."
    },
    {
     "trigger": "kills:8",

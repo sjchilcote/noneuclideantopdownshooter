@@ -49,33 +49,37 @@ WEAPONS: dict[str, dict] = {
 WEAPON_ORDER = ["knife", "pistol", "smg", "shotgun", "rail", "lightning"]
 LIGHTNING_RECHARGE_TICKS = 60 * 9
 
+# Speed doctrine (Teleglitch): base walk slightly SLOWER than the player
+# (terminal = accel/fric; player ~146 u/s) so spacing is a real skill; the
+# husk/brute lunge is the burst that punishes carelessness. Mites nearly
+# match player speed and win by numbers.
 ENEMIES: dict[str, dict] = {
-    "husk": dict(hp=15, radius=8.0, mass=1.0, accel=520.0, fric=3.2, touch_dmg=12,
+    "husk": dict(hp=15, radius=8.0, mass=1.0, accel=430.0, fric=3.2, touch_dmg=12,
                  touch_cd=38, alert_snd="enemy_alert_husk", die_snd="enemy_die_husk",
                  score=1),
-    "mite": dict(hp=4, radius=4.0, mass=0.35, accel=980.0, fric=4.4, touch_dmg=4,
+    "mite": dict(hp=4, radius=4.0, mass=0.35, accel=690.0, fric=4.5, touch_dmg=4,
                  touch_cd=24, alert_snd="enemy_alert_mite", die_snd="enemy_die_mite",
                  score=1),
-    "spitter": dict(hp=18, radius=9.0, mass=1.4, accel=380.0, fric=3.8, touch_dmg=8,
+    "spitter": dict(hp=18, radius=9.0, mass=1.4, accel=340.0, fric=3.8, touch_dmg=8,
                     touch_cd=45, alert_snd="enemy_alert_husk", die_snd="enemy_die_husk",
-                    spit_cd=95, spit_speed=430.0, spit_dmg=11, keep_min=110.0,
+                    spit_cd=95, spit_speed=430.0, spit_dmg=9, keep_min=110.0,
                     keep_max=190.0, score=2),
-    "brute": dict(hp=65, radius=13.5, mass=7.0, accel=300.0, fric=2.6, touch_dmg=26,
+    "brute": dict(hp=65, radius=13.5, mass=7.0, accel=260.0, fric=2.6, touch_dmg=24,
                   touch_cd=55, alert_snd="enemy_alert_husk", die_snd="enemy_die_brute",
                   score=4),
     "shrieker": dict(hp=10, radius=7.0, mass=0.8, accel=520.0, fric=3.4, touch_dmg=0,
                      touch_cd=60, alert_snd="shrieker_scream", die_snd="enemy_die_mite",
                      scream_cd=60 * 5, score=3),
-    "warden": dict(hp=340, radius=16.0, mass=12.0, accel=420.0, fric=2.4, touch_dmg=34,
+    "warden": dict(hp=340, radius=16.0, mass=12.0, accel=330.0, fric=2.4, touch_dmg=30,
                    touch_cd=48, alert_snd="shrieker_scream", die_snd="enemy_die_brute",
                    spit_cd=70, spit_speed=520.0, spit_dmg=13, keep_min=0.0,
                    keep_max=100.0, score=25),
 }
 
 PICKUPS: dict[str, dict] = {
-    "ammo_9mm": dict(radius=5.0, amount=20),
-    "ammo_shell": dict(radius=5.0, amount=5),
-    "ammo_cell": dict(radius=5.0, amount=6),
+    "ammo_9mm": dict(radius=5.0, amount=30),
+    "ammo_shell": dict(radius=5.0, amount=7),
+    "ammo_cell": dict(radius=5.0, amount=8),
     "medkit": dict(radius=6.0, amount=35),
     "weapon_smg": dict(radius=7.0),
     "weapon_shotgun": dict(radius=7.0),
@@ -86,7 +90,7 @@ PICKUPS: dict[str, dict] = {
 }
 
 DROP_TABLES = {
-    "husk": [(0.22, "ammo_9mm"), (0.06, "medkit")],
+    "husk": [(0.35, "ammo_9mm"), (0.08, "medkit")],
     "mite": [(0.04, "ammo_9mm")],
     "spitter": [(0.30, "ammo_shell"), (0.08, "medkit")],
     "brute": [(0.55, "ammo_cell"), (0.25, "medkit")],
@@ -164,7 +168,7 @@ class GameSession:
                            PLAYER_RADIUS, PLAYER_MASS, GROUP_PLAYER)
         s.set_props(self.pid, rest_wall=0.0, rest_ent=0.05, max_substep=6.0)
         self.hp = st.get("hp", PLAYER_HP)
-        self.ammo = dict(st.get("ammo", {"9mm": 36, "shell": 0, "cell": 0}))
+        self.ammo = dict(st.get("ammo", {"9mm": 48, "shell": 0, "cell": 0}))
         self.weapons = list(st.get("weapons", ["knife", "pistol"]))
         self.keys: set[str] = set()
         self.weapon = st.get("weapon", "pistol")
@@ -272,14 +276,22 @@ class GameSession:
     def player_room(self) -> int:
         return self.sim.get_room(self.pid)
 
+    WAKE_TICKS = {"husk": 32, "mite": 18, "spitter": 26, "brute": 45,
+                  "shrieker": 12, "warden": 20}
+
     def alert_enemies(self, room: int, hops: int):
         for eid, e in self.enemies.items():
-            if e["state"] == "hunt":
-                continue
+            if e["state"] != "idle":
+                continue  # hunting already, or mid-wake (keep the beat)
             er = self.sim.get_room(eid)
             d = self.sim.hop_distance(er, room)
             if 0 <= d <= hops:
-                e["state"] = "hunt"
+                e["state"] = "waking"
+                e["wake"] = self.WAKE_TICKS[e["kind"]]
+                if d == 0:
+                    _, ex, ey, *_ = self.sim.get(eid)
+                    self._snd(ENEMIES[e["kind"]]["alert_snd"], er, (ex, ey), 0.8)
+                    self.fx.append(("alerted", eid))
 
     # ------------------------------------------------------------------
     # the tick
@@ -431,7 +443,7 @@ class GameSession:
                 self.sim.set_dir(bid, math.cos(ang), math.sin(ang))
                 self.bullets[bid] = dict(kind="bullet", dmg=w["dmg"], ttl=90)
         # gunfire is loud: it travels the graph
-        self.alert_enemies(proom, 3)
+        self.alert_enemies(proom, self.level.alert_hops)
 
     def _fire_rail(self, proom, px, py, adx, ady):
         ox, oy, room = px + adx * (PLAYER_RADIUS + 3), py + ady * (PLAYER_RADIUS + 3), proom
@@ -473,7 +485,7 @@ class GameSession:
         self.bullets[bid] = dict(kind="dart", dmg=w["dmg"], ttl=240)
         self._snd("lightning_fire", proom, (px, py))
         self._shake(4.0)
-        self.alert_enemies(proom, 4)
+        self.alert_enemies(proom, self.level.alert_hops + 1)
 
     def _detonate_dart(self, bid: int, room: int, x: float, y: float):
         w = WEAPONS["lightning"]
@@ -550,7 +562,7 @@ class GameSession:
     def _damage_player(self, dmg: float, room: int):
         if self.hurt_cd > 0 or self.dead:
             return
-        self.hurt_cd = 18
+        self.hurt_cd = 30
         self.hp -= dmg
         self.metrics["dmg_taken"] += dmg
         px, py = self.player_pos()
@@ -587,8 +599,16 @@ class GameSession:
 
             if e["state"] == "idle":
                 if room == proom:
-                    e["state"] = "hunt"
+                    # the notice beat: growl first, charge after — the
+                    # player always gets the first move
+                    e["state"] = "waking"
+                    e["wake"] = self.WAKE_TICKS[kind]
                     self._snd(d["alert_snd"], room, (ex, ey), 0.9)
+                    self.fx.append(("alerted", eid))
+                    ddx, ddy = px - ex, py - ey
+                    dl = math.hypot(ddx, ddy) or 1e-6
+                    s.set_dir(eid, ddx / dl, ddy / dl)
+                    continue
                 else:
                     # aimless drift
                     if e["wander_cd"] <= 0:
@@ -599,6 +619,12 @@ class GameSession:
                     s.set_vel(eid, evx + wx * d["accel"] * 0.25 * DT,
                               evy + wy * d["accel"] * 0.25 * DT)
                     continue
+
+            if e["state"] == "waking":
+                e["wake"] = e.get("wake", 0) - 1
+                if e["wake"] <= 0:
+                    e["state"] = "hunt"
+                continue
 
             # hunting
             accel = d["accel"] * (1.25 if e.get("buff", 0) > 0 else 1.0)
@@ -614,8 +640,8 @@ class GameSession:
                 # attack, not a shove
                 if kind in ("husk", "brute") and dist < 95.0 \
                         and e.get("lunge_cd", 0) <= 0:
-                    e["lunge_cd"] = 100 if kind == "husk" else 140
-                    burst = 340.0 if kind == "husk" else 260.0
+                    e["lunge_cd"] = 120 if kind == "husk" else 150
+                    burst = 300.0 if kind == "husk" else 240.0
                     s.set_vel(eid, evx + nx * burst, evy + ny * burst)
                     self._snd(d["alert_snd"], room, (ex, ey), 0.55)
                 if e.get("lunge_cd", 0) > 0:
@@ -769,7 +795,7 @@ class GameSession:
                 self.ammo[t] = self.ammo.get(t, 0) + PICKUPS[kind]["amount"]
                 self._snd("pickup_ammo", proom, (x, y))
             elif kind == "medkit":
-                if self.hp >= PLAYER_HP:
+                if self.hp > 70:
                     continue  # leave it for later — scarcity respects foresight
                 self.hp = min(PLAYER_HP, self.hp + PICKUPS[kind]["amount"])
                 self._snd("pickup_medkit", proom, (x, y))
@@ -828,10 +854,29 @@ class GameSession:
         if self.exit_room < 0 or proom != self.exit_room:
             return
         px, py = self.player_pos()
-        if math.hypot(self.exit_pos[0] - px, self.exit_pos[1] - py) < 18.0:
-            self.complete = True
-            self.metrics["completed"] = True
-            self._maybe_radio("exit")
+        if math.hypot(self.exit_pos[0] - px, self.exit_pos[1] - py) >= 18.0:
+            return
+        lvl = self.level
+        if lvl.exit_key and lvl.exit_key not in self.keys:
+            if "exit_locked" not in self._radio_fired:
+                self._radio_fired.add("exit_locked")
+                text = ("Ratio: The way out doesn't answer. It wants the "
+                        f"{lvl.exit_key} seal.")
+                self.radio_queue.append(text)
+                self.fx.append(("radio", text))
+            return
+        if lvl.exit_gate_kind and any(
+                e["kind"] == lvl.exit_gate_kind for e in self.enemies.values()):
+            if "exit_gated" not in self._radio_fired:
+                self._radio_fired.add("exit_gated")
+                text = ("Ratio: The way out doesn't answer. Something in "
+                        "here is holding it shut. Something big.")
+                self.radio_queue.append(text)
+                self.fx.append(("radio", text))
+            return
+        self.complete = True
+        self.metrics["completed"] = True
+        self._maybe_radio("exit")
 
     # ------------------------------------------------------------------
     # bullets ttl (called from tick loop indirectly, cheap sweep)
@@ -886,4 +931,15 @@ class GameSession:
             exit_room=self.exit_room,
             exit_next_edge=self.sim.next_edge(proom, self.exit_room)
             if self.exit_room >= 0 else -1,
+            exit_key_needed=self.level.exit_key
+            if self.level.exit_key and self.level.exit_key not in self.keys
+            else "",
+            exit_gate_kind=self.level.exit_gate_kind,
+            exit_gate_remaining=sum(
+                1 for e in self.enemies.values()
+                if e["kind"] == self.level.exit_gate_kind)
+            if self.level.exit_gate_kind else 0,
+            door_keys_needed=sorted(
+                {d["key"] for d in self.doors if not d["open"] and d["key"]}
+                - self.keys),
         )

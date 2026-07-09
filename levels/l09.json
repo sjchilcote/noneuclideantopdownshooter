@@ -100,15 +100,8 @@
     {
      "type": "husk",
      "pos": [
-      1269.9094407565651,
-      110.88844545457847
-     ]
-    },
-    {
-     "type": "husk",
-     "pos": [
-      1305.6156092503313,
-      68.49658855381543
+      1275.5250500068964,
+      79.38503400839389
      ]
     }
    ],
@@ -212,6 +205,13 @@
      "type": "brute",
      "pos": [
       900.0,
+      500.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      885.0,
       500.0
      ]
     }
@@ -329,22 +329,15 @@
     {
      "type": "mite",
      "pos": [
-      479.38503400839386,
-      924.4749499931037
+      469.90944075656506,
+      910.8884454545785
      ]
     },
     {
      "type": "mite",
      "pos": [
-      475.5250500068964,
-      879.3850340083939
-     ]
-    },
-    {
-     "type": "mite",
-     "pos": [
-      520.6149659916061,
-      875.5250500068963
+      505.6156092503313,
+      868.4965885538154
      ]
     }
    ],
@@ -378,17 +371,17 @@
      ]
     },
     {
-     "type": "husk",
+     "type": "spitter",
      "pos": [
-      869.909440756565,
-      910.8884454545785
+      875.5250500068963,
+      879.3850340083939
      ]
     },
     {
-     "type": "spitter",
+     "type": "key_void",
      "pos": [
-      905.6156092503313,
-      868.4965885538154
+      840.0,
+      900.0
      ]
     }
    ],
@@ -448,6 +441,13 @@
      "pos": [
       75.52505000689638,
       1279.3850340083939
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      85.0,
+      1300.0
      ]
     }
    ],
@@ -758,7 +758,8 @@
   "pos": [
    1360.0,
    1300.0
-  ]
+  ],
+  "key": "void"
  },
  "lore": {
   "intro": "There is no deck like this on the station.\nYou are not on the station anymore.\n\nSixteen rooms. Every room borders four.\nBleed carefully. It's the only ink you have.",
@@ -774,6 +775,10 @@
    {
     "trigger": "enter_room:10",
     "text": "Ratio: The spike moves when you move. Four doors from home, Commando \u2014 in a place where 'four' is a direction."
+   },
+   {
+    "trigger": "pickup:void",
+    "text": "Ratio: Void seal. 1010 \u2014 two bit-flips from the spike. You're learning to read this place. I'm not sure that's good."
    },
    {
     "trigger": "exit",
