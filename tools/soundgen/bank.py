@@ -1074,22 +1074,29 @@ def gen_tau_overcharge_hurt() -> np.ndarray:
     zap = sy.soft_clip(zap, 3.0)
     th = gun_thump(f0=150, f1=70, pitch_s=0.015, dur_s=0.08, drive=2.0)
     knock = body_knock(0.07, 240, seed=seed + 1)
-    # urgent two-tone warning blip (dark, radio-band, not a clean arcade beep)
-    def tone(f, d):
+    # urgent two-tone warning: two full low-high repetitions, saturated and
+    # radio-banded so it reads as hardware alarm, not a clean arcade beep
+    def tone(f, d, seed_):
         t = sy.square(f, d)
-        t = sy.soft_clip(t, 2.2)
-        return sy.apply_env(t, sy.env_adsr(d, 0.004, 0.01, 0.75, 0.02))
-    alarm = sy.concat(tone(760, 0.05), tone(540, 0.06))
-    alarm = sy.bandpass(alarm, 850, q=0.8)
+        grit = sy.white_noise(d, seed=seed_)
+        grit = sy.bandpass(grit, f * 1.5, q=1.5)
+        t = sy.mix_layers([t, grit], [0.85, 0.25])
+        t = sy.soft_clip(t, 3.0)
+        return sy.apply_env(t, sy.env_adsr(d, 0.006, 0.01, 0.75, 0.025))
+    alarm = sy.concat(tone(620, 0.05, seed + 3), tone(430, 0.055, seed + 4),
+                      tone(620, 0.05, seed + 5), tone(430, 0.055, seed + 6))
+    alarm = sy.bandpass(alarm, 700, q=0.7)
+    alarm = sy.soft_clip(alarm, 2.0)
     alarm = sy.bitcrush(alarm, bits=8)
-    x = place(dur,
-              (0.0, hot_transient(0.004, seed=seed + 2, gain=0.5, lp_hz=3500), 0.8),
+    x = place(0.38,
+              (0.0, hot_transient(0.004, seed=seed + 2, gain=0.4, lp_hz=3000), 0.8),
               (0.0, zap, 0.95),
-              (0.001, th, 1.0),
-              (0.001, knock, 0.7),
-              (0.14, alarm, 0.45))
-    x = sy.soft_clip(x, 2.0)
-    return finish(x, fade_s=0.03, pad_s=0.03)
+              (0.001, th, 1.2),
+              (0.001, knock, 0.9),
+              (0.12, alarm, 0.75))
+    x = sy.soft_clip(x, 1.8)
+    x = sy.lowpass(x, 3200)
+    return finish(x, fade_s=0.04, pad_s=0.02)
 
 
 # ==========================================================================
