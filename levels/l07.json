@@ -184,6 +184,14 @@
     [
      900,
      -300
+    ],
+    [
+     860.0,
+     -300.0
+    ],
+    [
+     740.0,
+     -300.0
     ]
    ],
    "entities": [
@@ -230,6 +238,49 @@
      ]
     }
    ]
+  },
+  {
+   "verts": [
+    [
+     740,
+     -390
+    ],
+    [
+     740,
+     -300
+    ],
+    [
+     860,
+     -300
+    ],
+    [
+     860,
+     -390
+    ]
+   ],
+   "entities": [
+    {
+     "type": "ammo_cell",
+     "pos": [
+      785.0,
+      -345.0
+     ]
+    },
+    {
+     "type": "ammo_cell",
+     "pos": [
+      800.0,
+      -345.0
+     ]
+    },
+    {
+     "type": "medkit",
+     "pos": [
+      815.0,
+      -345.0
+     ]
+    }
+   ]
   }
  ],
  "connects": [
@@ -259,7 +310,15 @@
   ]
  ],
  "connects_x": [],
- "doors": [],
+ "doors": [
+  {
+   "a": 3,
+   "ea": 4,
+   "b": 4,
+   "eb": 1,
+   "key": "shoot"
+  }
+ ],
  "player": {
   "room": 0,
   "pos": [
@@ -323,6 +382,14 @@
      400
     ],
     "text": "CORE RECOVERY MANIFEST\nStaff-mind cores, recovered from Records:\n  VESALIUS - damaged, held the west ring\n  THIBAULT - damaged, held the junction\n  OSEI - [NO CORE RECOVERED]\nThey held the subverted peripherals out of the\ncore ring so the administrator could seal.\nOsei walked into Aisle 9 to buy them the time."
+   },
+   {
+    "room": 4,
+    "pos": [
+     800,
+     -345
+    ],
+    "text": "INCIDENT FILE 0000\nEmpty folder. The tab reads 0000.\nSomeone filed the folder itself as\nthe incident.\nAppendix: one requisition slip,\napproved, for 'one additional room'."
    }
   ]
  }

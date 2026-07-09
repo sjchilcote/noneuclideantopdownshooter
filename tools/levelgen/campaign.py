@@ -514,6 +514,9 @@ def l07():
     closet = b.rect(700, 300, 120, 140)
     deep = b.rect(700, -300, 200, 140)
 
+    annex = b.rect(740, -390, 120, 90)   # the aisle before aisle one
+    b.door_pts(deep, (800, -300), annex, (800, -300), "shoot")
+    b.no_connect(deep, annex)
     b.connect_pts(entry, (160, 70), stack, (300, 70))
     # the endless aisle: top of the stack feeds its own bottom
     b.connect_pts(stack, (410, 0), stack, (410, 140))
@@ -552,6 +555,14 @@ def l07():
                "They held the subverted peripherals out of the\n"
                "core ring so the administrator could seal.\n"
                "Osei walked into Aisle 9 to buy them the time.")
+    b.terminal(annex, (800, -345),
+               "INCIDENT FILE 0000\n"
+               "Empty folder. The tab reads 0000.\n"
+               "Someone filed the folder itself as\n"
+               "the incident.\n"
+               "Appendix: one requisition slip,\n"
+               "approved, for 'one additional room'.")
+    cache(b, annex, "ammo_cell ammo_cell medkit")
     squad(b, stack, "mite mite mite mite mite mite")
     squad(b, closet, "spitter spitter")
     squad(b, deep, "brute brute shrieker")
