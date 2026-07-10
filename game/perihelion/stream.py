@@ -85,15 +85,21 @@ class WorldStreamer:
         s.exit_gate_rooms = (c["offset"], c["offset"] + c["n_rooms"])
 
     def _snapshot_state(self) -> dict:
-        # hp floors at 70 and 9mm at 45: respawning hurt or dry into a
-        # fully restocked chunk death-spirals — every retry replays the
-        # same doomed loadout (soak seed 2175 entered the finale with 9
-        # rounds and died 400+ times). The seed prints a battle-ready
-        # frame, not a copy of your wounds or your empty magazines.
+        # hp and 9mm floors: respawning hurt or dry into a fully restocked
+        # chunk death-spirals — every retry replays the same doomed loadout
+        # (soak seed 2175 entered the finale with 9 rounds and died 400+
+        # times; hard mode needs higher floors against 1.35x enemies, 75 of
+        # 983 hard soak campaigns ground out on normal-tuned floors). The
+        # seed prints a battle-ready frame, not a copy of your wounds or
+        # your empty magazines. Floors only lift the pathological bottom;
+        # normal entries carry far more and are untouched.
         s = self.session
+        hard = getattr(s, "difficulty", "normal") == "hard"
         ammo = dict(s.ammo)
-        ammo["9mm"] = max(ammo.get("9mm", 0), 45)
-        return dict(hp=max(int(s.hp), 70), ammo=ammo,
+        ammo["9mm"] = max(ammo.get("9mm", 0), 90 if hard else 45)
+        if hard:
+            ammo["shell"] = max(ammo.get("shell", 0), 8)
+        return dict(hp=max(int(s.hp), 85 if hard else 70), ammo=ammo,
                     weapons=list(s.weapons), weapon=s.weapon,
                     holes=s.holes, cloister=s.cloister is not None)
 
