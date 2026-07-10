@@ -26,11 +26,12 @@ import tempfile
 from pathlib import Path
 
 from perihelion.levels import load_level
-from perihelion.testkit import AggroBot, CamperBot, ExplorerBot, PacifistBot, run_bot
+from perihelion.testkit import AggroBot, CamperBot, ExplorerBot, PacifistBot, SteadyBot, run_bot
 from perihelion.testkit.harness import summarize
 
 BOTS = {
     "aggro": AggroBot,
+    "steady": SteadyBot,
     "pacifist": PacifistBot,
     "camper": CamperBot,
     "explorer": ExplorerBot,

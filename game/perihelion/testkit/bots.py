@@ -323,6 +323,21 @@ class AggroBot(_CombatMixin, _UnstickMixin, Bot):
         return nav_to_exit(session, snapshot)
 
 
+class SteadyBot(AggroBot):
+    """AggroBot with half the aim wander — a mid-skill human proxy.
+
+    The measurement each bot owns: AggroBot answers "is this beatable by
+    a sloppy player?" (normal mode should be ~100% for it); SteadyBot
+    answers "is this beatable by a competent one?" (hard mode should be
+    ~100% for it while AggroBot grinds — that gap IS the difficulty).
+    Hard-mode completability gates should use SteadyBot."""
+
+    def _combat_input(self, session, snapshot, enemies_in_room, mobile):
+        inp = super()._combat_input(session, snapshot, enemies_in_room, mobile)
+        self._aim_jitter = max(-0.11, min(0.11, self._aim_jitter))
+        return inp
+
+
 class PacifistBot(_UnstickMixin, Bot):
     """Never fires. Flees any enemy sharing its room, otherwise navigates
     toward the exit exactly like AggroBot's non-combat movement."""
