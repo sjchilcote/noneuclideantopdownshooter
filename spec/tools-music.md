@@ -2521,7 +2521,7 @@ This tool extracts each music-state transition from a recording. Types include f
 
 Each clip spans 6 seconds before through 8 seconds after its event. `transitions` interprets `music_jump` with a `~s` suffix as a seamless loop. It interprets `music_rel` as a boss release and `music_halt` as a death. A `music_bank` event after the first second is a rotation. A riser begins when its value increases above 0.01. Same-type transitions less than 1.5 seconds apart are deduplicated.
 
-The probe sends 4 clips in each request and asks for a 1-to-10 score plus either a description of audible artifacts or `none` for each clip.
+The probe sends 4 clips in each request. It asks for a 1-to-10 score plus either a description of audible artifacts or `none` for each clip.
 
 ### Caveats
 

@@ -60,4 +60,4 @@ The port is a rename family (`room` became `polygon`) plus the typed coordinate 
 - Graft (`loop-result`): check.sh green on the in-tree engine after regenerating the synthesized sfx bank (328 passed).
 - De-narrativization (`netds-base`): check.sh green (264 passed) and an aggro-bot clear of all ten campaign levels. A 400-second streamed-app soak reached New Game+ and caught a second epilogue call site the tests missed.
 - Engine forward + port: cargo 125 passed, check.sh green (264 passed, zero skips), and the campaign cleared again, ten of ten in one try each.
-- PERIHELION cross-check after the directory swap: recorded in this file's next update once run.
+- PERIHELION cross-check after the directory swap: its check.sh is green against the swapped-in sibling engine (1037 passed).
