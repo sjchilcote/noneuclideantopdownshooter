@@ -37,7 +37,7 @@ def _go_to(s, room_target, point, max_ticks=1200):
             if e < 0:
                 return False
             mx, my = nav_to_point(s, px, py,
-                                  s.sim.edge_midpoint(s.player_room(), e))
+                                  s.sim.edge_midpoint(s.player_room(), e).local())
         s.tick(InputFrame(mx=mx, my=my))
     return False
 

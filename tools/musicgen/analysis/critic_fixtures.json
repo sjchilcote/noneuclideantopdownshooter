@@ -1,0 +1,319 @@
+{
+ "good": {
+  "n_calls": 6,
+  "p_median": 0.85,
+  "p_all": [
+   0.85,
+   0.85,
+   0.85,
+   0.85,
+   0.85,
+   0.8
+  ],
+  "originality_median": 0.6,
+  "verdicts": [
+   "comparable craft",
+   "comparable craft",
+   "comparable craft",
+   "comparable craft",
+   "comparable craft",
+   "comparable craft"
+  ],
+  "verdict_stable_under_swap": true,
+  "spec_reads": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "biggest_fixes": [
+   "Tighten the low-end relationship between the kick drum and the synth bassline to prevent slight muddy overlap in the sub-frequencies.",
+   "Tame the harshness in the high-midrange of the lead synth during the climax to prevent ear fatigue.",
+   "Tame the harshness in the high-midrange of the lead synth/guitars to prevent ear fatigue.",
+   "Tame the harshness in the upper-midrange frequencies of the lead synth/guitars to prevent listener fatigue.",
+   "Tame the harshness in the upper-midrange guitars and synths to prevent listener fatigue.",
+   "Tame the harshness in the high-mids (around 2-4kHz) on the main synth lead to prevent listener fatigue."
+  ],
+  "amateur_tells": [
+   "harsh high-mid buildup",
+   "harshness-in-high-mids",
+   "harshness_in_high_mids",
+   "overly bright synth lead",
+   "slightly static drum loop programming"
+  ],
+  "raw": [
+   {
+    "p_ship_first_draft": 0.85,
+    "originality": 0.6,
+    "better_or_worse": "comparable craft",
+    "biggest_fix": "Tighten the low-end relationship between the kick drum and the synth bassline to prevent slight muddy overlap in the sub-frequencies.",
+    "amateur_tells": [],
+    "summary": "Clip B demonstrates highly professional craft with intentional, driving synth sequences, a well-structured drum groove, and strong dynamic transitions. The sound sources read as heavy and authentic to the industrial genre, matching the production standard set by Clip A. Only minor low-end cleanup in the mix is needed to make it fully shippable.",
+    "anchor": "02_fleshgrinder_blk02",
+    "swapped_order": false
+   },
+   {
+    "p_ship_first_draft": 0.85,
+    "originality": 0.6,
+    "better_or_worse": "comparable craft",
+    "biggest_fix": "Tame the harshness in the high-midrange of the lead synth during the climax to prevent ear fatigue.",
+    "amateur_tells": [
+     "harsh high-mid buildup"
+    ],
+    "summary": "Clip B displays a highly professional level of craft with strong, intentional sound design, driving synthwave/cyberpunk rhythms, and a well-structured arrangement. The energy transition into the heavy guitar-and-synth climax is executed with great momentum and punch. The only minor tell is a slightly unrefined harshness in the upper-mid frequencies of the lead synth during the busiest sections, which could be easily smoothed out in the final mix.",
+    "anchor": "02_fleshgrinder_blk02",
+    "swapped_order": true
+   },
+   {
+    "p_ship_first_draft": 0.85,
+    "originality": 0.6,
+    "better_or_worse": "comparable craft",
+    "biggest_fix": "Tame the harshness in the high-midrange of the lead synth/guitars to prevent ear fatigue.",
+    "amateur_tells": [
+     "harshness-in-high-mids"
+    ],
+    "summary": "Clip B demonstrates a highly professional level of craft, featuring a driving, well-locked industrial groove, intentional synth programming, and great dynamic energy. The arrangement is punchy and the transition into the main section is executed with confidence. Only minor mix polish is needed, specifically addressing some harshness in the high-mid frequencies of the lead elements.",
+    "anchor": "04_not_a_heart__but_an_engine_blk07",
+    "swapped_order": false
+   },
+   {
+    "p_ship_first_draft": 0.85,
+    "originality": 0.6,
+    "better_or_worse": "comparable craft",
+    "biggest_fix": "Tame the harshness in the upper-midrange frequencies of the lead synth/guitars to prevent listener fatigue.",
+    "amateur_tells": [
+     "harshness-in-high-mids"
+    ],
+    "summary": "Clip B exhibits a highly professional level of production, featuring aggressive, well-defined industrial synth lines and heavy, driving drums that lock into a solid groove. The arrangement is dynamic and purposeful, matching the intensity and craft of the reference track. The only minor drawback is a slight buildup of harsh frequencies in the upper-midrange during the densest sections of the mix.",
+    "anchor": "04_not_a_heart__but_an_engine_blk07",
+    "swapped_order": true
+   },
+   {
+    "p_ship_first_draft": 0.85,
+    "originality": 0.6,
+    "better_or_worse": "comparable craft",
+    "biggest_fix": "Tame the harshness in the upper-midrange guitars and synths to prevent listener fatigue.",
+    "amateur_tells": [
+     "harshness_in_high_mids"
+    ],
+    "summary": "Clip B is a highly energetic, well-crafted industrial rock track with strong rhythmic drive and intentional arrangement. The performance and sound sources feel authentic and aggressive, matching the professional standard of Clip A. The primary area for improvement is the harshness in the upper-mid frequencies of the guitars and synths, which needs to be smoothed out in the final mix.",
+    "anchor": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00",
+    "swapped_order": false
+   },
+   {
+    "p_ship_first_draft": 0.8,
+    "originality": 0.5,
+    "better_or_worse": "comparable craft",
+    "biggest_fix": "Tame the harshness in the high-mids (around 2-4kHz) on the main synth lead to prevent listener fatigue.",
+    "amateur_tells": [
+     "overly bright synth lead",
+     "slightly static drum loop programming"
+    ],
+    "summary": "Clip B is a highly competent, driving industrial synthwave track with excellent energy and a solid low-end foundation. The writing has clear intent, featuring a strong melodic hook and a well-structured arrangement that builds tension effectively. With some minor mix polish to smooth out the harsh high-mid frequencies on the lead synth, this is fully shippable.",
+    "anchor": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00",
+    "swapped_order": true
+   }
+  ]
+ },
+ "bad": {
+  "n_calls": 6,
+  "p_median": 0.1,
+  "p_all": [
+   0.1,
+   0.1,
+   0.2,
+   0.1,
+   0.1,
+   0.1
+  ],
+  "originality_median": 0.2,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "verdict_stable_under_swap": true,
+  "spec_reads": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "biggest_fixes": [
+   "Replace the generic, static synth-brass lead with a dynamic, textured, and modulated sound source that has movement and grit.",
+   "Replace the stock, thin synthesizer leads and bass with thick, multi-layered, and distorted industrial sound sources.",
+   "Replace the stock, dry synth-brass lead with a heavily processed, textured industrial sound source that matches the grit of the rhythm section.",
+   "Replace the toy-like, GM-MIDI-sounding synthesizer patches with professional, textured, and harmonically rich sound sources.",
+   "Replace the stock, unmodulated synthesizer patches and static drum samples with custom-designed, dynamic sound sources that have movement and grit.",
+   "Replace the generic, flat synthesizer presets with custom-designed, textured, and modulated sound sources that have industrial grit."
+  ],
+  "amateur_tells": [
+   "Monotonous, repetitive arrangement lacking dynamic transitions or build-ups",
+   "Stiff, fully quantized MIDI programming with zero velocity variation",
+   "Thin, dry mix with no spatial depth or professional low-end weight",
+   "Toy-like, preset-sounding synthesizer timbres",
+   "abrupt, unglued transition between the intro beat and the main melody",
+   "abrupt, unpolished loop transitions",
+   "dry, unprocessed synth presets",
+   "flat quantization",
+   "flat quantized wallpaper",
+   "lack of low-end cohesion and mix depth",
+   "lack of low-end weight and glue in the mix",
+   "rigid, fully-quantized MIDI programming with zero velocity variation",
+   "static arrangement",
+   "static filter sweeps",
+   "static, unmodulated synth patches",
+   "static, unmodulated synthesizer presets",
+   "stiff, fully-quantized step-sequencer feel",
+   "toy/GM-MIDI timbres"
+  ],
+  "raw": [
+   {
+    "p_ship_first_draft": 0.1,
+    "originality": 0.2,
+    "better_or_worse": "B clearly worse",
+    "biggest_fix": "Replace the generic, static synth-brass lead with a dynamic, textured, and modulated sound source that has movement and grit.",
+    "amateur_tells": [
+     "static, unmodulated synthesizer presets",
+     "rigid, fully-quantized MIDI programming with zero velocity variation",
+     "abrupt, unpolished loop transitions",
+     "lack of low-end cohesion and mix depth"
+    ],
+    "summary": "Clip B sounds like an unfinished MIDI sketch using stock, toy-like synthesizer presets that lack the grit, movement, and production value of a professional industrial track. The performance is completely flat and quantized, with no dynamic variation or expressive modulation. To reach a shippable standard, the sound sources need to be completely overhauled with rich, textured synthesis, and the arrangement requires proper mix depth and transitional polish.",
+    "anchor": "02_fleshgrinder_blk02",
+    "swapped_order": false
+   },
+   {
+    "p_ship_first_draft": 0.1,
+    "originality": 0.2,
+    "better_or_worse": "B clearly worse",
+    "biggest_fix": "Replace the stock, thin synthesizer leads and bass with thick, multi-layered, and distorted industrial sound sources.",
+    "amateur_tells": [
+     "toy/GM-MIDI timbres",
+     "flat quantization",
+     "static arrangement"
+    ],
+    "summary": "Clip B sounds like an early-stage MIDI draft using stock, unpolished synthesizer presets that lack the grit, weight, and production value of a professional industrial track. The arrangement is highly repetitive and lacks the dynamic transitions, spatial depth, and aggressive sound design demonstrated in Clip A. To reach a shippable standard, the sound sources need to be completely overhauled with richer textures, distortion, and humanized modulation.",
+    "anchor": "02_fleshgrinder_blk02",
+    "swapped_order": true
+   },
+   {
+    "p_ship_first_draft": 0.2,
+    "originality": 0.4,
+    "better_or_worse": "B clearly worse",
+    "biggest_fix": "Replace the stock, dry synth-brass lead with a heavily processed, textured industrial sound source that matches the grit of the rhythm section.",
+    "amateur_tells": [
+     "dry, unprocessed synth presets",
+     "stiff, fully-quantized step-sequencer feel",
+     "abrupt, unglued transition between the intro beat and the main melody"
+    ],
+    "summary": "While Clip B attempts a classic industrial-synthwave aesthetic, it suffers from highly amateurish sound design, particularly the dry, stock-sounding synth lead that lacks any grit or spatial processing. The transition from the harsh intro beat to the melodic section feels disjointed and unglued, making the track sound like a rough MIDI demo rather than a finished production. To reach a professional standard, the synth timbres need to be heavily redesigned with distortion, filtering, and modulation to match the aggressive energy of the drums.",
+    "anchor": "04_not_a_heart__but_an_engine_blk07",
+    "swapped_order": false
+   },
+   {
+    "p_ship_first_draft": 0.1,
+    "originality": 0.2,
+    "better_or_worse": "B clearly worse",
+    "biggest_fix": "Replace the toy-like, GM-MIDI-sounding synthesizer patches with professional, textured, and harmonically rich sound sources.",
+    "amateur_tells": [
+     "Toy-like, preset-sounding synthesizer timbres",
+     "Stiff, fully quantized MIDI programming with zero velocity variation",
+     "Monotonous, repetitive arrangement lacking dynamic transitions or build-ups",
+     "Thin, dry mix with no spatial depth or professional low-end weight"
+    ],
+    "summary": "Clip B exhibits several amateur hallmarks, most notably its reliance on cheap, GM-MIDI-style synthesizer patches and completely flat, quantized sequencing. Unlike the rich, driving, and professionally produced industrial metal of Clip A, Clip B lacks any sense of groove, dynamic range, or production polish. To reach a shippable standard, the entire sound palette needs to be replaced with high-quality instruments, and the arrangement requires actual humanization and dynamic variation.",
+    "anchor": "04_not_a_heart__but_an_engine_blk07",
+    "swapped_order": true
+   },
+   {
+    "p_ship_first_draft": 0.1,
+    "originality": 0.2,
+    "better_or_worse": "B clearly worse",
+    "biggest_fix": "Replace the stock, unmodulated synthesizer patches and static drum samples with custom-designed, dynamic sound sources that have movement and grit.",
+    "amateur_tells": [
+     "toy/GM-MIDI timbres",
+     "flat quantized wallpaper",
+     "static, unmodulated synth patches",
+     "lack of low-end weight and glue in the mix"
+    ],
+    "summary": "Clip B sounds like an early-stage MIDI sketch using basic, unedited software presets rather than a finished production. The synth leads are static and thin, while the drums lack the weight, grit, and dynamic variation expected in professional industrial or electronic music. To reach a shippable standard, the sound sources need to be completely overhauled with custom sound design, modulation, and a cohesive mix.",
+    "anchor": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00",
+    "swapped_order": false
+   },
+   {
+    "p_ship_first_draft": 0.1,
+    "originality": 0.2,
+    "better_or_worse": "B clearly worse",
+    "biggest_fix": "Replace the generic, flat synthesizer presets with custom-designed, textured, and modulated sound sources that have industrial grit.",
+    "amateur_tells": [
+     "toy/GM-MIDI timbres",
+     "flat quantized wallpaper",
+     "static filter sweeps"
+    ],
+    "summary": "Clip B suffers from incredibly dated, toy-like synthesizer presets and static, fully quantized programming that lacks any human performance or dynamic contour. Unlike the rich, atmospheric, and cinematic depth of Clip A, Clip B sounds like a rough draft made with stock GM-MIDI sounds from an early 2000s workstation. The writing is predictable, and the sound sources lack the weight and grit required for a professional heavy-electronic release.",
+    "anchor": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00",
+    "swapped_order": true
+   }
+  ]
+ },
+ "bad_spec": {
+  "n_calls": 3,
+  "church_forms_audible": 0.1,
+  "machine_performers": 0.4,
+  "sincere_not_ironic": 0.2,
+  "template_pastiche": 0.9,
+  "forms_heard": [
+   "bell-like attack",
+   "modal melody"
+  ],
+  "symbolism_notes": [
+   null,
+   null,
+   null
+  ],
+  "raw": [
+   {
+    "church_forms_audible": 0.1,
+    "church_forms_heard": [
+     "bell-like attack"
+    ],
+    "machine_performers": 0.3,
+    "sincere_not_ironic": 0.2,
+    "template_pastiche": 0.9,
+    "symbolism_note": null,
+    "summary": "The clip consists of a repetitive, high-tempo electronic beat followed by a simple synth melody over a driving rhythm. It lacks any genuine liturgical structures, reverent tone, or industrial machine-voice performance, reading instead as a generic electronic dance template with basic synthesizer presets."
+   },
+   {
+    "church_forms_audible": 0.1,
+    "church_forms_heard": [
+     "bell-like attack"
+    ],
+    "machine_performers": 0.4,
+    "sincere_not_ironic": 0.2,
+    "template_pastiche": 0.9,
+    "symbolism_note": null,
+    "summary": "The clip consists of a repetitive, aggressive industrial beat followed by a simple synthesizer melody over a driving rhythm. It lacks any genuine liturgical form, chant grammar, or reverent atmosphere, reading instead as a generic electronic track with basic synth patches."
+   },
+   {
+    "church_forms_audible": 0.1,
+    "church_forms_heard": [
+     "modal melody"
+    ],
+    "machine_performers": 0.4,
+    "sincere_not_ironic": 0.3,
+    "template_pastiche": 0.9,
+    "symbolism_note": null,
+    "summary": "The clip consists of a generic, aggressive industrial beat that transitions into a basic synthesizer lead playing a simple modal melody. It lacks any genuine liturgical forms, reverence, or meaningful machine-as-performer symbolism, reading instead as a standard electronic track with superficial dark-synth dressing."
+   }
+  ]
+ },
+ "pass": true
+}

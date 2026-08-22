@@ -1,0 +1,82 @@
+[
+  {
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "start": 0.0,
+    "end": 152.0,
+    "duration": 152.0,
+    "path": "tracks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance.wav"
+  },
+  {
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "start": 152.0,
+    "end": 295.0,
+    "duration": 143.0,
+    "path": "tracks/02_fleshgrinder.wav"
+  },
+  {
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "start": 295.0,
+    "end": 433.0,
+    "duration": 138.0,
+    "path": "tracks/03_trash_planet_mining_rig.wav"
+  },
+  {
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "start": 433.0,
+    "end": 671.0,
+    "duration": 238.0,
+    "path": "tracks/04_not_a_heart__but_an_engine.wav"
+  },
+  {
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "start": 671.0,
+    "end": 857.0,
+    "duration": 186.0,
+    "path": "tracks/05_styx_floods_with_souls.wav"
+  },
+  {
+    "track": "06_utter_loss",
+    "title": "Utter Loss",
+    "start": 857.0,
+    "end": 954.0,
+    "duration": 97.0,
+    "path": "tracks/06_utter_loss.wav"
+  },
+  {
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "start": 954.0,
+    "end": 1171.0,
+    "duration": 217.0,
+    "path": "tracks/07_i_swear_to_protect__chant_of_trust.wav"
+  },
+  {
+    "track": "08_populist",
+    "title": "Populist",
+    "start": 1171.0,
+    "end": 1361.0,
+    "duration": 190.0,
+    "path": "tracks/08_populist.wav"
+  },
+  {
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "start": 1361.0,
+    "end": 1525.0,
+    "duration": 164.0,
+    "path": "tracks/09_humanity_first.wav"
+  },
+  {
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "start": 1525.0,
+    "end": 1711,
+    "duration": 186.0,
+    "path": "tracks/10_on_the_edge_of_my_ability__chant_of_focus.wav"
+  }
+]

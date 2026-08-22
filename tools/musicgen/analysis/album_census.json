@@ -1,0 +1,2029 @@
+{
+ "n_blocks": 72,
+ "tiers": {
+  "restrained": {
+   "n": 10,
+   "rms_dbfs": {
+    "p25": -18.275,
+    "median": -16.61,
+    "p75": -15.345
+   },
+   "crest_db": {
+    "p25": 12.637,
+    "median": 13.75,
+    "p75": 15.607
+   },
+   "centroid_hz": {
+    "p25": 211.525,
+    "median": 335.85,
+    "p75": 697.95
+   },
+   "flatness": {
+    "p25": 0.001,
+    "median": 0.005,
+    "p75": 0.009
+   },
+   "onsets_per_s": {
+    "p25": 0.755,
+    "median": 1.47,
+    "p75": 2.072
+   },
+   "low_onsets_per_beat": {
+    "p25": 1.475,
+    "median": 1.8,
+    "p75": 2.242
+   },
+   "high_onsets_per_beat": {
+    "p25": 0.315,
+    "median": 0.625,
+    "p75": 1.188
+   },
+   "articulation_cv": {
+    "p25": 0.388,
+    "median": 0.458,
+    "p75": 0.554
+   },
+   "band_sub": {
+    "p25": 0.1255,
+    "median": 0.1395,
+    "p75": 0.3191
+   },
+   "band_low": {
+    "p25": 0.4721,
+    "median": 0.5236,
+    "p75": 0.6945
+   },
+   "band_mid": {
+    "p25": 0.0751,
+    "median": 0.137,
+    "p75": 0.1999
+   },
+   "band_high": {
+    "p25": 0.0018,
+    "median": 0.0156,
+    "p75": 0.0309
+   },
+   "band_air": {
+    "p25": 0.0002,
+    "median": 0.0005,
+    "p75": 0.0046
+   }
+  },
+  "high": {
+   "n": 55,
+   "rms_dbfs": {
+    "p25": -15.58,
+    "median": -14.77,
+    "p75": -14.145
+   },
+   "crest_db": {
+    "p25": 12.405,
+    "median": 12.96,
+    "p75": 13.77
+   },
+   "centroid_hz": {
+    "p25": 603.15,
+    "median": 809.5,
+    "p75": 987.45
+   },
+   "flatness": {
+    "p25": 0.004,
+    "median": 0.007,
+    "p75": 0.01
+   },
+   "onsets_per_s": {
+    "p25": 0.8,
+    "median": 1.43,
+    "p75": 2.215
+   },
+   "low_onsets_per_beat": {
+    "p25": 1.585,
+    "median": 2.33,
+    "p75": 3.355
+   },
+   "high_onsets_per_beat": {
+    "p25": 0.58,
+    "median": 1.19,
+    "p75": 1.785
+   },
+   "articulation_cv": {
+    "p25": 0.24,
+    "median": 0.289,
+    "p75": 0.348
+   },
+   "band_sub": {
+    "p25": 0.1352,
+    "median": 0.1639,
+    "p75": 0.2519
+   },
+   "band_low": {
+    "p25": 0.4645,
+    "median": 0.5234,
+    "p75": 0.5741
+   },
+   "band_mid": {
+    "p25": 0.1577,
+    "median": 0.1829,
+    "p75": 0.2056
+   },
+   "band_high": {
+    "p25": 0.062,
+    "median": 0.0994,
+    "p75": 0.1273
+   },
+   "band_air": {
+    "p25": 0.0063,
+    "median": 0.0105,
+    "p75": 0.0145
+   }
+  },
+  "peak": {
+   "n": 7,
+   "rms_dbfs": {
+    "p25": -17.065,
+    "median": -15.28,
+    "p75": -14.495
+   },
+   "crest_db": {
+    "p25": 12.695,
+    "median": 13.63,
+    "p75": 15.44
+   },
+   "centroid_hz": {
+    "p25": 908.45,
+    "median": 1015.1,
+    "p75": 1123.05
+   },
+   "flatness": {
+    "p25": 0.005,
+    "median": 0.006,
+    "p75": 0.008
+   },
+   "onsets_per_s": {
+    "p25": 1.085,
+    "median": 1.4,
+    "p75": 1.45
+   },
+   "low_onsets_per_beat": {
+    "p25": 2.34,
+    "median": 2.84,
+    "p75": 3.87
+   },
+   "high_onsets_per_beat": {
+    "p25": 0.67,
+    "median": 1.56,
+    "p75": 1.815
+   },
+   "articulation_cv": {
+    "p25": 0.252,
+    "median": 0.394,
+    "p75": 0.44
+   },
+   "band_sub": {
+    "p25": 0.1522,
+    "median": 0.1766,
+    "p75": 0.1968
+   },
+   "band_low": {
+    "p25": 0.3856,
+    "median": 0.4428,
+    "p75": 0.4589
+   },
+   "band_mid": {
+    "p25": 0.1919,
+    "median": 0.2062,
+    "p75": 0.3119
+   },
+   "band_high": {
+    "p25": 0.1216,
+    "median": 0.1257,
+    "p75": 0.1473
+   },
+   "band_air": {
+    "p25": 0.0084,
+    "median": 0.0107,
+    "p75": 0.012
+   }
+  }
+ },
+ "all": {
+  "rms_dbfs": {
+   "p25": -16.205,
+   "median": -14.93,
+   "p75": -14.223
+  },
+  "crest_db": {
+   "p25": 12.455,
+   "median": 12.985,
+   "p75": 13.97
+  },
+  "centroid_hz": {
+   "p25": 593.775,
+   "median": 804.7,
+   "p75": 1019.05
+  },
+  "flatness": {
+   "p25": 0.003,
+   "median": 0.007,
+   "p75": 0.01
+  },
+  "onsets_per_s": {
+   "p25": 0.8,
+   "median": 1.415,
+   "p75": 2.178
+  },
+  "low_onsets_per_beat": {
+   "p25": 1.578,
+   "median": 2.275,
+   "p75": 3.137
+  },
+  "high_onsets_per_beat": {
+   "p25": 0.552,
+   "median": 1.125,
+   "p75": 1.637
+  },
+  "articulation_cv": {
+   "p25": 0.243,
+   "median": 0.296,
+   "p75": 0.402
+  },
+  "band_sub": {
+   "p25": 0.1286,
+   "median": 0.1633,
+   "p75": 0.2505
+  },
+  "band_low": {
+   "p25": 0.4605,
+   "median": 0.5111,
+   "p75": 0.574
+  },
+  "band_mid": {
+   "p25": 0.1446,
+   "median": 0.182,
+   "p75": 0.2117
+  },
+  "band_high": {
+   "p25": 0.0574,
+   "median": 0.0983,
+   "p75": 0.1282
+  },
+  "band_air": {
+   "p25": 0.0056,
+   "median": 0.0099,
+   "p75": 0.0139
+  }
+ },
+ "blocks": [
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -20.76,
+   "crest_db": 17.33,
+   "band_frac": {
+    "sub": 0.0895,
+    "low": 0.3812,
+    "mid": 0.5007,
+    "high": 0.0279,
+    "air": 0.0006
+   },
+   "centroid_hz": 713.9,
+   "flatness": 0.0016,
+   "tempo_bpm": 184.6,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.83,
+   "low_onsets_per_beat": 1.66,
+   "high_onsets_per_beat": 0.33,
+   "articulation_cv": 1.557,
+   "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.87,
+   "crest_db": 12.2,
+   "band_frac": {
+    "sub": 0.1396,
+    "low": 0.6725,
+    "mid": 0.142,
+    "high": 0.0447,
+    "air": 0.0006
+   },
+   "centroid_hz": 357.2,
+   "flatness": 0.0001,
+   "tempo_bpm": 191.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.07,
+   "low_onsets_per_beat": 0.95,
+   "high_onsets_per_beat": 0.01,
+   "articulation_cv": 0.229,
+   "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.92,
+   "crest_db": 11.87,
+   "band_frac": {
+    "sub": 0.135,
+    "low": 0.6182,
+    "mid": 0.185,
+    "high": 0.0576,
+    "air": 0.0034
+   },
+   "centroid_hz": 519.7,
+   "flatness": 0.0016,
+   "tempo_bpm": 191.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.77,
+   "low_onsets_per_beat": 0.99,
+   "high_onsets_per_beat": 0.28,
+   "articulation_cv": 0.32,
+   "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.48,
+   "crest_db": 12.58,
+   "band_frac": {
+    "sub": 0.1458,
+    "low": 0.5402,
+    "mid": 0.2483,
+    "high": 0.0586,
+    "air": 0.0061
+   },
+   "centroid_hz": 602.2,
+   "flatness": 0.0026,
+   "tempo_bpm": 191.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.73,
+   "low_onsets_per_beat": 1.07,
+   "high_onsets_per_beat": 0.56,
+   "articulation_cv": 0.298,
+   "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.08,
+   "crest_db": 12.17,
+   "band_frac": {
+    "sub": 0.1354,
+    "low": 0.6714,
+    "mid": 0.1681,
+    "high": 0.0232,
+    "air": 0.0013
+   },
+   "centroid_hz": 329.8,
+   "flatness": 0.0005,
+   "tempo_bpm": 191.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.5,
+   "low_onsets_per_beat": 0.93,
+   "high_onsets_per_beat": 0.14,
+   "articulation_cv": 0.284,
+   "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk05.wav",
+   "dur_s": 27.0,
+   "rms_dbfs": -14.47,
+   "crest_db": 11.43,
+   "band_frac": {
+    "sub": 0.1283,
+    "low": 0.6994,
+    "mid": 0.1567,
+    "high": 0.0147,
+    "air": 0.0004
+   },
+   "centroid_hz": 282.9,
+   "flatness": 0.0072,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.07,
+   "low_onsets_per_beat": 0.86,
+   "high_onsets_per_beat": 0.01,
+   "articulation_cv": 0.393,
+   "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk05",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/02_fleshgrinder_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -16.74,
+   "crest_db": 14.83,
+   "band_frac": {
+    "sub": 0.0828,
+    "low": 0.242,
+    "mid": 0.3986,
+    "high": 0.2606,
+    "air": 0.0154
+   },
+   "centroid_hz": 1666.4,
+   "flatness": 0.0539,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.27,
+   "low_onsets_per_beat": 1.57,
+   "high_onsets_per_beat": 0.14,
+   "articulation_cv": 0.644,
+   "block": "02_fleshgrinder_blk00",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/02_fleshgrinder_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.27,
+   "crest_db": 12.97,
+   "band_frac": {
+    "sub": 0.1547,
+    "low": 0.5106,
+    "mid": 0.1896,
+    "high": 0.1301,
+    "air": 0.014
+   },
+   "centroid_hz": 962.7,
+   "flatness": 0.0105,
+   "tempo_bpm": 97.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.8,
+   "low_onsets_per_beat": 3.06,
+   "high_onsets_per_beat": 1.19,
+   "articulation_cv": 0.182,
+   "block": "02_fleshgrinder_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/02_fleshgrinder_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.78,
+   "crest_db": 13.38,
+   "band_frac": {
+    "sub": 0.1742,
+    "low": 0.5847,
+    "mid": 0.1579,
+    "high": 0.0712,
+    "air": 0.01
+   },
+   "centroid_hz": 634.6,
+   "flatness": 0.0069,
+   "tempo_bpm": 97.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 3.27,
+   "low_onsets_per_beat": 3.38,
+   "high_onsets_per_beat": 2.11,
+   "articulation_cv": 0.284,
+   "block": "02_fleshgrinder_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/02_fleshgrinder_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.45,
+   "crest_db": 12.7,
+   "band_frac": {
+    "sub": 0.1645,
+    "low": 0.5234,
+    "mid": 0.1811,
+    "high": 0.1159,
+    "air": 0.0137
+   },
+   "centroid_hz": 909.7,
+   "flatness": 0.0102,
+   "tempo_bpm": 97.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.47,
+   "low_onsets_per_beat": 3.34,
+   "high_onsets_per_beat": 1.48,
+   "articulation_cv": 0.24,
+   "block": "02_fleshgrinder_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/02_fleshgrinder_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.15,
+   "crest_db": 12.67,
+   "band_frac": {
+    "sub": 0.1466,
+    "low": 0.5147,
+    "mid": 0.1924,
+    "high": 0.1309,
+    "air": 0.0144
+   },
+   "centroid_hz": 958.8,
+   "flatness": 0.0102,
+   "tempo_bpm": 65.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.8,
+   "low_onsets_per_beat": 4.71,
+   "high_onsets_per_beat": 1.59,
+   "articulation_cv": 0.247,
+   "block": "02_fleshgrinder_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/02_fleshgrinder_blk05.wav",
+   "dur_s": 18.0,
+   "rms_dbfs": -15.48,
+   "crest_db": 13.8,
+   "band_frac": {
+    "sub": 0.1563,
+    "low": 0.4934,
+    "mid": 0.1937,
+    "high": 0.1395,
+    "air": 0.0162
+   },
+   "centroid_hz": 1434.4,
+   "flatness": 0.0229,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.61,
+   "low_onsets_per_beat": 1.22,
+   "high_onsets_per_beat": 0.37,
+   "articulation_cv": 0.21,
+   "block": "02_fleshgrinder_blk05",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/03_trash_planet_mining_rig_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.48,
+   "crest_db": 13.17,
+   "band_frac": {
+    "sub": 0.2649,
+    "low": 0.4868,
+    "mid": 0.1611,
+    "high": 0.0761,
+    "air": 0.0101
+   },
+   "centroid_hz": 636.6,
+   "flatness": 0.0075,
+   "tempo_bpm": 161.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.37,
+   "low_onsets_per_beat": 1.68,
+   "high_onsets_per_beat": 0.8,
+   "articulation_cv": 0.307,
+   "block": "03_trash_planet_mining_rig_blk00",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/03_trash_planet_mining_rig_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.5,
+   "crest_db": 12.19,
+   "band_frac": {
+    "sub": 0.3167,
+    "low": 0.4273,
+    "mid": 0.1437,
+    "high": 0.0996,
+    "air": 0.0117
+   },
+   "centroid_hz": 765.3,
+   "flatness": 0.0086,
+   "tempo_bpm": 80.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.87,
+   "low_onsets_per_beat": 3.74,
+   "high_onsets_per_beat": 1.66,
+   "articulation_cv": 0.224,
+   "block": "03_trash_planet_mining_rig_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/03_trash_planet_mining_rig_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.7,
+   "crest_db": 12.78,
+   "band_frac": {
+    "sub": 0.1948,
+    "low": 0.5634,
+    "mid": 0.1739,
+    "high": 0.0593,
+    "air": 0.008
+   },
+   "centroid_hz": 514.5,
+   "flatness": 0.004,
+   "tempo_bpm": 161.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 3.37,
+   "low_onsets_per_beat": 1.99,
+   "high_onsets_per_beat": 1.56,
+   "articulation_cv": 0.24,
+   "block": "03_trash_planet_mining_rig_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/03_trash_planet_mining_rig_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.87,
+   "crest_db": 13.15,
+   "band_frac": {
+    "sub": 0.0835,
+    "low": 0.5822,
+    "mid": 0.2023,
+    "high": 0.118,
+    "air": 0.0126
+   },
+   "centroid_hz": 966.0,
+   "flatness": 0.0097,
+   "tempo_bpm": 161.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.23,
+   "low_onsets_per_beat": 1.99,
+   "high_onsets_per_beat": 1.3,
+   "articulation_cv": 0.297,
+   "block": "03_trash_planet_mining_rig_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/03_trash_planet_mining_rig_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.36,
+   "crest_db": 12.83,
+   "band_frac": {
+    "sub": 0.0818,
+    "low": 0.5342,
+    "mid": 0.2073,
+    "high": 0.1607,
+    "air": 0.0148
+   },
+   "centroid_hz": 1208.9,
+   "flatness": 0.009,
+   "tempo_bpm": 80.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.03,
+   "low_onsets_per_beat": 4.01,
+   "high_onsets_per_beat": 1.63,
+   "articulation_cv": 0.244,
+   "block": "03_trash_planet_mining_rig_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/03_trash_planet_mining_rig_blk05.wav",
+   "dur_s": 13.0,
+   "rms_dbfs": -16.31,
+   "crest_db": 14.43,
+   "band_frac": {
+    "sub": 0.1067,
+    "low": 0.5644,
+    "mid": 0.1978,
+    "high": 0.121,
+    "air": 0.0089
+   },
+   "centroid_hz": 692.7,
+   "flatness": 0.0042,
+   "tempo_bpm": 161.5,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.46,
+   "low_onsets_per_beat": 1.97,
+   "high_onsets_per_beat": 1.09,
+   "articulation_cv": 0.313,
+   "block": "03_trash_planet_mining_rig_blk05",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.33,
+   "crest_db": 11.5,
+   "band_frac": {
+    "sub": 0.3728,
+    "low": 0.5492,
+    "mid": 0.066,
+    "high": 0.0013,
+    "air": 0.0
+   },
+   "centroid_hz": 124.1,
+   "flatness": 0.0004,
+   "tempo_bpm": 178.2,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.17,
+   "low_onsets_per_beat": 1.58,
+   "high_onsets_per_beat": 0.31,
+   "articulation_cv": 0.222,
+   "block": "04_not_a_heart__but_an_engine_blk00",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.23,
+   "crest_db": 11.66,
+   "band_frac": {
+    "sub": 0.3111,
+    "low": 0.4596,
+    "mid": 0.1608,
+    "high": 0.0563,
+    "air": 0.0092
+   },
+   "centroid_hz": 599.0,
+   "flatness": 0.0061,
+   "tempo_bpm": 120.2,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.07,
+   "low_onsets_per_beat": 2.46,
+   "high_onsets_per_beat": 1.96,
+   "articulation_cv": 0.259,
+   "block": "04_not_a_heart__but_an_engine_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.86,
+   "crest_db": 11.12,
+   "band_frac": {
+    "sub": 0.2636,
+    "low": 0.4552,
+    "mid": 0.1829,
+    "high": 0.0807,
+    "air": 0.0137
+   },
+   "centroid_hz": 770.3,
+   "flatness": 0.0091,
+   "tempo_bpm": 60.1,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.4,
+   "low_onsets_per_beat": 5.26,
+   "high_onsets_per_beat": 3.13,
+   "articulation_cv": 0.242,
+   "block": "04_not_a_heart__but_an_engine_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.74,
+   "crest_db": 11.08,
+   "band_frac": {
+    "sub": 0.2492,
+    "low": 0.4499,
+    "mid": 0.1939,
+    "high": 0.0868,
+    "air": 0.0146
+   },
+   "centroid_hz": 799.9,
+   "flatness": 0.009,
+   "tempo_bpm": 60.1,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.77,
+   "low_onsets_per_beat": 5.06,
+   "high_onsets_per_beat": 2.33,
+   "articulation_cv": 0.226,
+   "block": "04_not_a_heart__but_an_engine_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.89,
+   "crest_db": 11.5,
+   "band_frac": {
+    "sub": 0.3485,
+    "low": 0.4706,
+    "mid": 0.1339,
+    "high": 0.04,
+    "air": 0.0062
+   },
+   "centroid_hz": 389.4,
+   "flatness": 0.0036,
+   "tempo_bpm": 120.2,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.8,
+   "low_onsets_per_beat": 2.33,
+   "high_onsets_per_beat": 1.5,
+   "articulation_cv": 0.25,
+   "block": "04_not_a_heart__but_an_engine_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk05.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.45,
+   "crest_db": 11.91,
+   "band_frac": {
+    "sub": 0.3318,
+    "low": 0.5097,
+    "mid": 0.1029,
+    "high": 0.0443,
+    "air": 0.0103
+   },
+   "centroid_hz": 516.1,
+   "flatness": 0.0054,
+   "tempo_bpm": 60.1,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.73,
+   "low_onsets_per_beat": 4.46,
+   "high_onsets_per_beat": 3.79,
+   "articulation_cv": 0.277,
+   "block": "04_not_a_heart__but_an_engine_blk05",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk06.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.34,
+   "crest_db": 12.34,
+   "band_frac": {
+    "sub": 0.1619,
+    "low": 0.6027,
+    "mid": 0.1449,
+    "high": 0.0798,
+    "air": 0.0098
+   },
+   "centroid_hz": 757.9,
+   "flatness": 0.0062,
+   "tempo_bpm": 60.1,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.7,
+   "low_onsets_per_beat": 5.66,
+   "high_onsets_per_beat": 5.06,
+   "articulation_cv": 0.225,
+   "block": "04_not_a_heart__but_an_engine_blk06",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk07.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.73,
+   "crest_db": 11.15,
+   "band_frac": {
+    "sub": 0.2852,
+    "low": 0.4428,
+    "mid": 0.1794,
+    "high": 0.0783,
+    "air": 0.0131
+   },
+   "centroid_hz": 726.2,
+   "flatness": 0.0078,
+   "tempo_bpm": 120.2,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.43,
+   "low_onsets_per_beat": 2.71,
+   "high_onsets_per_beat": 1.85,
+   "articulation_cv": 0.246,
+   "block": "04_not_a_heart__but_an_engine_blk07",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk08.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.99,
+   "crest_db": 11.57,
+   "band_frac": {
+    "sub": 0.2888,
+    "low": 0.4206,
+    "mid": 0.1867,
+    "high": 0.0876,
+    "air": 0.015
+   },
+   "centroid_hz": 844.1,
+   "flatness": 0.0081,
+   "tempo_bpm": 178.2,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.4,
+   "low_onsets_per_beat": 1.67,
+   "high_onsets_per_beat": 0.46,
+   "articulation_cv": 0.358,
+   "block": "04_not_a_heart__but_an_engine_blk08",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/04_not_a_heart__but_an_engine_blk09.wav",
+   "dur_s": 13.0,
+   "rms_dbfs": -20.53,
+   "crest_db": 17.5,
+   "band_frac": {
+    "sub": 0.1212,
+    "low": 0.3337,
+    "mid": 0.3869,
+    "high": 0.1515,
+    "air": 0.006
+   },
+   "centroid_hz": 1214.4,
+   "flatness": 0.0049,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.08,
+   "low_onsets_per_beat": 1.02,
+   "high_onsets_per_beat": 0.14,
+   "articulation_cv": 0.441,
+   "block": "04_not_a_heart__but_an_engine_blk09",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.63,
+   "crest_db": 14.06,
+   "band_frac": {
+    "sub": 0.1639,
+    "low": 0.4061,
+    "mid": 0.2986,
+    "high": 0.1138,
+    "air": 0.0116
+   },
+   "centroid_hz": 1135.4,
+   "flatness": 0.0327,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.0,
+   "low_onsets_per_beat": 1.25,
+   "high_onsets_per_beat": 0.45,
+   "articulation_cv": 0.483,
+   "block": "05_styx_floods_with_souls_blk00",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.53,
+   "crest_db": 13.63,
+   "band_frac": {
+    "sub": 0.071,
+    "low": 0.5464,
+    "mid": 0.1999,
+    "high": 0.1611,
+    "air": 0.0202
+   },
+   "centroid_hz": 1344.1,
+   "flatness": 0.0163,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.57,
+   "low_onsets_per_beat": 1.64,
+   "high_onsets_per_beat": 0.98,
+   "articulation_cv": 0.381,
+   "block": "05_styx_floods_with_souls_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.24,
+   "crest_db": 12.67,
+   "band_frac": {
+    "sub": 0.0989,
+    "low": 0.5739,
+    "mid": 0.1698,
+    "high": 0.1411,
+    "air": 0.0148
+   },
+   "centroid_hz": 1044.8,
+   "flatness": 0.0109,
+   "tempo_bpm": 67.1,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.2,
+   "low_onsets_per_beat": 5.42,
+   "high_onsets_per_beat": 3.55,
+   "articulation_cv": 0.22,
+   "block": "05_styx_floods_with_souls_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -16.33,
+   "crest_db": 14.93,
+   "band_frac": {
+    "sub": 0.1847,
+    "low": 0.4687,
+    "mid": 0.2109,
+    "high": 0.1195,
+    "air": 0.0105
+   },
+   "centroid_hz": 855.5,
+   "flatness": 0.0066,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.33,
+   "low_onsets_per_beat": 1.46,
+   "high_onsets_per_beat": 0.92,
+   "articulation_cv": 0.448,
+   "block": "05_styx_floods_with_souls_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -18.45,
+   "crest_db": 16.29,
+   "band_frac": {
+    "sub": 0.067,
+    "low": 0.5264,
+    "mid": 0.2401,
+    "high": 0.152,
+    "air": 0.0136
+   },
+   "centroid_hz": 880.7,
+   "flatness": 0.0061,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 3.03,
+   "low_onsets_per_beat": 1.46,
+   "high_onsets_per_beat": 0.99,
+   "articulation_cv": 0.538,
+   "block": "05_styx_floods_with_souls_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk05.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.15,
+   "crest_db": 12.74,
+   "band_frac": {
+    "sub": 0.0873,
+    "low": 0.5828,
+    "mid": 0.1682,
+    "high": 0.145,
+    "air": 0.0157
+   },
+   "centroid_hz": 1084.7,
+   "flatness": 0.0117,
+   "tempo_bpm": 67.1,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.2,
+   "low_onsets_per_beat": 5.54,
+   "high_onsets_per_beat": 3.34,
+   "articulation_cv": 0.229,
+   "block": "05_styx_floods_with_souls_blk05",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk06.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.88,
+   "crest_db": 14.47,
+   "band_frac": {
+    "sub": 0.0575,
+    "low": 0.4617,
+    "mid": 0.3141,
+    "high": 0.1529,
+    "air": 0.013
+   },
+   "centroid_hz": 1107.7,
+   "flatness": 0.0074,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.23,
+   "low_onsets_per_beat": 1.78,
+   "high_onsets_per_beat": 0.57,
+   "articulation_cv": 0.454,
+   "block": "05_styx_floods_with_souls_blk06",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/05_styx_floods_with_souls_blk07.wav",
+   "dur_s": 11.0,
+   "rms_dbfs": -20.24,
+   "crest_db": 15.72,
+   "band_frac": {
+    "sub": 0.0002,
+    "low": 0.2936,
+    "mid": 0.538,
+    "high": 0.1639,
+    "air": 0.0042
+   },
+   "centroid_hz": 1176.1,
+   "flatness": 0.0075,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.09,
+   "low_onsets_per_beat": 1.43,
+   "high_onsets_per_beat": 0.05,
+   "articulation_cv": 0.418,
+   "block": "05_styx_floods_with_souls_blk07",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/06_utter_loss_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.97,
+   "crest_db": 12.08,
+   "band_frac": {
+    "sub": 0.2841,
+    "low": 0.5364,
+    "mid": 0.1048,
+    "high": 0.0635,
+    "air": 0.0093
+   },
+   "centroid_hz": 738.2,
+   "flatness": 0.0259,
+   "tempo_bpm": 83.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.23,
+   "low_onsets_per_beat": 2.86,
+   "high_onsets_per_beat": 1.32,
+   "articulation_cv": 0.289,
+   "block": "06_utter_loss_blk00",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/06_utter_loss_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.67,
+   "crest_db": 12.08,
+   "band_frac": {
+    "sub": 0.2055,
+    "low": 0.6359,
+    "mid": 0.1011,
+    "high": 0.0488,
+    "air": 0.0074
+   },
+   "centroid_hz": 477.7,
+   "flatness": 0.0056,
+   "tempo_bpm": 83.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.6,
+   "low_onsets_per_beat": 2.62,
+   "high_onsets_per_beat": 1.42,
+   "articulation_cv": 0.362,
+   "block": "06_utter_loss_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/06_utter_loss_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.39,
+   "crest_db": 13.34,
+   "band_frac": {
+    "sub": 0.1245,
+    "low": 0.7693,
+    "mid": 0.1023,
+    "high": 0.0032,
+    "air": 0.0004
+   },
+   "centroid_hz": 194.0,
+   "flatness": 0.0002,
+   "tempo_bpm": 83.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.9,
+   "low_onsets_per_beat": 2.62,
+   "high_onsets_per_beat": 1.39,
+   "articulation_cv": 0.554,
+   "block": "06_utter_loss_blk02",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/06_utter_loss_blk03.wav",
+   "dur_s": 22.0,
+   "rms_dbfs": -15.32,
+   "crest_db": 12.41,
+   "band_frac": {
+    "sub": 0.1581,
+    "low": 0.7948,
+    "mid": 0.0468,
+    "high": 0.0001,
+    "air": 0.0
+   },
+   "centroid_hz": 154.1,
+   "flatness": 0.0,
+   "tempo_bpm": 83.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.77,
+   "low_onsets_per_beat": 2.32,
+   "high_onsets_per_beat": 1.21,
+   "articulation_cv": 0.554,
+   "block": "06_utter_loss_blk03",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -18.65,
+   "crest_db": 13.32,
+   "band_frac": {
+    "sub": 0.3927,
+    "low": 0.4608,
+    "mid": 0.1423,
+    "high": 0.0006,
+    "air": 0.0001
+   },
+   "centroid_hz": 388.8,
+   "flatness": 0.0083,
+   "tempo_bpm": 184.6,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.6,
+   "low_onsets_per_beat": 0.99,
+   "high_onsets_per_beat": 0.1,
+   "articulation_cv": 0.402,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk00",
+   "intensity_level": "low",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -16.56,
+   "crest_db": 14.0,
+   "band_frac": {
+    "sub": 0.2281,
+    "low": 0.479,
+    "mid": 0.242,
+    "high": 0.0463,
+    "air": 0.0033
+   },
+   "centroid_hz": 604.1,
+   "flatness": 0.0014,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.7,
+   "low_onsets_per_beat": 1.17,
+   "high_onsets_per_beat": 0.19,
+   "articulation_cv": 0.561,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -16.31,
+   "crest_db": 14.02,
+   "band_frac": {
+    "sub": 0.1578,
+    "low": 0.4673,
+    "mid": 0.2982,
+    "high": 0.0705,
+    "air": 0.005
+   },
+   "centroid_hz": 729.7,
+   "flatness": 0.002,
+   "tempo_bpm": 101.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.9,
+   "low_onsets_per_beat": 2.41,
+   "high_onsets_per_beat": 0.59,
+   "articulation_cv": 0.414,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -16.17,
+   "crest_db": 14.16,
+   "band_frac": {
+    "sub": 0.4395,
+    "low": 0.4981,
+    "mid": 0.0435,
+    "high": 0.0164,
+    "air": 0.0014
+   },
+   "centroid_hz": 264.1,
+   "flatness": 0.0026,
+   "tempo_bpm": 101.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.73,
+   "low_onsets_per_beat": 2.01,
+   "high_onsets_per_beat": 0.53,
+   "articulation_cv": 0.386,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk03",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.94,
+   "crest_db": 12.93,
+   "band_frac": {
+    "sub": 0.4056,
+    "low": 0.4896,
+    "mid": 0.0727,
+    "high": 0.0268,
+    "air": 0.0041
+   },
+   "centroid_hz": 318.1,
+   "flatness": 0.0012,
+   "tempo_bpm": 101.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.2,
+   "low_onsets_per_beat": 2.41,
+   "high_onsets_per_beat": 0.73,
+   "articulation_cv": 0.302,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk05.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.9,
+   "crest_db": 12.96,
+   "band_frac": {
+    "sub": 0.2266,
+    "low": 0.4715,
+    "mid": 0.2373,
+    "high": 0.0568,
+    "air": 0.0064
+   },
+   "centroid_hz": 578.1,
+   "flatness": 0.0034,
+   "tempo_bpm": 101.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.57,
+   "low_onsets_per_beat": 2.51,
+   "high_onsets_per_beat": 1.13,
+   "articulation_cv": 0.293,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk05",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk06.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.13,
+   "crest_db": 12.34,
+   "band_frac": {
+    "sub": 0.2546,
+    "low": 0.4508,
+    "mid": 0.2245,
+    "high": 0.0632,
+    "air": 0.0056
+   },
+   "centroid_hz": 575.9,
+   "flatness": 0.0029,
+   "tempo_bpm": 101.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.3,
+   "low_onsets_per_beat": 2.43,
+   "high_onsets_per_beat": 1.03,
+   "articulation_cv": 0.227,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk06",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk07.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -17.74,
+   "crest_db": 13.96,
+   "band_frac": {
+    "sub": 0.2932,
+    "low": 0.4215,
+    "mid": 0.2039,
+    "high": 0.0772,
+    "air": 0.0014
+   },
+   "centroid_hz": 660.4,
+   "flatness": 0.0005,
+   "tempo_bpm": 198.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.17,
+   "low_onsets_per_beat": 1.09,
+   "high_onsets_per_beat": 0.06,
+   "articulation_cv": 0.402,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk07",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/07_i_swear_to_protect__chant_of_trust_blk08.wav",
+   "dur_s": 17.0,
+   "rms_dbfs": -18.32,
+   "crest_db": 13.91,
+   "band_frac": {
+    "sub": 0.2871,
+    "low": 0.5334,
+    "mid": 0.1312,
+    "high": 0.0469,
+    "air": 0.0004
+   },
+   "centroid_hz": 444.9,
+   "flatness": 0.0009,
+   "tempo_bpm": 191.4,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.18,
+   "low_onsets_per_beat": 0.92,
+   "high_onsets_per_beat": 0.11,
+   "articulation_cv": 0.66,
+   "block": "07_i_swear_to_protect__chant_of_trust_blk08",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -17.42,
+   "crest_db": 15.99,
+   "band_frac": {
+    "sub": 0.1188,
+    "low": 0.4679,
+    "mid": 0.2395,
+    "high": 0.1578,
+    "air": 0.0152
+   },
+   "centroid_hz": 1114.3,
+   "flatness": 0.0202,
+   "tempo_bpm": 107.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.27,
+   "low_onsets_per_beat": 2.64,
+   "high_onsets_per_beat": 1.43,
+   "articulation_cv": 0.561,
+   "block": "08_populist_blk00",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.01,
+   "crest_db": 13.53,
+   "band_frac": {
+    "sub": 0.1519,
+    "low": 0.448,
+    "mid": 0.2226,
+    "high": 0.1576,
+    "air": 0.0187
+   },
+   "centroid_hz": 1244.8,
+   "flatness": 0.012,
+   "tempo_bpm": 107.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.7,
+   "low_onsets_per_beat": 2.99,
+   "high_onsets_per_beat": 1.91,
+   "articulation_cv": 0.253,
+   "block": "08_populist_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.14,
+   "crest_db": 12.99,
+   "band_frac": {
+    "sub": 0.2098,
+    "low": 0.4805,
+    "mid": 0.1676,
+    "high": 0.1269,
+    "air": 0.0139
+   },
+   "centroid_hz": 968.2,
+   "flatness": 0.0069,
+   "tempo_bpm": 107.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.5,
+   "low_onsets_per_beat": 3.07,
+   "high_onsets_per_beat": 1.24,
+   "articulation_cv": 0.264,
+   "block": "08_populist_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -17.38,
+   "crest_db": 16.14,
+   "band_frac": {
+    "sub": 0.1303,
+    "low": 0.3439,
+    "mid": 0.3922,
+    "high": 0.1257,
+    "air": 0.0073
+   },
+   "centroid_hz": 972.8,
+   "flatness": 0.0026,
+   "tempo_bpm": 107.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.17,
+   "low_onsets_per_beat": 2.84,
+   "high_onsets_per_beat": 0.78,
+   "articulation_cv": 0.742,
+   "block": "08_populist_blk03",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.28,
+   "crest_db": 13.63,
+   "band_frac": {
+    "sub": 0.1742,
+    "low": 0.4273,
+    "mid": 0.2368,
+    "high": 0.1502,
+    "air": 0.0107
+   },
+   "centroid_hz": 1108.9,
+   "flatness": 0.006,
+   "tempo_bpm": 71.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.4,
+   "low_onsets_per_beat": 3.76,
+   "high_onsets_per_beat": 1.56,
+   "articulation_cv": 0.394,
+   "block": "08_populist_blk04",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk05.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.32,
+   "crest_db": 12.65,
+   "band_frac": {
+    "sub": 0.1766,
+    "low": 0.4553,
+    "mid": 0.2062,
+    "high": 0.1445,
+    "air": 0.0162
+   },
+   "centroid_hz": 1137.2,
+   "flatness": 0.0105,
+   "tempo_bpm": 71.8,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.47,
+   "low_onsets_per_beat": 4.99,
+   "high_onsets_per_beat": 1.78,
+   "articulation_cv": 0.213,
+   "block": "08_populist_blk05",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk06.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.07,
+   "crest_db": 12.75,
+   "band_frac": {
+    "sub": 0.1899,
+    "low": 0.4286,
+    "mid": 0.1925,
+    "high": 0.1695,
+    "air": 0.0183
+   },
+   "centroid_hz": 1253.5,
+   "flatness": 0.0092,
+   "tempo_bpm": 107.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.83,
+   "low_onsets_per_beat": 3.07,
+   "high_onsets_per_beat": 0.85,
+   "articulation_cv": 0.269,
+   "block": "08_populist_blk06",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/08_populist_blk07.wav",
+   "dur_s": 15.0,
+   "rms_dbfs": -16.75,
+   "crest_db": 14.74,
+   "band_frac": {
+    "sub": 0.1986,
+    "low": 0.4625,
+    "mid": 0.2043,
+    "high": 0.124,
+    "air": 0.0096
+   },
+   "centroid_hz": 1015.1,
+   "flatness": 0.0046,
+   "tempo_bpm": 107.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.0,
+   "low_onsets_per_beat": 1.97,
+   "high_onsets_per_beat": 0.56,
+   "articulation_cv": 0.438,
+   "block": "08_populist_blk07",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -17.05,
+   "crest_db": 14.46,
+   "band_frac": {
+    "sub": 0.1503,
+    "low": 0.6796,
+    "mid": 0.1317,
+    "high": 0.0319,
+    "air": 0.0057
+   },
+   "centroid_hz": 650.1,
+   "flatness": 0.0135,
+   "tempo_bpm": 147.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.13,
+   "low_onsets_per_beat": 1.44,
+   "high_onsets_per_beat": 0.72,
+   "articulation_cv": 0.513,
+   "block": "09_humanity_first_blk00",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.92,
+   "crest_db": 13.61,
+   "band_frac": {
+    "sub": 0.1164,
+    "low": 0.5907,
+    "mid": 0.1699,
+    "high": 0.0995,
+    "air": 0.0218
+   },
+   "centroid_hz": 995.8,
+   "flatness": 0.0115,
+   "tempo_bpm": 147.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.17,
+   "low_onsets_per_beat": 2.17,
+   "high_onsets_per_beat": 1.31,
+   "articulation_cv": 0.292,
+   "block": "09_humanity_first_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.2,
+   "crest_db": 13.94,
+   "band_frac": {
+    "sub": 0.0984,
+    "low": 0.5807,
+    "mid": 0.1999,
+    "high": 0.0972,
+    "air": 0.0222
+   },
+   "centroid_hz": 1030.9,
+   "flatness": 0.0116,
+   "tempo_bpm": 147.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.33,
+   "low_onsets_per_beat": 2.23,
+   "high_onsets_per_beat": 1.57,
+   "articulation_cv": 0.31,
+   "block": "09_humanity_first_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -13.57,
+   "crest_db": 12.47,
+   "band_frac": {
+    "sub": 0.1568,
+    "low": 0.6403,
+    "mid": 0.1331,
+    "high": 0.0608,
+    "air": 0.0082
+   },
+   "centroid_hz": 575.7,
+   "flatness": 0.0047,
+   "tempo_bpm": 110.0,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.37,
+   "low_onsets_per_beat": 2.96,
+   "high_onsets_per_beat": 2.33,
+   "articulation_cv": 0.255,
+   "block": "09_humanity_first_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.98,
+   "crest_db": 13.45,
+   "band_frac": {
+    "sub": 0.0923,
+    "low": 0.5902,
+    "mid": 0.2209,
+    "high": 0.0806,
+    "air": 0.015
+   },
+   "centroid_hz": 851.2,
+   "flatness": 0.0074,
+   "tempo_bpm": 63.0,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.97,
+   "low_onsets_per_beat": 4.95,
+   "high_onsets_per_beat": 3.94,
+   "articulation_cv": 0.296,
+   "block": "09_humanity_first_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk05.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.77,
+   "crest_db": 12.98,
+   "band_frac": {
+    "sub": 0.1654,
+    "low": 0.5411,
+    "mid": 0.1698,
+    "high": 0.1051,
+    "air": 0.0173
+   },
+   "centroid_hz": 882.2,
+   "flatness": 0.01,
+   "tempo_bpm": 147.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.43,
+   "low_onsets_per_beat": 2.05,
+   "high_onsets_per_beat": 0.76,
+   "articulation_cv": 0.329,
+   "block": "09_humanity_first_blk05",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/09_humanity_first_blk06.wav",
+   "dur_s": 14.0,
+   "rms_dbfs": -15.96,
+   "crest_db": 13.74,
+   "band_frac": {
+    "sub": 0.1724,
+    "low": 0.6225,
+    "mid": 0.1173,
+    "high": 0.0787,
+    "air": 0.0082
+   },
+   "centroid_hz": 813.6,
+   "flatness": 0.0092,
+   "tempo_bpm": 147.7,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.86,
+   "low_onsets_per_beat": 1.6,
+   "high_onsets_per_beat": 1.22,
+   "articulation_cv": 0.329,
+   "block": "09_humanity_first_blk06",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk00.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -18.56,
+   "crest_db": 16.0,
+   "band_frac": {
+    "sub": 0.1287,
+    "low": 0.4846,
+    "mid": 0.2143,
+    "high": 0.1639,
+    "air": 0.0079
+   },
+   "centroid_hz": 1101.1,
+   "flatness": 0.0086,
+   "tempo_bpm": 156.6,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.8,
+   "low_onsets_per_beat": 1.94,
+   "high_onsets_per_beat": 1.12,
+   "articulation_cv": 0.288,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk00",
+   "intensity_level": "building",
+   "tier": "restrained"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk01.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.66,
+   "crest_db": 12.49,
+   "band_frac": {
+    "sub": 0.1866,
+    "low": 0.5743,
+    "mid": 0.1287,
+    "high": 0.104,
+    "air": 0.0056
+   },
+   "centroid_hz": 682.0,
+   "flatness": 0.0025,
+   "tempo_bpm": 78.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.73,
+   "low_onsets_per_beat": 3.91,
+   "high_onsets_per_beat": 2.58,
+   "articulation_cv": 0.206,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk01",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk02.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.65,
+   "crest_db": 13.0,
+   "band_frac": {
+    "sub": 0.2554,
+    "low": 0.4612,
+    "mid": 0.1574,
+    "high": 0.1203,
+    "air": 0.0042
+   },
+   "centroid_hz": 809.5,
+   "flatness": 0.0023,
+   "tempo_bpm": 78.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 2.3,
+   "low_onsets_per_beat": 3.37,
+   "high_onsets_per_beat": 2.53,
+   "articulation_cv": 0.35,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk02",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk03.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.02,
+   "crest_db": 13.01,
+   "band_frac": {
+    "sub": 0.1619,
+    "low": 0.5117,
+    "mid": 0.1861,
+    "high": 0.1276,
+    "air": 0.0117
+   },
+   "centroid_hz": 979.1,
+   "flatness": 0.0075,
+   "tempo_bpm": 156.6,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.87,
+   "low_onsets_per_beat": 1.81,
+   "high_onsets_per_beat": 0.64,
+   "articulation_cv": 0.346,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk03",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk04.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -15.13,
+   "crest_db": 12.92,
+   "band_frac": {
+    "sub": 0.2615,
+    "low": 0.5272,
+    "mid": 0.1015,
+    "high": 0.0994,
+    "air": 0.0088
+   },
+   "centroid_hz": 654.2,
+   "flatness": 0.005,
+   "tempo_bpm": 78.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 4.37,
+   "low_onsets_per_beat": 3.73,
+   "high_onsets_per_beat": 4.27,
+   "articulation_cv": 0.205,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk04",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk05.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.67,
+   "crest_db": 12.74,
+   "band_frac": {
+    "sub": 0.1951,
+    "low": 0.5117,
+    "mid": 0.1622,
+    "high": 0.1192,
+    "air": 0.0108
+   },
+   "centroid_hz": 844.1,
+   "flatness": 0.0074,
+   "tempo_bpm": 78.3,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 1.47,
+   "low_onsets_per_beat": 3.98,
+   "high_onsets_per_beat": 2.02,
+   "articulation_cv": 0.258,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk05",
+   "intensity_level": "peak",
+   "tier": "peak"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk06.wav",
+   "dur_s": 30.0,
+   "rms_dbfs": -14.2,
+   "crest_db": 12.78,
+   "band_frac": {
+    "sub": 0.161,
+    "low": 0.5463,
+    "mid": 0.169,
+    "high": 0.112,
+    "air": 0.0106
+   },
+   "centroid_hz": 824.3,
+   "flatness": 0.0072,
+   "tempo_bpm": 156.6,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.6,
+   "low_onsets_per_beat": 1.85,
+   "high_onsets_per_beat": 0.8,
+   "articulation_cv": 0.218,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk06",
+   "intensity_level": "high",
+   "tier": "high"
+  },
+  {
+   "path": "/tmp/claude-1000/-home-login-PycharmProjects-noneuclideantopdownshooter/6f0b5b45-ac47-4526-b96e-c9dc90e4fe0b/scratchpad/musicgen/blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk07.wav",
+   "dur_s": 10.57,
+   "rms_dbfs": -16.8,
+   "crest_db": 15.37,
+   "band_frac": {
+    "sub": 0.1627,
+    "low": 0.5457,
+    "mid": 0.1662,
+    "high": 0.1125,
+    "air": 0.0118
+   },
+   "centroid_hz": 1553.4,
+   "flatness": 0.0318,
+   "tempo_bpm": 156.6,
+   "tempo_strength": 1.0,
+   "onsets_per_s": 0.57,
+   "low_onsets_per_beat": 1.02,
+   "high_onsets_per_beat": 0.47,
+   "articulation_cv": 0.226,
+   "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk07",
+   "intensity_level": "high",
+   "tier": "high"
+  }
+ ],
+ "discrimination": [
+  {
+   "demo": "demo_piece_v7_high.wav",
+   "n_lane_failures": 1,
+   "failures": [
+    "crest_db=9.15 outside [10.357,15.817]"
+   ]
+  },
+  {
+   "demo": "demo_piece_v8.wav",
+   "n_lane_failures": 1,
+   "failures": [
+    "crest_db=5.57 outside [10.357,15.817]"
+   ]
+  },
+  {
+   "demo": "demo_piece_v8_high.wav",
+   "n_lane_failures": 1,
+   "failures": [
+    "crest_db=6.18 outside [10.357,15.817]"
+   ]
+  }
+ ]
+}

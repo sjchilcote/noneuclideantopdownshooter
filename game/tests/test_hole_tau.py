@@ -33,7 +33,7 @@ def test_portable_hole_links_two_walls():
     ax2, ay2 = necore.mat_apply(s.cam, px, py + 50)
     s.tick(InputFrame(ax=ax2, ay=ay2, fire=True))
     assert s.hole_mark is None and s.holes == 1
-    assert s.sim.num_rooms() == 2  # corridor added
+    assert s.sim.num_polygons() == 2  # corridor added
     crossed = [s.player_room()]
     for _ in range(500):
         s.tick(InputFrame(my=1.0))

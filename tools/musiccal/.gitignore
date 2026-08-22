@@ -1,0 +1,6 @@
+# Raw per-tick telemetry (gzip JSONL, hundreds of MB across a full farm) is
+# a regenerable build artifact -- factor_model.json + FITTING_REPORT.md are
+# the durable record and ARE committed.
+runs/
+runs_tuning/
+*.jsonl.gz

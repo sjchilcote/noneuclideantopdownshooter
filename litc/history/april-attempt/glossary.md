@@ -1,0 +1,1006 @@
+# Glossary
+
+This glossary contains recognized process and technical terms that are necessary across several specfiles. It does not redefine ordinary English, coin phrases to satisfy a linter, or assign private meanings to familiar words.
+
+## Literate Compiler process
+
+- **specfile** — a Markdown source document that litc compiles to code or decompiles from code
+- **warm-start** — the litc procedure that derives an initial spec corpus from an existing implementation
+- **standards manifest** — the file that lists the standards documents applicable to the product
+- **receipt** — the record of the exact repository tree that passed the required checks
+- **frontmatter** — structured metadata at the beginning of a specfile
+- **caveat** — a stated limitation, defect, or qualification of a specified unit
+- **unit** — a function, class, module, or coherent behavior group described by Goal, Invariants, Verification, Implementation, and Caveats sections
+
+## Shared software and media terms
+
+- **bytecode** — executable instructions for a virtual machine
+- **checksum** — a value calculated to detect changes in data
+- **MacBinary** — a classic Macintosh file wrapper format
+- **regression** — previously correct software behavior that becomes incorrect
+- **traceback** — a call-stack report for a software exception
+- **UTC** — Coordinated Universal Time
+- **dataclass** — a Python class generated from declared data fields
+- **markup** — structured text annotations interpreted by a parser or renderer
+- **decimal** — a number or notation expressed in base ten
+- **escaping** — encoding syntactically special characters so that a parser treats them as data
+- **grammar** — the rules that define valid structure for encoded text or data
+- **read-only** — permitting reads but not writes through the applicable interface
+- **app** — the common software abbreviation for application
+- **hook** — a callback or extension point invoked at a defined software operation
+- **package** — a software distribution unit or importable module collection
+- **placeholder** — temporary content or a value reserved for later replacement
+- **prereq** — the common abbreviation for prerequisite
+- **UI** — user interface
+- **facade** — a software interface that presents a simpler boundary over another subsystem
+- **idempotent** — producing no additional state change when repeated with the same state and input
+- **lookup** — retrieval of a value by key or index
+- **mismatch** — disagreement between values or representations that must correspond
+- **reconciliation** — correction of related representations until they agree
+- **registry** — a keyed collection of registered software objects or handlers
+- **subtree** — a tree node together with all of its descendants
+- **traversal** — an algorithmic visit through graph, tree, or geometry elements
+- **ABI** — application binary interface
+- **comparable** — having a defined equality or ordering relation
+- **composition** — ordered combination of transforms or operations into one result
+- **contiguous** — occupying adjacent memory positions with no gaps
+- **hash** — a deterministic fixed-size value calculated from data
+- **incompatible** — unable to operate together under the applicable interface or data contract
+- **inactive** — present but not currently operating or selected
+- **lifetime** — the interval during which an object or resource remains valid
+- **little-endian** — byte order with the least significant byte first
+- **lossy** — not preserving all information from the source representation
+- **opaque** — intentionally not exposed for inspection or interpretation by a caller
+- **overflow** — a result or write beyond the representable numeric or storage range
+- **network** — connected software endpoints or graph elements that exchange data
+- **platform** — the operating-system and processor environment on which software runs
+- **prefix** — data or text placed before another sequence
+- **representation** — the data form used to encode or expose a value
+- **sidecar** — a companion file stored adjacent to and associated with a primary file
+- **statistics** — numeric measurements that summarize a data set or operation
+- **ranking** — an ordering of candidates by a defined score or comparison
+- **algorithm** — a finite procedure for a calculation or data operation
+- **API** — application programming interface
+- **argument** — a value supplied to a function or command
+- **array** — an indexed collection of values with a regular layout
+- **attribute** — a named value attached to an object
+- **backend** — an implementation behind a stable interface
+- **asset** — a file used by or delivered with a software product
+- **batch** — a set of jobs processed without interactive control
+- **binding** — an interface that exposes one language or library to another
+- **bit** — one binary digit
+- **blob** — an opaque sequence of bytes
+- **Boolean** — a value or type with true and false alternatives
+- **buffer** — a memory region used to hold data during an operation
+- **byte** — an 8-bit data unit
+- **callback** — a function supplied for another component to invoke later
+- **controller** — software that coordinates state changes in a subsystem
+- **scheduler** — software that selects the sequence or allocation of pending work
+- **call** — an invocation of a function, method, or external program
+- **caller** — the code that invokes a function, method, or external program
+- **class** — a software type that defines data and behavior for its instances
+- **CLI** — command-line interface
+- **clock** — a software source of elapsed time or ordered ticks
+- **code** — program instructions expressed in a programming language
+- **codec** — software or a format that encodes and decodes media
+- **collection** — a software container that holds multiple values
+- **command** — an instruction sent to a program or subsystem
+- **comment** — source text that documents code and does not execute
+- **configuration** — settings that select software behavior
+- **console** — a text input and output interface for a program
+- **editor** — interactive software for creating or changing structured content
+- **constructor** — the operation that creates and initializes an object
+- **conversion** — a change from one data type, unit, or representation to another
+- **CRC32** — a family of 32-bit cyclic redundancy check algorithms and their result values
+- **debug** — software instrumentation or operation used to diagnose a defect
+- **decode** — to convert encoded data to its usable representation
+- **defect** — a software behavior that does not agree with its specification
+- **dictionary** — a software collection that maps keys to values
+- **directory** — a named filesystem container for files
+- **disk** — persistent storage used by the program
+- **docstring** — a Python string that documents a module, class, or function
+- **EMA** — exponential moving average
+- **encode** — to convert data to a specified storage or transport representation
+- **enum** — a type with a fixed set of named values
+- **event** — a software record that reports an occurrence to interested code
+- **exception** — a software object that interrupts normal control flow to report an error
+- **executable** — a file or program that the operating system can run
+- **execution** — operation of program instructions
+- **failure** — an unsuccessful software operation or check
+- **field** — a named record member, or a quantity defined across a spatial or mathematical domain
+- **label** — user-interface or data text that identifies a value or object
+- **reference** — an artifact or value used as the basis of a comparison
+- **file** — a named sequence of data in a filesystem
+- **flag** — a Boolean or small enumerated value that selects software behavior
+- **float** — a floating-point number
+- **floating-point** — a finite-precision numeric representation with a significand and exponent
+- **format** — a defined layout or encoding for data
+- **frame** — one complete image, one simulation update interval, or a coordinate system used as a reference
+- **framebuffer** — memory that contains the pixels of one image frame
+- **generator** — a software object that yields a sequence of values on demand
+- **identifier** — a name or numeric value that distinguishes one software object from another
+- **implementation** — code that realizes an interface or specified behavior
+- **import** — a language operation that makes a module available to other code
+- **index** — a position or key used to select an element from a collection
+- **initialization** — the operation that gives a new software object its initial values
+- **integer** — a whole-number data type or value
+- **JSON** — JavaScript Object Notation, a text format for structured data
+- **key** — a value used to select an entry from a mapping or encoded record
+- **library** — reusable software exposed through an interface
+- **list** — an ordered software collection
+- **loader** — software that reads and constructs data or code from storage
+- **log** — a diagnostic record emitted during software operation
+- **map** — a keyed software collection, a mathematical mapping, or a represented game level
+- **memory** — storage that a running program can directly access
+- **metadata** — data that describes the representation or context of other data
+- **module** — a named software unit that contains related code and data
+- **NumPy** — the array library used by the Python game code
+- **object** — a software value with an identity, type, or associated behavior
+- **Ogg** — a multimedia container format used for encoded audio
+- **packet** — one bounded unit of encoded data passed through an interface
+- **panic** — Rust control flow that reports a failed invariant and either unwinds the active stack or aborts the process
+- **parameter** — a named input declared by a function, method, or command
+- **parse** — to interpret data according to a defined syntax or format
+- **payload** — the data carried inside a message, event, or container
+- **PIL** — the Python Imaging Library interface provided by Pillow
+- **pipe** — an operating-system stream that connects one process to another
+- **PNG** — Portable Network Graphics, a raster image format
+- **pool** — a reusable collection of software resources or workers
+- **process** — a running operating-system instance of a program
+- **profile** — measured software behavior data, or a named codec configuration that limits encoding features
+- **program** — an executable set of software instructions
+- **protocol** — a defined structure and sequence for communication between components
+- **pure function** — a function whose result depends only on its arguments and that has no observable side effects
+- **Python** — the programming language used by the game layer
+- **query** — a request for information that does not intentionally change the queried data
+- **queue** — a software collection that holds work or data for later processing
+- **BFS** — breadth-first search
+- **harness** — software that controls a test and records its results
+- **latency** — elapsed time between an input or event and its response
+- **plugin** — a software component that a host program loads through a defined interface
+- **retry** — another software operation attempted after a failure
+- **row-major** — an array storage or traversal sequence that completes each row before the next row
+- **schema** — the declared fields, types, and constraints of structured data
+- **timestamp** — a recorded time associated with an event or data item
+- **WAD** — a game-data archive or container format; this repository reads Marathon WAD map data
+- **repository** — version-controlled files for a software project
+- **request** — a message or call that asks a component to perform an operation
+- **response** — data or status returned for a request
+- **return** — to end a function or method call and provide its result to the caller
+- **RGBA** — red, green, blue, and alpha pixel components
+- **runtime** — the period or software environment in which a program executes
+- **Rust** — the programming language used by the native engine
+- **script** — a source file intended for direct execution by an interpreter
+- **session** — one bounded period of program operation with related state
+- **slice** — a selected contiguous range of an array or sequence
+- **source code** — human-readable program instructions before compilation or interpretation
+- **stack** — a last-in, first-out software collection or call-storage region
+- **state** — stored data that can affect subsequent software behavior
+- **stdin** — the standard input stream of a process
+- **storage** — memory or persistent media used to retain data
+- **stream** — an ordered sequence of data read or written over time
+- **string** — a software sequence of text characters
+- **stub** — a minimal implementation used in place of a complete component
+- **subclass** — a class that derives behavior or data from another class
+- **subprocess** — a child process controlled by another process
+- **table** — structured data arranged in rows, columns, or keyed entries
+- **text** — character data represented in a defined encoding
+- **thread** — an independently scheduled path of execution inside a process
+- **timeout** — a limit on how long software waits for an operation
+- **toolchain** — the connected tools that build, test, or process software
+- **tuple** — a fixed-length ordered software collection
+- **unsigned integer** — an integer representation with no negative values
+- **validation** — a check that data or behavior satisfies stated rules
+- **redo** — to reapply an edit that an undo operation reversed
+- **timing** — measurement of event times and durations
+- **undo** — to reverse the latest edit operation
+- **version** — an identifier for a particular revision of software or data
+- **WAV** — Waveform Audio File Format
+- **candidate** — a value or object under consideration by an algorithm
+- **default** — a software value or behavior selected when the caller supplies no alternative
+- **element** — one value or object in a collection
+- **environment** — the operating-system and process context in which software runs
+- **indentation** — leading whitespace that structures Python source text
+- **interactive** — accepting and responding to user input during execution
+- **model** — a software representation of data or simulated behavior
+- **newline** — the control character or character sequence that terminates a text line
+- **print** — to write a text representation to a program output stream
+- **raise** — to create and propagate a software exception
+- **run** — to execute a program, test, function, or simulation step
+- **truth value** — the Boolean interpretation of an expression or data value
+- **wrap** — to map a numeric value cyclically into a fixed interval
+- **cleanup** — software work that releases resources or removes partial state after an operation
+- **drawing** — a graphics operation that writes shapes or pixels to an image surface
+- **unsigned** — a numeric representation that has no negative values
+
+## Shared mathematical, graphics, and simulation terms
+
+- **outlier** — an observation far from the other values in a data set
+- **cascade** — a process in which one state change causes related changes to propagate through a group
+- **denominator** — the quantity below the division line in a fraction
+- **overshoot** — motion beyond an animation or control target
+- **penetration distance** — overlap depth used by collision response
+- **bitwise** — operating at the level of individual bits in a representation
+- **disjoint** — having no shared element or overlap
+- **frontier** — graph nodes adjacent to a visited or completed set but not yet in that set
+- **relaxation** — iterative adjustment toward a stable numeric or graph-layout result
+- **repulsion** — a force that pushes simulated objects apart
+- **sector** — an angular region bounded by two radii and an arc
+- **semi-implicit Euler integration** — the numerical method that updates velocity before position in each integration step
+- **stiffness** — the coefficient that relates displacement to restoring force
+- **tiebreak** — a rule that selects among candidates with equal primary rank
+- **correlated** — having related signal values rather than statistically independent values
+- **absolute** — measured without sign, or relative to a fixed origin rather than another value
+- **formula** — a mathematical expression that defines a calculated value
+- **multiplier** — a numeric factor by which another value is multiplied
+- **subset** — a set whose members all belong to another set
+- **trajectory** — the path of a moving body through space and time
+- **conjugate** — paired by a standard mathematical transform relation
+- **deformation** — a change in simulated geometry shape
+- **energy** — a physics quantity used to bound or describe motion and deformation
+- **equilibrium** — a state in which opposing simulated effects balance
+- **holonomy** — the non-identity transform produced by transport around a closed geometric loop
+- **ill-conditioned** — numerically sensitive to small input changes
+- **intersection** — a point or region shared by geometric objects
+- **involution** — an operation or transform that is its own inverse
+- **outflow** — the quantity that leaves one simulated cell or region during an update
+- **singular** — having no matrix inverse
+- **tangential** — directed along a surface or edge rather than along its normal
+- **well-conditioned** — numerically stable under small input changes
+- **divisor** — the value by which another value is divided
+- **bounds** — the minimum and maximum limits of an index, value, or geometric region
+- **invertible** — having an inverse operation or transform
+- **nondecreasing** — having each later value greater than or equal to the preceding value
+- **nonfinite** — equal to infinity, negative infinity, or NaN
+- **nonpositive** — less than or equal to zero
+- **normalization** — conversion to a canonical range, length, or representation
+- **scaling** — multiplication by a numeric size or magnitude factor
+- **transport** — conversion of geometry or state through a coordinate transform
+- **reflex** — describing a polygon vertex whose internal angle is more than 180 degrees
+- **bounding box** — the smallest axis-aligned rectangle that contains an object
+- **addition** — the arithmetic operation that combines quantities into a sum
+- **adjacency** — the relation between directly connected graph or geometric elements
+- **angle** — the rotation between two directions
+- **arithmetic** — numeric operations on values
+- **axis** — a reference line or dimension in a coordinate system
+- **boundary** — the limit of a geometric region or discrete interval
+- **calculation** — a deterministic numeric operation
+- **cell** — one element of a spatial grid or signal field
+- **channel** — one component of an image, audio signal, or data stream
+- **circle** — the set of planar points at a fixed radius from a center
+- **collinear** — lying on one straight line
+- **coincident** — occupying the same geometric position
+- **clip** — to limit geometry, media, or values to a specified region or range
+- **collision** — contact detected between simulated shapes or bodies
+- **column** — one vertical sequence of elements in a matrix or image
+- **convexity** — the property that every segment between points in a shape stays in that shape
+- **coordinate** — a numeric position in a reference system
+- **cosine** — the trigonometric function used to relate an angle to a unit-circle coordinate
+- **degree** — an angular unit equal to one three-hundred-sixtieth of a full turn
+- **delta** — a numeric difference or change
+- **determinant** — a scalar derived from a square matrix that characterizes its scale and invertibility
+- **diagonal** — a line or matrix element that joins nonadjacent corners or has equal row and column indices
+- **distribution** — a probability law, an empirical spread of observed values, or a packaged form of software
+- **accuracy** — closeness to a correct or reference result; for classification, the fraction of results that are correct
+- **probability** — a numeric value from zero through one that represents likelihood
+- **frequency** — the number of occurrences or cycles per unit of time
+- **division** — the arithmetic operation that finds a quotient and remainder or ratio
+- **endpoint** — either terminal point of a line segment or interval
+- **finite** — neither infinite nor NaN
+- **fraction** — a numeric ratio of two quantities
+- **geometry** — mathematical representation and calculation of shapes and positions
+- **grid** — a regular arrangement of spatial cells
+- **half-plane** — either of the two planar regions on one side of a line
+- **identity** — a transform or value that leaves its operand unchanged
+- **interpolation** — calculation of a value between known samples
+- **inverse** — an operation or transform that reverses another operation or transform
+- **matrix** — a rectangular numeric array used for linear or affine operations
+- **magnitude** — the unsigned size of a vector or force
+- **mean** — the arithmetic sum of values divided by their count
+- **modulo** — an operation that returns the remainder after division
+- **negative** — less than zero
+- **nonnegative** — greater than or equal to zero
+- **nonzero** — not equal to zero
+- **normal** — a vector perpendicular to a surface or edge
+- **NaN** — an IEEE floating-point value that represents a result that is not a number
+- **numeric** — represented or operated on as a number
+- **origin** — the zero point of a coordinate system
+- **plane** — a flat two-dimensional geometric space
+- **positive** — greater than zero
+- **radius** — the distance from the center of a circle to its boundary
+- **radian** — the SI unit of plane angle
+- **rectangle** — a four-sided planar shape with four right angles
+- **region** — a bounded set of positions or pixels
+- **rotation** — a transform that turns positions or directions around an origin
+- **rounding** — conversion of a numeric value to a nearby representable value
+- **scalar** — a single numeric value
+- **scale** — a multiplicative size transform or factor
+- **square** — a rectangle with four equal sides, or a value multiplied by itself
+- **subtraction** — the arithmetic operation that finds a difference
+- **transform** — a mapping from one coordinate or representation to another
+- **translation** — a transform that moves every point by the same offset
+- **truncation** — removal of fractional or excess data without rounding
+- **winding** — the clockwise or counterclockwise vertex order of a polygon
+- **vector** — an ordered numeric representation of a direction, offset, or multi-component value
+- **vertex** — one point of a polygon or other geometric primitive
+- **arc** — a connected part of a curve or circle
+- **band** — a bounded strip in an image, signal, or numeric range
+- **divisible** — having an integer quotient with a zero remainder
+- **fractional** — containing or representing a non-integer part
+- **geometric** — related to shapes, positions, or their mathematical properties
+- **line** — a straight one-dimensional geometric primitive or one row of text
+- **percent** — one part in one hundred
+- **percentile** — the value at or below which a stated percentage of samples falls
+- **trigonometric** — related to functions of angles and triangles
+- **x** — the conventional variable or coordinate label for a horizontal component
+- **y** — the conventional variable or coordinate label for a vertical component
+
+## Shared game, rendering, and media terms
+
+- **gib** — a small body-fragment effect in a game
+- **hazard stripe** — an alternating warning-color band
+- **silhouette** — the solid visible outline or form of a rendered body
+- **squash** — nonuniform compression used in an animation
+- **streak** — an elongated time-integrated mark of a moving effect
+- **albedo** — surface reflectance or color before lighting
+- **checkpoint** — a recorded game recovery or progress point
+- **luminance** — a photometric measure of light intensity per unit projected area in a direction
+- **melee** — close-range game combat
+- **fog-of-war** — user-interface filtering that hides unrevealed game-map or graph regions
+- **FX** — the standard abbreviation for visual or audio effects
+- **prop** — a placed game-world object used for scenery or interaction
+- **Adversary** — the proper name of the hostile faction in Perihelion
+- **aim** — the direction or target point selected for a weapon or body
+- **ammunition** — the consumable resource used by a weapon
+- **knockback** — game movement caused by an attack impulse
+- **lunge** — a short rapid game movement toward a target
+- **muzzle** — the forward end of a weapon from which a projectile originates
+- **recoil** — backward motion or impulse caused by weapon discharge
+- **combat** — gameplay in which hostile entities attack and receive damage
+- **Commando** — the proper name of the player character in Perihelion
+- **Perihelion** — the proper name of the game implemented by this repository
+- **bus** — a software or audio channel that carries events or signals between components
+- **fps** — frames per second
+- **HUD** — heads-up display
+- **font** — a set of glyphs and metrics used to draw text
+- **layout** — the calculated positions and dimensions of visual or geometric elements
+- **panel** — a bounded user-interface region that groups related content or controls
+- **sensor** — a simulation or software component that measures or reports its environment
+- **synthetic** — generated by software rather than captured from a physical source
+- **draw** — to rasterize a graphics primitive or write pixels to a surface
+- **footprint** — the memory, pixel, or geometric area occupied by an object or operation
+- **frustum** — the geometric view region bounded by clipping planes or lines
+- **occluder** — geometry that blocks visibility or light
+- **primitive** — one basic geometric or drawing shape accepted by a renderer
+- **round-half-to-even** — the rounding rule that sends an exact half value to the nearest even integer
+- **scanline** — one horizontal row processed by a rasterization algorithm
+- **slip** — tangential motion that remains after a collision removes inward normal velocity
+- **substep** — one smaller physics integration interval inside a simulation step
+- **sweep** — collision or geometry testing across a complete movement path
+- **texel** — one sampled element of a texture
+- **walkable** — permitting a game entity to traverse the applicable level region
+- **aggro** — the game state in which an enemy actively engages a target
+- **ammo** — the standard abbreviation for ammunition
+- **bitmap** — an image represented by a regular grid of pixels
+- **canvas** — a graphics surface or coordinate area on which drawing operations occur
+- **economy** — a game system that produces, stores, and spends finite resources
+- **cone** — a directional angular region used for light, sight, or effects
+- **cooldown** — an interval during which a game action cannot start again
+- **coverage** — the pixels or geometric area affected by a rendering operation
+- **crossfade** — a transition that decreases one source while it increases another
+- **disc** — a filled circular geometric region
+- **ellipse** — a closed planar curve whose points have a constant summed distance from two foci
+- **cursor** — the screen position controlled by a pointing device
+- **glyph** — one rendered character shape from a font
+- **parallax** — the apparent relative movement of objects at different depths when the viewpoint moves
+- **medkit** — a game item that restores health
+- **mesh** — connected polygon or triangle geometry
+- **projectile** — a simulated moving body produced by a weapon
+- **px** — the standard abbreviation for pixel
+- **ray** — a geometric half-line that starts at one point and extends in one direction
+- **rect** — the common graphics abbreviation for rectangle
+- **spawn** — to create or place a game entity in the simulated world
+- **regeneration** — restoration or increase of a game resource or health over time
+- **retreat** — game-AI movement away from a threat
+- **turret** — a stationary game weapon that attacks targets
+- **strafe** — lateral game movement relative to a facing direction or target
+- **sprite** — a two-dimensional bitmap image that a graphics system draws as one object
+- **visibility** — the property or result of determining which scene regions are visible from a viewpoint
+- **canonical** — selected as the standard representation among equivalent forms
+- **drag** — a pointer action that moves an item while a button is held
+- **audio** — digital sound data or its processing subsystem
+- **body** — a simulated physical object with position and collision properties
+- **camera** — the view transform and viewport used to render a scene
+- **engine** — the reusable simulation, rendering, or media subsystem under the game layer
+- **entity** — an individually identified object in a game simulation
+- **image** — a two-dimensional array of pixel values
+- **graphics** — rendered visual data or operations
+- **schematic** — a simplified technical drawing
+- **keyboard** — a key-input device
+- **pan** — to move a camera parallel to its view plane
+- **media** — encoded or raw audio and video data
+- **neighbor** — a directly adjacent graph, grid, or geometric element
+- **neighborhood** — a graph vertex together with vertices within a stated edge distance
+- **observer** — the entity or coordinate frame from which a visibility query is made
+- **path** — an ordered route through a graph or geometric space
+- **screen** — the rendered output coordinate space or display area
+- **signal** — a numeric or event value transmitted between simulation or media components
+- **simulation** — computed changes to a model over time
+- **video** — an ordered sequence of image frames, optionally with audio
+- **window** — an operating-system display surface or a bounded time or spatial interval
+- **world** — the simulated game space and its objects
+- **budget** — a finite numeric allowance that an algorithm can allocate among requests
+- **faction** — a game affiliation used to classify entities as allied or hostile
+- **peer** — another entity in the same coordination group
+- **brightness** — a numeric measure or adjustment of image light intensity
+- **color channel** — one component plane of pixel or image color data
+- **tint** — a color adjustment applied to rendered or source image values
+- **transparency** — the degree to which rendered image data permits underlying content to remain visible
+- **destination** — the target endpoint of a path or movement
+- **hub** — a graph or level region with several connecting routes
+
+## Additional cross-cutting domain terms
+
+- **anchor** — a fixed reference point used by layout, geometry, or a game system
+- **audit** — a systematic check of an artifact against stated criteria
+- **bot** — software that operates the game or another interface automatically
+- **box** — a rectangular geometric region or bounding volume
+- **build** — a compiled or assembled software artifact, or the operation that makes it
+- **campaign** — an ordered series of game levels
+- **contract** — a stated software interface or behavioral requirement
+- **crossing** — movement through a portal, boundary, or graph edge
+- **demo** — a runnable software or media demonstration
+- **gameplay** — the interactive rules and actions experienced during a game session
+- **gate** — a check that must pass before a software workflow can continue
+- **goal** — the required outcome stated by a specification unit
+- **health** — the game quantity that measures how much damage a body can survive
+- **invariant** — a property that must remain true across the stated operations
+- **lane** — one independently controlled path in an audio, media, or data system
+- **manifest** — a structured declaration of the contents, inputs, outputs, or governing documents of an artifact or process
+- **median** — the middle value of an ordered numeric sample
+- **prompt** — text supplied to a user, model, or command to request an action or result
+- **ratio** — the quotient that compares two numeric quantities
+- **requirement** — a behavior or constraint that a specification demands
+- **route** — an ordered path through a graph or geometric space
+- **seed** — an initial numeric value that makes a pseudorandom process repeatable
+- **stage** — one named step in a software, rendering, or media pipeline
+- **tail** — the decaying end of an audio signal, effect, or queued data range
+- **telemetry** — structured measurements recorded while software runs
+- **track** — one ordered audio, video, animation, or recorded-data sequence
+- **verdict** — the pass, fail, or other classified result of a check
+- **weapon** — a game system that creates damage, impulse, or another combat effect
+- **zoom** — the scale of a camera view relative to the game world
+- **cost** — a numeric resource price or algorithmic expense
+- **death** — the terminal game state reached when a player or another game entity dies
+- **report** — a structured software or test result intended for review
+- **root** — the starting vertex of a graph traversal or hierarchy
+- **span** — a bounded contiguous range of memory, time, text, or geometry
+- **verification** — evidence-based checking that implementation meets stated requirements
+- **speed** — distance or simulation progress per unit of time
+
+## Engine, geometry, graphics, and media vocabulary
+
+- **baked** — generated and stored before frame rendering or media playback
+- **bbox** — the common software abbreviation for bounding box
+- **compositor** — software that combines image layers into one result
+- **hue** — the color attribute associated with a dominant wavelength or color-family position
+- **LOD** — level of detail
+- **rim** — the outer boundary of a rendered or geometric shape
+- **smoothstep** — a standard cubic interpolation function with zero slope at both endpoints
+- **stroke** — the rendered path and width applied along a line or shape boundary
+- **convention** — an agreed data, coordinate, or interface interpretation
+- **rasterizer** — software that converts geometry into raster pixels
+- **bar** — one measured interval of musical time
+- **bandpass** — a filter that passes a bounded frequency range
+- **envelope** — a time-varying control curve applied to a signal
+- **full-bleed** — image content that extends to every crop edge
+- **friction** — a physical resistance that decreases relative motion between contacting bodies
+- **listening** — evaluation of audio by hearing
+- **highpass** — a filter that passes frequencies above its cutoff region
+- **lowpass** — a filter that passes frequencies below its cutoff region
+- **MIDI** — the Musical Instrument Digital Interface event protocol
+- **octave** — a musical interval with a two-to-one frequency ratio
+- **pitch** — the perceived or represented frequency position of a sound
+- **reverb** — audio processing that models reflected sound
+- **snare** — a drum with wires against one head, or its recorded or synthesized sound
+- **stem** — one synchronized audio layer of a music arrangement
+- **swatch** — a small image sample of a material or color
+- **waveform** — signal amplitude represented over time
+- **firing** — the weapon discharge action in a game simulation
+- **alpha** — the opacity component of a pixel or color value
+- **amplitude** — the magnitude of an audio signal sample or waveform
+- **animation** — a timed sequence of image or simulation changes
+- **annotation** — structured descriptive data attached to an image or record
+- **apex** — the vertex at the point of a wedge, cone, or frustum
+- **artifact** — a file or data product made by a software tool or build
+- **bank** — a named collection of related audio assets and metadata
+- **bass** — a low-frequency musical part or audio range
+- **bitrate** — encoded bits per unit of media time
+- **boss** — a high-threat enemy that anchors a major game encounter
+- **breach** — an opening that connects previously separate level regions
+- **cache** — reusable data retained to avoid repeated acquisition or calculation
+- **centroid** — the geometric center calculated from a shape's vertices or area
+- **center** — the midpoint, arithmetic mean position, or reference origin of geometry or image data
+- **chant** — a repeated vocal musical part
+- **chunk** — a bounded block of audio, binary data, or streamed work
+- **clamp** — to limit a value to a specified minimum and maximum
+- **composite** — a combined image or operation made from multiple layers or passes
+- **convex** — having the geometric property that each segment between two points stays inside the shape
+- **crate** — a Rust compilation unit and package
+- **decay** — a decrease governed by elapsed time or repeated simulation steps
+- **decal** — an image or shape applied over a rendered surface
+- **door** — a level boundary that can open or close a connection
+- **doorway** — an opening that connects two level regions
+- **enemy** — a hostile game entity controlled by the simulation
+- **fade** — a gradual change of audio gain, image opacity, or light level over time
+- **filter** — a signal or value operation that attenuates, smooths, or selects components
+- **fixture** — fixed test setup, state, input, or reference output used by one or more tests
+- **gain** — a multiplier applied to audio, signal, or image values
+- **glow** — an additive rendered light effect around a source region
+- **graph** — vertices or nodes connected by edges
+- **half-life** — the elapsed time over which exponential decay reduces a value by half
+- **hash table** — a keyed collection that uses hash values for storage lookup
+- **headless** — software operation without a display or interactive device
+- **hop** — one traversal of a graph edge or portal
+- **Hz** — hertz, the unit of cycles or events per second
+- **ID** — an identifier used by software or data
+- **instance** — one occurrence of a type, entity, or visible geometry result
+- **lightmap** — an image whose pixels modulate the lighting of rendered pixels
+- **mask** — data that selects pixels, samples, or elements affected by an operation
+- **mono** — audio with one channel
+- **ms** — milliseconds
+- **music** — organized audio and the software subsystem that selects or plays it
+- **node** — one vertex or element in a graph, tree, or linked structure
+- **offset** — a displacement from a reference position or time
+- **opcode** — a numeric code that identifies a machine or wire-format operation
+- **orientation** — the ordered direction of geometry, coordinates, or an object
+- **overlay** — a rendered layer composited over underlying image content
+- **palette** — a selected collection of image colors
+- **parity** — agreement between implementations or outputs under their specified equality or tolerance comparison
+- **phase** — the position of a periodic signal or timed sequence within its cycle
+- **physics** — the simulation subsystem for movement, collision, impulse, and related quantities
+- **pixel** — one sampled position in a raster image
+- **polygon** — a planar shape bounded by straight edges
+- **polyline** — an ordered sequence of connected line segments
+- **portal** — a connection between level regions with a coordinate transform
+- **preset** — a named set of configuration values
+- **probe** — a targeted measurement or diagnostic program for one part of a system
+- **Pygame** — the Python game and graphics library used by the project
+- **raster** — a pixel-grid representation of an image
+- **raycast** — a query that advances a ray through geometry and reports an intersection
+- **render** — to produce image pixels from scene, geometry, or drawing data
+- **replay** — deterministic reproduction of a recorded simulation or input sequence
+- **RGB** — a pixel representation with red, green, and blue components
+- **segment** — the bounded straight part of a line between two endpoints
+- **shell** — the polygon boundary geometry of a level region or object
+- **silence** — an audio signal or asset state with no audible samples
+- **sim** — the common software abbreviation for simulation
+- **spring** — a physics constraint that applies force based on displacement from a rest length
+- **stderr** — the standard error stream of a process
+- **stdout** — the standard output stream of a process
+- **stereo** — audio with separate left and right channels
+- **target** — the entity, value, or destination selected by an operation
+- **terrain** — level geometry that blocks or changes simulated movement
+- **texture** — an image sampled during rendering
+- **threshold** — a numeric boundary at which software behavior changes
+- **tick** — one discrete simulation-time unit or update index
+- **topology** — the connection structure of graph or level regions
+- **velocity** — a vector that gives movement direction and speed
+- **vignette** — an image effect that changes color or brightness near frame edges
+- **wall** — a blocking level boundary or collision edge
+
+## Standard codecs, containers, and implementation names
+
+- **AAC** — Advanced Audio Coding
+- **ABI3** — Python's stable application binary interface for extension modules
+- **Annex B** — the H.264 byte-stream format that separates NAL units with start codes
+- **AV1** — an open video compression format
+- **buffer protocol** — the Python interface through which an object exposes typed memory
+- **chroma** — the color-difference components of a YUV image
+- **CPython** — the reference implementation of Python
+- **CRF** — Constant Rate Factor, an encoder quality control
+- **FFmpeg** — a media-processing and codec program
+- **GIL** — CPython's global interpreter lock
+- **H.264** — a compressed video format
+- **IDR** — the H.264 abbreviation for instantaneous decoding refresh
+- **ISO-BMFF** — ISO Base Media File Format
+- **keyframe** — a video frame at which independent decoding can begin
+- **luma** — the brightness-related component of a YUV image
+- **MP4** — a media container format based on ISO-BMFF
+- **muxer** — a component that writes encoded media tracks into a container
+- **NAL** — the H.264 abbreviation for Network Abstraction Layer
+- **PCM** — pulse-code modulation for uncompressed sampled audio
+- **Pillow** — a Python image-processing library
+- **PPS** — an H.264 picture parameter set
+- **PyO3** — the Rust library used to implement the Python extension module
+- **SFX** — the standard abbreviation for sound effects
+- **SPS** — an H.264 sequence parameter set
+- **softbuffer** — the Rust library used to present a CPU pixel buffer in a window
+- **UTF-8** — the variable-length Unicode text encoding
+- **winit** — the Rust window and event-loop library used by the binding
+- **x264** — the H.264 encoder program used by the recorder
+- **YUV** — a color representation with one luma and two chroma components
+
+## Additional standard software and simulation terms
+
+- **acceleration** — change in velocity per unit of time
+- **AI** — artificial intelligence logic that selects simulated entity behavior
+- **alignment** — the memory, geometric, or time relation that places values on specified boundaries
+- **allocation** — reservation of memory, channels, or another finite software resource
+- **architecture** — the high-level structure and boundaries of a software system
+- **asynchronous** — able to progress without blocking the calling execution path
+- **atomic** — completed as one indivisible state change or file operation
+- **binary** — data or software represented in a machine-oriented two-state form
+- **block** — a bounded data, code, geometry, or audio unit
+- **branch** — one conditional path of software execution
+- **CPU** — central processing unit
+- **comparison** — an operation that determines the ordering or equality of values
+- **compose** — to combine transforms, images, or operations in a specified sequence
+- **config** — the common software abbreviation for configuration
+- **construction** — creation and initialization of an object, data structure, simulated world, or connected subsystem
+- **contiguity** — the property that data occupies adjacent memory or file positions
+- **continuity** — the absence of an unintended jump in a timed or numeric sequence
+- **corpus** — a defined collection of text, data, or test artifacts
+- **deformable** — able to change simulated geometry under forces or constraints
+- **degenerate** — having fewer independent dimensions or degrees of freedom than the general case, without necessarily being invalid
+- **deterministic** — producing the same result from the same inputs and initial state
+- **dict** — the common Python abbreviation for dictionary
+- **duration** — elapsed time occupied by media, an event, or an operation
+- **elapsed** — measured from a prior tick or time point
+- **emission** — creation of an event, signal, light, or audio value by a source
+- **emit** — to add or send an event, signal, light, or audio value
+- **enabled** — configured to permit a software operation or subsystem
+- **encoding** — a defined representation of data for storage or transport
+- **equality** — the relation that two values compare as equal
+- **exponential** — described by a power whose exponent contains the varying quantity
+- **factor** — a numeric multiplier in a calculation
+- **floor** — a level or rendered walking surface, a minimum numeric bound, or rounding toward negative infinity
+- **fullscreen** — a display mode that occupies the complete screen
+- **GPL** — GNU General Public License
+- **gradient** — a spatial or numeric rate of change
+- **handedness** — whether a coordinate transform preserves or reverses orientation
+- **header** — structured metadata at the start of a file, packet, or data block
+- **heading** — text that names the section that follows it
+- **helper** — a supporting function or component used by another implementation unit
+- **HP** — hit points, the game value that represents remaining health
+- **impulse** — an instantaneous physics change to momentum or velocity
+- **inward** — directed toward the inside of a geometric region
+- **iteration** — one repetition of an algorithm step
+- **legacy** — retained for compatibility with an older software or data path
+- **load** — to read data or code from storage and make it available to software
+- **malformed** — not conforming to the required syntax or data structure
+- **materialize** — to calculate and store a deferred or time-dependent value
+- **materialization** — calculation and storage of a deferred or time-dependent value
+- **metric** — a measured evaluation value, or a mathematical distance function that satisfies the metric axioms
+- **native** — implemented for or represented directly by the active platform
+- **normalized** — converted to a specified unit length, range, or canonical representation
+- **OS** — operating system
+- **outline** — the rendered or geometric boundary of a shape
+- **quantization** — conversion of continuous or high-precision values to discrete levels
+- **quantized** — converted to discrete numeric levels
+- **raw** — not yet decoded, converted, mixed, or otherwise processed
+- **resolution** — image dimensions or numeric precision
+- **resize** — to change image, window, buffer, or collection dimensions
+- **restart** — to start a software component again after a stop or reset
+- **restitution** — a collision coefficient that controls retained normal speed after impact
+- **scope** — the region of code or operation in which a name or setting applies
+- **search** — an algorithm or query that locates a value, entity, path, or geometry item
+- **self-intersection** — a point at which different parts of one shape cross
+- **snapshot** — a stored copy of state or values at one time
+- **sort** — to arrange values according to a defined ordering key
+- **suffix** — data or text at the end of a sequence or name
+- **sync** — alignment of software or media operations in state or time, including a media point at which decoding can restart
+- **transfer** — movement of data, state, or an entity between components or coordinate spaces
+- **truncate** — to remove fractional, trailing, or excess data without rounding
+- **union** — the set or geometric operation that combines all members of its operands
+- **update** — one software operation that advances stored state or time
+- **writable** — permitting software to modify the referenced memory, file, or buffer
+
+## Additional standard game, rendering, and audio terms
+
+- **ambience** — background environmental audio and its mixing subsystem
+- **audible** — having a nonzero or perceptible audio output level
+- **beat** — the basic periodic time unit of musical meter
+- **bloom** — a rendered glow that spreads bright image values into nearby pixels
+- **bounce** — a physics response that reverses velocity at a collision boundary
+- **clipping** — limiting geometry, image data, or audio to a specified region or range
+- **cross product** — the vector operation that produces a perpendicular vector
+- **cull** — to omit geometry, audio, or entities that do not contribute to the output
+- **damping** — a physics or signal operation that reduces motion or oscillation over time
+- **dB** — decibels, a logarithmic unit of signal level
+- **dwell** — elapsed time spent in one state, region, or media position
+- **fadeout** — an audio asset or operation that applies a fade to silence
+- **falloff** — decrease of light, sound, or signal level with distance or time
+- **feedback** — output information returned as input to a controller or user-facing operation
+- **flicker** — rapid unintended or authored changes in rendered visibility or light
+- **glide** — a gradual audio or control-value transition toward a target
+- **interleaved** — stored by alternating channel or component samples in one sequence
+- **kit** — a named collection of related audio or gameplay assets
+- **loudness** — perceived sound level or its numeric control
+- **meter** — a music timing structure or a measured signal display
+- **mute** — to suppress audible output without stopping the source operation
+- **offline** — media or simulation processing that does not run against real-time playback
+- **perception** — game-AI acquisition of sight, sound, or other sensed data
+- **projection** — a transform from one geometric dimension or coordinate space to another
+- **respawn** — to create or reactivate a game entity after its death or removal
+- **saturation** — clipping arithmetic at a numeric limit, the purity of a color relative to gray, or a data response that no longer increases with additional input
+- **sightline** — a geometric line tested for visibility between an observer and target
+- **steer** — to select or change a simulated movement direction
+- **transient** — a short-lived signal, audio event, or software state
+- **wedge** — a geometric region bounded by two rays and an edge or arc
+
+## Standard engine, game-AI, and level terms
+
+- **apse** — a semicircular or polygonal end chamber
+- **affine** — preserving affine combinations and parallel lines; an affine transform has a linear part followed by translation
+- **attack** — a gameplay action that attempts to damage a target
+- **average** — an arithmetic or weighted mean
+- **beacon** — a game or rendering marker that indicates a position or direction
+- **blink** — a rapid visibility change or short entity movement effect
+- **bullet** — a projectile entity produced by a weapon
+- **burst** — a short sequence of closely spaced game, audio, or signal events
+- **cap** — a maximum numeric, resource, traversal, or iteration limit
+- **chain** — an ordered sequence of connected graph, geometry, or software elements
+- **chase** — game-AI movement that follows a perceived target
+- **containment** — the physics property that keeps a body inside its recorded region
+- **credit** — a scheduler balance used to distribute work or resource cost fairly
+- **facet** — a boundary element whose dimension is one less than the geometric object that contains it
+- **gatehouse** — an entrance structure that controls passage
+- **cross** — to traverse an edge, portal, threshold, or geometric boundary
+- **difficulty** — a game configuration that changes challenge or simulation parameters
+- **garrison** — a group of game entities assigned to defend a level region
+- **idle** — a software or game-entity state with no active work or action
+- **objective** — a game-AI target or player goal
+- **occlusion** — blockage of sight, light, or rendered geometry by intervening geometry
+- **pause** — a temporary stop in dispatch, playback, or simulation progress
+- **pickup** — a game entity that another entity can collect
+- **production** — creation of game entities or resources by a simulated economy
+- **scriptorium** — a chamber intended for writing or records
+- **seam** — a shared or cut boundary between geometry, media, or rendered regions
+- **spread** — propagation of a signal or value through adjacent graph elements
+- **static** — fixed for the relevant software, geometry, or simulation lifetime
+- **steering** — game-AI calculation of a movement direction or acceleration
+- **trail** — stored navigation or signal data left along a movement route
+- **transept** — a transverse chamber or passage across a main axis
+- **trunk** — the principal central passage of a branching layout
+- **vestibule** — an entrance chamber
+
+## Standard audio, UI, and recording terms
+
+- **amplifier** — a device or signal stage that increases amplitude
+- **aperiodicity** — the degree to which a signal or voiced sound lacks periodic structure
+- **articulation** — the manner in which a musical note or phrase begins, continues, and ends
+- **audition** — evaluation of an audio source by listening
+- **automation** — recorded or programmed changes to audio controls over time
+- **cartridge** — a physical DX7 storage medium that holds a bank of voice programs
+- **chirp** — a signal whose frequency changes over time
+- **choir** — an ensemble of singers or a synthesized voice modeled on one
+- **clef** — a music-notation symbol that assigns pitches to staff positions
+- **compression** — reduction of an audio signal's dynamic range
+- **compressor** — an audio processor that reduces dynamic range
+- **crest factor** — the ratio of a signal's peak level to its root-mean-square level
+- **DAW** — digital audio workstation
+- **dBFS** — decibels relative to full scale, where 0 dBFS is the maximum representable digital level
+- **DC offset** — a constant displacement of a signal from zero
+- **distortion** — nonlinear audio processing that changes waveform shape and adds spectral components
+- **downbeat** — the first and metrically strongest beat of a measure
+- **dropout** — an unintended short loss of recorded or streamed signal data
+- **DSP** — digital signal processing
+- **ducking** — automatic reduction of one signal's level in response to another signal
+- **DX7** — the Yamaha DX7 frequency-modulation synthesizer
+- **EQ** — equalization of frequency-dependent signal gain
+- **eighth note** — a musical note value equal to one eighth of a whole note
+- **factory preset** — a preset supplied by the manufacturer of an instrument or processor
+- **fuzz** — strong nonlinear audio distortion that produces a clipped waveform
+- **GABC** — a text notation for Gregorian chant
+- **groove** — the repeating rhythmic feel produced by timing and emphasis
+- **harmonic** — a frequency component at an integer multiple of a fundamental frequency
+- **harmonic rhythm** — the rate and pattern of chord changes
+- **hi-hat** — a paired-cymbal percussion instrument or its recorded or synthesized sound
+- **hymn** — a formal song, commonly with sacred text
+- **incipit** — the opening notes or words used to identify a work
+- **legato** — musical articulation with smoothly connected notes
+- **LUFS** — Loudness Units relative to Full Scale
+- **lyrics** — the words of a song
+- **melisma** — several musical notes sung on one syllable
+- **modal** — organized around a musical mode rather than functional major-minor tonality
+- **modulation** — controlled variation of one signal parameter by another signal
+- **monophonic** — permitting only one musical note to sound at a time
+- **motif** — a short recurring musical idea
+- **note-off** — a MIDI event that ends a note
+- **note-on** — a MIDI event that starts a note
+- **one-shot** — an audio sample or event that plays once without looping
+- **onset** — the beginning of a sound event
+- **organ** — a keyboard instrument that produces sustained tones through pipes or electronic synthesis
+- **organum** — medieval polyphony that adds one or more voices to a chant
+- **oscillator** — a signal source that produces a periodic waveform
+- **pad** — a sustained synthesizer voice used as a harmonic background
+- **phrase** — a coherent musical passage
+- **pitch wheel** — a MIDI control for continuous pitch displacement
+- **playhead** — the current read or playback position in timed media
+- **portamento** — a continuous glide between pitches
+- **pre-emphasis** — frequency-dependent gain applied before recording, transmission, or later processing
+- **chord progression** — an ordered sequence of musical chords
+- **quarter note** — a musical note value equal to one quarter of a whole note
+- **reel-to-reel** — magnetic tape recording that moves tape between open reels
+- **repitching** — changing pitch by changing playback rate or resampling
+- **resampling** — conversion of sampled data to a different sample rate
+- **resonance** — increased response near a system's natural frequency
+- **resynthesis** — reconstruction of audio from an analyzed or transformed representation
+- **rhythm** — the temporal pattern of musical events and accents
+- **riff** — a short repeated instrumental musical phrase
+- **sample rate** — the number of digital samples recorded or processed per unit of time
+- **seamless loop** — audio whose end joins its start without an audible discontinuity
+- **semitone** — the smallest interval in twelve-tone equal temperament
+- **sixteenth note** — a musical note value equal to one sixteenth of a whole note
+- **solo** — a musical part performed by one featured voice or instrument
+- **sound effect** — audio made or selected to represent an event rather than continuous music
+- **spectral flux** — a measure of change between successive signal spectra
+- **spring reverb** — reverberation produced or modeled with vibrating springs
+- **strophe** — a stanza or structural section of a chant, poem, or song
+- **subsonic** — below the lower frequency range of human hearing
+- **sustain** — continuation of a musical sound or its steady level after an initial decay
+- **synthesizer** — an electronic or software instrument that generates sound
+- **SysEx** — MIDI System Exclusive data
+- **tape echo** — a delay effect produced or modeled with magnetic tape recording
+- **tempo** — the rate of musical beats
+- **tenor** — a high adult male vocal range or a part written for that range
+- **timbre** — the perceptual character that distinguishes sounds with similar pitch and level
+- **transcription** — a written representation of music or speech
+- **TR-909** — the Roland TR-909 drum machine
+- **tube stage** — an audio amplification or distortion stage that uses or models vacuum tubes
+- **vocal** — a sung or spoken musical part
+- **vocoder** — a processor that analyzes one signal to control the spectral shape of another
+- **volta** — a repeated-section ending that differs between passes
+- **vowel** — a speech sound made without a complete vocal-tract closure
+
+## Standard statistics and signal-analysis terms
+
+- **AUC** — area under a plotted curve, commonly a receiver-operating-characteristic curve
+- **bin** — one interval used to group numeric observations
+- **bias** — systematic displacement of an estimate from its target value
+- **correlation** — statistical association between two variables
+- **factor analysis** — a statistical model that represents observed variables with fewer latent factors
+- **histogram** — counts or frequencies grouped into numeric intervals
+- **L1 penalty** — a model penalty equal to the sum of absolute parameter values
+- **nonlinearity** — behavior that is not proportional or additive with respect to its input
+- **PCA** — principal component analysis, an orthogonal transformation that represents data with ordered uncorrelated components
+- **p-value** — the probability, under a stated null hypothesis, of a result at least as extreme as the observed result
+- **quartile** — one of the three cut points that divide ordered data into four groups
+- **Spearman correlation** — rank correlation measured with Spearman's coefficient
+- **standard deviation** — the square root of variance
+- **standard error** — the estimated standard deviation of a sampling distribution
+- **subsampling** — selection or processing of fewer samples than the complete set
+- **Tukey fence** — an outlier boundary based on quartiles and the interquartile range
+
+## Standard software and file-format terms
+
+- **control change** — a MIDI message that changes a controller value
+- **decoder** — software that converts encoded data to a usable representation
+- **glob** — a file-name pattern that uses wildcard characters
+- **gzip** — the gzip compressed-data format
+- **hard-coded** — fixed directly in source code instead of supplied as data or configuration
+- **host** — software that loads and operates a plugin or embedded component
+- **HTTP** — Hypertext Transfer Protocol
+- **keepalive** — a message or mechanism that maintains or checks a live connection or process
+- **Markdown** — a plain-text markup format
+- **NUL** — the zero-valued character or byte used as a terminator or padding value
+- **parser** — software that converts input according to a grammar
+- **pipeline** — an ordered sequence of processing stages
+- **polling** — repeated checking of state or input at intervals
+- **predicate** — a function or expression that evaluates a condition
+- **provenance** — the origin and processing history of data or an artifact
+- **renderer** — software that produces an image or media output from scene or source data
+- **SDL** — Simple DirectMedia Layer
+- **sentinel** — a distinguished value that marks a boundary, absence, or control condition
+- **streaming** — processing or transfer of data incrementally rather than as one complete block
+- **token** — one atomic item recognized by a parser, protocol, or authorization system
+- **UX** — user experience
+- **watchdog** — software that detects and reports or recovers from a stalled component
+- **wrapper** — software that presents another component through a different interface
+- **XML** — Extensible Markup Language
+
+## Music software and source names
+
+- **Dexed** — an open-source software synthesizer compatible with DX7 voice data
+- **Dies Irae** — the Latin plainchant sequence used as musical source material
+- **Dragonfly Hall** — the Dragonfly Reverb hall-effect plugin
+- **GregoBase** — a database of Gregorian chant transcriptions
+- **JUCE** — a software framework for audio applications and plugins
+- **LilyPond** — a program and text language for music engraving
+- **Linux** — the operating-system kernel and family of operating systems built around it
+- **MrsWatson** — a command-line audio-plugin host
+- **Needleman–Wunsch alignment** — a dynamic-programming algorithm for global sequence alignment
+- **Odin2** — an open-source software synthesizer
+- **OpenAI** — the artificial-intelligence company and service provider
+- **OpenRouter** — a service that routes requests to hosted language models
+- **Sol Ultra** — a provider model identifier that the recorded OpenRouter request reported as unavailable
+- **Specimen** — a software sampler instrument
+- **Surge XT** — an open-source software synthesizer
+- **VST** — Virtual Studio Technology audio-plugin format
+- **Wine** — a compatibility layer for running Windows applications on other operating systems
+- **Wikipedia** — the collaboratively edited online encyclopedia
+
+## Additional audio, UI, recording, and software terms
+
+- **chug** — a short muted repeated guitar or synthesizer articulation
+- **drone** — a sustained musical tone
+- **kick** — a bass-drum part or hit
+- **tremolo** — rapid reiteration of a note or repeated modulation of audio amplitude
+- **tritone** — a musical interval of six semitones
+- **accumulator** — stored elapsed time not yet consumed by fixed simulation steps
+- **chrome** — user-interface controls and status areas around primary content
+- **crosshair** — the screen marker that shows an aim position
+- **footer** — the bottom status or instruction region of a page or panel
+- **JSONL** — JSON Lines, with one JSON value on each text line
+- **kerning** — adjustment of spacing between adjacent glyphs
+- **IBM Plex** — the IBM Plex font family
+- **pt** — the standard abbreviation for typographic point
+- **readout** — displayed numeric or status information
+- **screenshot** — an image captured from all or part of displayed screen content
+- **soundtrack** — audio synchronized with a game or film, or a collection of music released from that work
+- **tab** — a user-interface control that selects one panel from a related set
+- **trace** — an ordered record of software events or measurements
+- **transcript** — a text record of spoken or displayed dialogue
+- **form** — the ordered section structure of a musical composition
+- **accent** — an emphasized musical event
+- **BPM** — beats per minute, the unit of musical tempo
+- **bed** — a continuous background music or ambience layer
+- **chord** — multiple musical pitches that sound together
+- **counterpoint** — simultaneous independent musical lines
+- **drum** — a percussion instrument or its recorded or synthesized sound
+- **lead** — a prominent melodic or instrumental music voice
+- **melody** — an ordered musical line of pitches
+- **riser** — an audio effect that increases tension toward a transition
+- **score** — composed music for a game, film, or other timed work
+- **stab** — a short emphatic musical hit
+- **sting** — a short musical phrase that marks an event or transition
+- **swell** — a gradual increase and decrease in musical or audio intensity
+- **tension** — a musical quality that creates anticipation or conflict
+- **timeline** — an ordered representation of events or media positions over time
+- **transition** — a change from one music section, state, or asset to another
+- **variant** — one selectable version of an asset or data item
+- **discontinuity** — an abrupt unintended or specified jump in a timed value
+- **mixer** — software or hardware that combines audio signals into output channels
+- **playback** — decoding and presenting recorded audio or video over time
+
+## Standard geometry, rendering, and systems terms
+
+- **assertion** — a software check that stops or reports when an expected condition is false
+- **blend** — to combine image, audio, or numeric values by a defined weighting rule
+- **border** — the outer geometric or rendered boundary of a region
+- **borderless** — a window mode with no operating-system frame decorations
+- **button** — a user-interface control or input-device control
+- **consumer** — a component that reads data produced by another component
+- **declaration** — source code that introduces a name, type, constant, or interface
+- **defense** — game-AI behavior that protects an entity or region from attack
+- **embedded** — stored inside another file, data structure, geometry region, or software component
+- **fallback** — an alternative value or operation used when the preferred path cannot apply
+- **fan** — a set of rays, triangles, or geometry that shares one origin
+- **global** — applying to the complete program, world, or data set rather than one local item
+- **infinite** — not finite or having no bounded endpoint
+- **integrate** — to accumulate a rate or physics quantity across time
+- **latent** — present but not active until a specified condition occurs
+- **leg** — one segment of a route, transform chain, or geometric path
+- **lit** — affected by a light or lightmap value
+- **margin** — a numeric or geometric allowance around a boundary or threshold
+- **measurement** — a recorded numeric observation of software, media, or simulation behavior
+- **message** — structured data sent between software components or processes
+- **midpoint** — the point halfway between two endpoints
+- **mirror** — a transform that reverses orientation across a line or plane
+- **mouse** — a pointer input device and its software event source
+- **nudge** — a small deliberate position correction in a physics or geometry algorithm
+- **oracle** — an independent reference calculation used to test an implementation
+- **outward** — directed away from the inside of a geometric region
+- **padded** — expanded by a set geometric or buffer margin
+- **priority** — an ordering value that selects which operation or request occurs first
+- **recursion** — a procedure or definition that invokes or refers to itself
+- **reconcile** — to correct state until two representations agree
+- **shadow** — a rendered or geometric region from which a light is excluded
+- **style** — a set of rendering or window-presentation properties
+- **swept** — calculated across the full path of a moving shape rather than only its final position
+- **template** — reusable structured data used to create instances or rendered shapes
+- **terminal** — a text input and output interface or a final graph endpoint
+- **triangle** — a polygon with three vertices
+- **underflow** — a numeric result below the representable magnitude or, for unsigned arithmetic, a subtraction below zero
+- **viewpoint** — the coordinate and direction origin of a visibility or rendering query

@@ -67,7 +67,7 @@ def _shoelace(verts) -> float:
 
 
 def _centroid(verts: list[tuple[float, float]]) -> tuple[float, float]:
-    # Area-weighted centroid, matching engine add_room re-centering.
+    # Area-weighted centroid, matching engine add_polygon re-centering.
     n = len(verts)
     a = 0.0
     cx = 0.0
@@ -207,7 +207,7 @@ class LevelBuilder:
         import math
 
         # Angle DECREASES so the shoelace area is negative: engine-canonical
-        # winding, so authored edge indices survive add_room unchanged.
+        # winding, so authored edge indices survive add_polygon unchanged.
         # Edge i runs from vertex i to i+1.
         verts = []
         for i in range(n):

@@ -1,4 +1,7 @@
-# PERIHELION
+# Non-Euclidean Top Down Shooter
+
+Working title NETDS. (PERIHELION is the sibling project at `../perihelion`;
+this repository was retitled in the 2026-08-22 separation.)
 
 A Teleglitch-style top-down survival shooter set aboard a station falling into
 the sun — built on a non-Euclidean engine. The world is a graph of convex

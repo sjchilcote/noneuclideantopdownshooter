@@ -100,7 +100,7 @@ def nav_to_room(session: GameSession, snapshot: dict, target_room: int,
     edge = session.sim.next_edge(proom, target_room)
     if edge < 0:
         return (0.0, 0.0)
-    tx, ty = session.sim.edge_midpoint(proom, edge)
+    tx, ty = session.sim.edge_midpoint(proom, edge).local()
     return nav_to_point(session, px, py, (tx, ty))
 
 
@@ -115,7 +115,7 @@ def nav_to_exit(session: GameSession, snapshot: dict) -> tuple[float, float]:
     edge = snapshot.get("exit_next_edge", -1)
     if edge < 0:
         return (0.0, 0.0)
-    tx, ty = session.sim.edge_midpoint(proom, edge)
+    tx, ty = session.sim.edge_midpoint(proom, edge).local()
     return nav_to_point(session, px, py, (tx, ty))
 
 
@@ -431,7 +431,7 @@ class ExplorerBot(_CombatMixin, _UnstickMixin, Bot):
 
     def _pick_unvisited(self, session: GameSession, proom: int) -> int | None:
         best_room, best_hops = None, None
-        for r in range(session.sim.num_rooms()):
+        for r in range(session.sim.num_polygons()):
             if r in self.visited:
                 continue
             hops = session.sim.hop_distance(proom, r)

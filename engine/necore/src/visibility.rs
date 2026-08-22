@@ -2,12 +2,12 @@ use std::collections::HashSet;
 
 use crate::geom::{self, HalfPlane};
 use crate::math::{v, Mat3, Vec2};
-use crate::world::{RoomId, World};
+use crate::world::{PolygonId, World};
 
-/// A view frustum through a portal, expressed in the CURRENT room's local
+/// A view frustum through a portal, expressed in the CURRENT polygon's local
 /// coordinates. The visible region is the intersection of:
-///   - the portal half-plane (this room's side of its entry edge — oriented by
-///     the room's own inward edge normal, so it is exact even when the apex
+///   - the portal half-plane (this polygon's side of its entry edge — oriented by
+///     the polygon's own inward edge normal, so it is exact even when the apex
 ///     sits on the portal line),
 ///   - the two half-planes bounded by rays apex->a and apex->b (dropped when
 ///     the apex is collinear with the segment: a genuine 180-degree view).
@@ -25,11 +25,37 @@ pub struct Frustum {
 /// Distance band around a portal line inside which the view is treated as a
 /// full 180-degree fan. Sub-pixel at gameplay zoom; keeps mid-doorway frames
 /// seamless instead of dropping the neighbor for one frame.
-pub const EDGE_BAND: f64 = 0.5;
+///
+/// MUST STRICTLY EXCEED `sim.py`'s `GameSession._APEX_EPS` (0.75): the
+/// camera/light apex the Python side hands to `visible_set` is never the
+/// raw physical position, it is `_clamp_apex`'s output, pulled at least
+/// `_APEX_EPS` inside the current polygon's polygon on every edge (that
+/// margin exists to dodge a DIFFERENT bug -- the apex landing marginally
+/// outside the polygon on transfer overshoot and hard-culling the portal
+/// behind it, "THE FLICKER"). Concretely: walking straight at a doorway,
+/// the apex handed to this traversal is pinned at exactly `_APEX_EPS`
+/// from the portal line for every tick right up to the crossing -- it
+/// never gets closer, no matter how close the real player gets. If
+/// EDGE_BAND <= _APEX_EPS, `wide` (the smooth 180-degree convergence this
+/// module promises "instead of dropping the neighbor for one frame") can
+/// NEVER trigger on the approach: the non-root render stays a narrow
+/// perspective wedge that clips away everything collinear with the
+/// portal line (a doorway's own jamb walls, which run along that same
+/// line) right up until the physics engine re-roots on the SAME tick the
+/// player's collision volume crosses the threshold -- at which point the
+/// new-root instance is unclipped and shows the jambs whole. One tick,
+/// jamb walls (and the floor band they'd been occluding) pop from absent
+/// to fully lit: the root-crossing "line color" flicker (see
+/// game/tests/test_root_invariance.py's real-level jamb-reveal case).
+/// Keeping EDGE_BAND comfortably above _APEX_EPS guarantees the clamped
+/// apex is always already inside the wide band by the time the polygon
+/// becomes reachable, so the pre-crossing render has already converged to
+/// what root will show -- no pop left to have.
+pub const EDGE_BAND: f64 = 1.0;
 
 impl Frustum {
-    pub fn half_planes(&self, world: &World, room: RoomId) -> Vec<HalfPlane> {
-        let r = &world.rooms[room];
+    pub fn half_planes(&self, world: &World, polygon: PolygonId) -> Vec<HalfPlane> {
+        let r = &world.polygons[polygon];
         let (e0, _) = r.edge(self.entry_edge);
         let mut hps = Vec::with_capacity(3);
         hps.push(HalfPlane {
@@ -46,8 +72,16 @@ impl Frustum {
         // bound anything; the portal half-plane alone is the exact answer.
         if cr.abs() > 1e-9 && ra.len2() > 1e-12 && rb.len2() > 1e-12 {
             // Keep the side of ray apex->a that contains b, and vice versa.
-            let na = if cr > 0.0 { ra.perp_left() } else { ra.perp_right() };
-            let nb = if cr > 0.0 { rb.perp_right() } else { rb.perp_left() };
+            let na = if cr > 0.0 {
+                ra.perp_left()
+            } else {
+                ra.perp_right()
+            };
+            let nb = if cr > 0.0 {
+                rb.perp_right()
+            } else {
+                rb.perp_left()
+            };
             hps.push(HalfPlane {
                 point: self.apex,
                 normal: na.normalized(),
@@ -62,28 +96,36 @@ impl Frustum {
 }
 
 #[derive(Debug, Clone)]
-pub struct RoomInstance {
-    pub room: RoomId,
-    /// room-local -> screen.
+pub struct PolygonInstance {
+    pub polygon: PolygonId,
+    /// polygon-local -> screen.
     pub xform: Mat3,
     pub depth: usize,
-    /// Visible convex region, room-local coordinates.
+    /// Visible convex region, polygon-local coordinates.
     pub clip_local: Vec<Vec2>,
     /// Same region mapped to screen coordinates.
     pub clip_screen: Vec<Vec2>,
-    /// Per room edge: visible span in screen coords + whether it is a portal.
+    /// Per polygon edge: visible span in screen coords + whether it is a portal.
     pub walls: Vec<(Vec2, Vec2, bool)>,
     pub entry_edge: Option<usize>,
     /// The frustum this instance's `clip_local` was clipped against (None
-    /// for the camera room itself, which is unclipped). Exposed so callers
+    /// for the camera polygon itself, which is unclipped). Exposed so callers
     /// (tests, tooling) can recompute `Frustum::half_planes` and verify
     /// containment independently of the traversal internals.
     pub frustum: Option<Frustum>,
 }
 
 struct Node {
-    room: RoomId,
+    polygon: PolygonId,
     xform: Mat3,
+    /// Portal-chain product WITHOUT the camera (identity at the root).
+    /// Dedup keys on this: keying on the composed screen transform made
+    /// instance identity camera-dependent, so two distinct portal paths to
+    /// the same polygon aliased on some frames and not others as the camera
+    /// moved — whole view wedges strobed in and out (the late-game
+    /// flicker), and entities at the vanished wedge's boundary rendered
+    /// sliced against black.
+    rel: Mat3,
     frustum: Option<Frustum>,
     depth: usize,
 }
@@ -92,8 +134,13 @@ fn quant(x: f64, s: f64) -> i64 {
     (x * s).round() as i64
 }
 
-fn dedup_key(room: RoomId, xf: &Mat3, fr: &Option<Frustum>) -> (usize, [i64; 6], [i64; 4]) {
-    let m = &xf.m;
+/// Camera-independent instance identity: polygon, quantized portal-chain
+/// transform (polygon-local units), entry edge, and the portal segment in the
+/// child polygon's OWN frame. Stable across frames; a genuine traversal loop
+/// (A->B->A composing to identity) still collides with the root and
+/// terminates, exactly as before.
+fn dedup_key(polygon: PolygonId, rel: &Mat3, fr: &Option<Frustum>) -> (usize, usize, [i64; 6], [i64; 4]) {
+    let m = &rel.m;
     let mk = [
         quant(m[0], 1000.0),
         quant(m[1], 1000.0),
@@ -102,35 +149,40 @@ fn dedup_key(room: RoomId, xf: &Mat3, fr: &Option<Frustum>) -> (usize, [i64; 6],
         quant(m[4], 1000.0),
         quant(m[5], 4.0),
     ];
-    let sk = match fr {
-        None => [i64::MIN, i64::MIN, i64::MIN, i64::MIN],
-        Some(f) => {
-            let a = xf.apply(f.a);
-            let b = xf.apply(f.b);
-            [quant(a.x, 4.0), quant(a.y, 4.0), quant(b.x, 4.0), quant(b.y, 4.0)]
-        }
+    let (edge, sk) = match fr {
+        None => (usize::MAX, [i64::MIN, i64::MIN, i64::MIN, i64::MIN]),
+        Some(f) => (
+            f.entry_edge,
+            [
+                quant(f.a.x, 4.0),
+                quant(f.a.y, 4.0),
+                quant(f.b.x, 4.0),
+                quant(f.b.y, 4.0),
+            ],
+        ),
     };
-    (room, mk, sk)
+    (polygon, edge, mk, sk)
 }
 
-/// Recursive portal traversal. `cam` maps `camera_room` local coordinates to
-/// screen coordinates; the camera/viewpoint is `apex_local` in that room.
+/// Recursive portal traversal. `cam` maps `camera_polygon` local coordinates to
+/// screen coordinates; the camera/viewpoint is `apex_local` in that polygon.
 /// Returns instances in painter's order (deepest first).
 pub fn visible_set(
     world: &World,
-    camera_room: RoomId,
+    camera_polygon: PolygonId,
     cam: Mat3,
     apex_local: Vec2,
     screen_w: f64,
     screen_h: f64,
     max_depth: usize,
     max_instances: usize,
-) -> Vec<RoomInstance> {
-    let mut out: Vec<RoomInstance> = Vec::new();
-    let mut seen: HashSet<(usize, [i64; 6], [i64; 4])> = HashSet::new();
+) -> Vec<PolygonInstance> {
+    let mut out: Vec<PolygonInstance> = Vec::new();
+    let mut seen: HashSet<(usize, usize, [i64; 6], [i64; 4])> = HashSet::new();
     let mut stack: Vec<Node> = vec![Node {
-        room: camera_room,
+        polygon: camera_polygon,
         xform: cam,
+        rel: Mat3::IDENTITY,
         frustum: None,
         depth: 0,
     }];
@@ -140,25 +192,40 @@ pub fn visible_set(
         if out.len() >= max_instances {
             break;
         }
-        let room = match world.rooms.get(node.room) {
+        let polygon = match world.polygons.get(node.polygon) {
             Some(r) => r,
             None => continue,
         };
 
-        let key = dedup_key(node.room, &node.xform, &node.frustum);
-        if !seen.insert(key) {
-            continue;
-        }
+        // Continuity rule: a dedup collision must never COST COVERAGE.
+        // Near-identical instances (two chains whose quantized keys
+        // alternate between colliding and not as the apex moves) both
+        // EMIT -- identical pixels overdraw harmlessly -- and only
+        // recursion is cut, which is all that termination needs. Dropping
+        // the emit made wedges pop in and out frame to frame.
+        let novel = seen.insert(dedup_key(node.polygon, &node.rel, &node.frustum));
 
         let hps: Vec<HalfPlane> = match &node.frustum {
             None => Vec::new(),
-            Some(f) => f.half_planes(world, node.room),
+            Some(f) => f.half_planes(world, node.polygon),
         };
-        let clip_local = if hps.is_empty() {
-            room.verts.clone()
+        let mut clip_local = if hps.is_empty() {
+            polygon.verts.clone()
         } else {
-            geom::clip_polygon(&room.verts, &hps)
+            geom::clip_polygon(&polygon.verts, &hps)
         };
+        // Canonical output contract: no consecutive duplicate vertices
+        // (including the first/last wrap pair). Wedge clipping can emit
+        // them at frustum/edge intersections, and a zero-length edge in a
+        // clip polygon poisons every consumer that builds edge normals
+        // (see geom::DEGENERATE_EDGE — this was the decor flicker).
+        clip_local.dedup_by(|a, b| a.dist(*b) < geom::DEGENERATE_EDGE);
+        while clip_local.len() >= 2
+            && clip_local[0].dist(clip_local[clip_local.len() - 1])
+                < geom::DEGENERATE_EDGE
+        {
+            clip_local.pop();
+        }
         if clip_local.len() < 3 {
             continue;
         }
@@ -171,17 +238,19 @@ pub fn visible_set(
         {
             continue;
         }
-        // Sub-pixel region: nothing to draw or recurse into.
-        if geom::signed_area(&clip_screen).abs() < 0.5 {
+        // Degenerate region only (numeric zero): threshold culls of
+        // positive-measure regions pop the whole subtree as the region
+        // oscillates across the cutoff -- continuity forbids them.
+        if geom::signed_area(&clip_screen).abs() < 1e-6 {
             continue;
         }
 
         // Visible wall spans (edges clipped to the frustum).
-        let n = room.num_edges();
+        let n = polygon.num_edges();
         let entry_edge = node.frustum.as_ref().map(|f| f.entry_edge);
         let mut walls = Vec::with_capacity(n);
         for i in 0..n {
-            let (a, b) = room.edge(i);
+            let (a, b) = polygon.edge(i);
             let span = if hps.is_empty() {
                 Some((a, b))
             } else {
@@ -192,14 +261,14 @@ pub fn visible_set(
                     walls.push((
                         node.xform.apply(p),
                         node.xform.apply(q),
-                        room.portals[i].is_some(),
+                        polygon.portals[i].is_some(),
                     ));
                 }
             }
         }
 
         // Recurse through portals.
-        if node.depth < max_depth {
+        if novel && node.depth < max_depth {
             let apex = match &node.frustum {
                 None => apex_local,
                 Some(f) => f.apex,
@@ -208,20 +277,48 @@ pub fn visible_set(
                 if Some(i) == entry_edge {
                     continue;
                 }
-                let portal = match room.portals[i] {
+                let portal = match polygon.portals[i] {
                     Some(p) => p,
                     None => continue,
                 };
-                let (ea, eb) = room.edge(i);
+                let (ea, eb) = polygon.edge(i);
                 // Nothing is visible through an edge whose line the apex sits
                 // well behind (a straight sight line cannot re-cross a
-                // half-plane boundary twice). Within EDGE_BAND of the line the
-                // view through the portal is a full 180-degree fan.
-                let apex_d = (apex - ea).dot(room.normals[i]);
+                // half-plane boundary twice). This is a genuine half-space
+                // test and is correct against the INFINITE line: any apex on
+                // the far side cannot see through this portal, regardless of
+                // how far off to the side it is.
+                let apex_d = (apex - ea).dot(polygon.normals[i]);
                 if apex_d < -EDGE_BAND {
                     continue;
                 }
-                let wide = apex_d <= EDGE_BAND;
+                // Within EDGE_BAND of the doorway the view through the
+                // portal is a full 180-degree fan ("standing in the
+                // doorway"). This must be proximity to the SEGMENT, not the
+                // infinite line: `apex_d` alone only measures perpendicular
+                // distance to the line through (ea, eb), so an apex far
+                // outside the segment along its tangential direction --
+                // e.g. a deep portal-chain apex that happens to align with
+                // this edge's line from way off to the side -- was passing
+                // the same test a genuine in-doorway apex passes, handing
+                // out an unconstrained 180-degree fan through a portal the
+                // apex is nowhere near facing (traced: seed 7 / aggro
+                // capture, tick 71, polygon 6 depth-3 entry-0 chain: apex
+                // (-52.62, 130.43) landed within EDGE_BAND of the line
+                // x=-52.5 while the segment itself only spans y in
+                // [-35, 35] -- 95 units off the actual doorway -- and polygon
+                // 7 downstream inherited one tick of a polygon-filling wedge
+                // where every neighboring tick had a sliver; see
+                // visibility::tests::wide_fan_requires_apex_near_segment).
+                let edge_vec = eb - ea;
+                let elen2 = edge_vec.len2();
+                let t = if elen2 > 1e-12 {
+                    ((apex - ea).dot(edge_vec) / elen2).clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                let closest = ea.lerp(eb, t);
+                let wide = apex_d <= EDGE_BAND && (apex - closest).len() <= EDGE_BAND;
                 let span = if hps.is_empty() {
                     Some((ea, eb))
                 } else {
@@ -234,12 +331,13 @@ pub fn visible_set(
                 if sa.dist(sb) < 1e-6 {
                     continue;
                 }
-                // Skip portals whose visible span projects below a pixel.
+                // Continuity rule: no threshold culls of positive-measure
+                // views. A span is skipped only when exactly degenerate
+                // (the world-space 1e-6 check above); a "half-pixel" span
+                // must still recurse, or the polygon behind it pops as the
+                // span oscillates across the old 0.75px cutoff.
                 let ssa = node.xform.apply(sa);
                 let ssb = node.xform.apply(sb);
-                if ssa.dist(ssb) < 0.75 {
-                    continue;
-                }
                 // Cull spans entirely off-screen: the child's region lies
                 // within the wedge apex->span projected beyond the span; a
                 // cheap conservative test is the span bbox vs screen, expanded
@@ -265,8 +363,9 @@ pub fn visible_set(
                 let child_xform = node.xform.mul(portal.xform);
                 let inv = portal.inv;
                 stack.push(Node {
-                    room: portal.target_room,
+                    polygon: portal.target_polygon,
                     xform: child_xform,
+                    rel: node.rel.mul(portal.xform),
                     frustum: Some(Frustum {
                         apex: inv.apply(apex),
                         a: inv.apply(sa),
@@ -279,8 +378,8 @@ pub fn visible_set(
             }
         }
 
-        out.push(RoomInstance {
-            room: node.room,
+        out.push(PolygonInstance {
+            polygon: node.polygon,
             xform: node.xform,
             depth: node.depth,
             clip_local,
@@ -315,46 +414,76 @@ mod tests {
     }
 
     #[test]
-    fn single_room_renders_fully() {
+    fn single_polygon_renders_fully() {
         let mut w = World::new();
-        let a = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
-        let vis = visible_set(&w, a, cam_center(800.0, 600.0), Vec2::ZERO, 800.0, 600.0, 8, 64);
+        let a = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
+        let vis = visible_set(
+            &w,
+            a,
+            cam_center(800.0, 600.0),
+            Vec2::ZERO,
+            800.0,
+            600.0,
+            8,
+            64,
+        );
         assert_eq!(vis.len(), 1);
         assert_eq!(vis[0].clip_local.len(), 4);
         assert!((geom::signed_area(&vis[0].clip_local).abs() - 10000.0).abs() < 1e-6);
     }
 
     #[test]
-    fn corridor_of_rooms_renders_neighbors() {
+    fn corridor_of_polygons_renders_neighbors() {
         let mut w = World::new();
-        let a = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
-        let b = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
-        let c = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
+        let a = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
+        let b = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
+        let c = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
         // edge indices for canonical square (see geom tests): 0 left, 1 bottom,
         // 2 right, 3 top -- verts (-,-),(-,+),(+,+),(+,-).
         w.connect(a, 2, b, 0).unwrap();
         w.connect(b, 2, c, 0).unwrap();
-        let vis = visible_set(&w, a, cam_center(800.0, 600.0), Vec2::ZERO, 800.0, 600.0, 8, 64);
-        let rooms: Vec<RoomId> = vis.iter().map(|i| i.room).collect();
-        assert!(rooms.contains(&a) && rooms.contains(&b) && rooms.contains(&c), "{rooms:?}");
+        let vis = visible_set(
+            &w,
+            a,
+            cam_center(800.0, 600.0),
+            Vec2::ZERO,
+            800.0,
+            600.0,
+            8,
+            64,
+        );
+        let polygons: Vec<PolygonId> = vis.iter().map(|i| i.polygon).collect();
+        assert!(
+            polygons.contains(&a) && polygons.contains(&b) && polygons.contains(&c),
+            "{polygons:?}"
+        );
         // Painter's order: c (depth 2) must come before a (depth 0).
-        let pos_a = vis.iter().position(|i| i.room == a).unwrap();
-        let pos_c = vis.iter().position(|i| i.room == c).unwrap();
+        let pos_a = vis.iter().position(|i| i.polygon == a).unwrap();
+        let pos_c = vis.iter().position(|i| i.polygon == c).unwrap();
         assert!(pos_c < pos_a);
         // b is seen through a's right edge: its visible region must lie right
         // of the shared edge (x >= 50 in a's frame == screen x >= 450).
-        let ib = vis.iter().find(|i| i.room == b).unwrap();
+        let ib = vis.iter().find(|i| i.polygon == b).unwrap();
         for p in &ib.clip_screen {
             assert!(p.x >= 450.0 - 1e-6, "{:?}", p);
         }
     }
 
     #[test]
-    fn mirror_room_terminates() {
+    fn mirror_polygon_terminates() {
         let mut w = World::new();
-        let a = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
+        let a = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
         w.connect(a, 2, a, 2).unwrap();
-        let vis = visible_set(&w, a, cam_center(800.0, 600.0), v(10.0, 0.0), 800.0, 600.0, 32, 512);
+        let vis = visible_set(
+            &w,
+            a,
+            cam_center(800.0, 600.0),
+            v(10.0, 0.0),
+            800.0,
+            600.0,
+            32,
+            512,
+        );
         assert!(vis.len() >= 2, "mirror should show reflected copies");
         assert!(vis.len() <= 512);
     }
@@ -362,25 +491,87 @@ mod tests {
     #[test]
     fn infinite_corridor_self_loop_terminates_and_repeats() {
         let mut w = World::new();
-        let a = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
+        let a = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
         // Loop right edge to own left edge: an endless corridor of copies.
         w.connect(a, 2, a, 0).unwrap();
-        let vis = visible_set(&w, a, cam_center(800.0, 600.0), Vec2::ZERO, 800.0, 600.0, 64, 512);
-        // 800px wide screen / 100px rooms => roughly 9 copies, not 512.
+        let vis = visible_set(
+            &w,
+            a,
+            cam_center(800.0, 600.0),
+            Vec2::ZERO,
+            800.0,
+            600.0,
+            64,
+            512,
+        );
+        // 800px wide screen / 100px polygons => roughly 9 copies, not 512.
         assert!(vis.len() >= 5, "expected several copies, got {}", vis.len());
-        assert!(vis.len() <= 16, "should cull off-screen copies, got {}", vis.len());
+        assert!(
+            vis.len() <= 16,
+            "should cull off-screen copies, got {}",
+            vis.len()
+        );
     }
 
     #[test]
     fn doorway_apex_sees_whole_neighbor() {
         let mut w = World::new();
-        let a = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
-        let b = w.add_room(&square(0.0, 0.0, 50.0)).unwrap();
+        let a = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
+        let b = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
         w.connect(a, 2, b, 0).unwrap();
         // Apex exactly on the shared edge line (x = 50).
-        let vis = visible_set(&w, a, cam_center(800.0, 600.0), v(50.0, 0.0), 800.0, 600.0, 8, 64);
-        let ib = vis.iter().find(|i| i.room == b).expect("b visible");
+        let vis = visible_set(
+            &w,
+            a,
+            cam_center(800.0, 600.0),
+            v(50.0, 0.0),
+            800.0,
+            600.0,
+            8,
+            64,
+        );
+        let ib = vis.iter().find(|i| i.polygon == b).expect("b visible");
         // 180-degree view: whole neighbor visible.
         assert!((geom::signed_area(&ib.clip_local).abs() - 10000.0).abs() < 1.0);
+    }
+
+    #[test]
+    fn wide_fan_requires_apex_near_segment() {
+        // Regression for the tick-71 seed-7/aggro pop: an apex can sit
+        // within EDGE_BAND of a portal edge's INFINITE line while being
+        // far outside the finite SEGMENT along the tangent -- e.g. a
+        // heavily-transformed apex several portal hops deep, whose
+        // projected position happens to line up with an unrelated edge's
+        // extension from way off to the side. The old `wide` test used
+        // only the perpendicular line distance and granted a false
+        // 180-degree fan (see `doorway_apex_sees_whole_neighbor` above for
+        // the LEGITIMATE case this must be distinguished from -- same
+        // EDGE_BAND proximity to the line, but apex.y is within the
+        // segment there and 450 units outside it here).
+        let mut w = World::new();
+        let a = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
+        let b = w.add_polygon(&square(0.0, 0.0, 50.0)).unwrap();
+        w.connect(a, 2, b, 0).unwrap();
+        // Apex is 0.2 units off edge 2's line (x = 50, comfortably inside
+        // EDGE_BAND) but 450 units past the doorway segment's y in
+        // [-50, 50].
+        let vis = visible_set(
+            &w,
+            a,
+            cam_center(800.0, 600.0),
+            v(50.2, 500.0),
+            800.0,
+            600.0,
+            8,
+            64,
+        );
+        if let Some(ib) = vis.iter().find(|i| i.polygon == b) {
+            // Must NOT be the false 180-degree fan (the full 10000-area
+            // polygon, as legitimately granted in doorway_apex_sees_whole_
+            // neighbor) -- a grazing view this far off-axis clips to a
+            // sliver near the corner the apex is actually looking through.
+            let area = geom::signed_area(&ib.clip_local).abs();
+            assert!(area < 1000.0, "expected a thin sliver, got area {area}");
+        }
     }
 }

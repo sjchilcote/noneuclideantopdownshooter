@@ -154,21 +154,22 @@ class GameSession:
         s = necore.Sim()
         self.sim = s
         for verts in level.room_verts:
-            s.add_room(verts)
+            s.add_polygon(verts)
         for a, ea, b, eb in level.connects:
             s.connect(a, ea, b, eb)
         for a, ea, b, eb, m9 in level.connects_x:
             s.connect_with_xform(a, ea, b, eb, m9)
-        # collision matrix
-        for g in range(5):
-            for h in range(5):
-                s.set_collision_pair(g, h, False)
-        s.set_collision_pair(GROUP_PLAYER, GROUP_ENEMY, True)
-        s.set_collision_pair(GROUP_ENEMY, GROUP_ENEMY, True)
-        s.set_collision_pair(GROUP_PBULLET, GROUP_ENEMY, True)
-        s.set_collision_pair(GROUP_EBULLET, GROUP_PLAYER, True)
-        # your own rounds CAN come back: mirrors and ricochets are honest
-        s.set_collision_pair(GROUP_PBULLET, GROUP_PLAYER, True)
+        # Collision policy: the engine hardwired the matrix (the Jul-29
+        # "friendly fire on" redesign). All `physical` bodies collide; the
+        # one configurable fact left is per-entity `physical`, and pickups/
+        # turret furniture opt out at spawn (set_props physical=False),
+        # which reproduces every old matrix row involving GROUP_PICKUP.
+        # ENGINE DIVERGENCE, unrepresentable game-side: the old configured
+        # matrix had EBULLET-ENEMY, PBULLET-PBULLET, PBULLET-EBULLET and
+        # EBULLET-EBULLET OFF; the engine now hardwires them ON.
+        # Preserved pairs: PLAYER-ENEMY, ENEMY-ENEMY, PBULLET-ENEMY,
+        # EBULLET-PLAYER, and PBULLET-PLAYER (your own rounds CAN come
+        # back: mirrors and ricochets are honest).
 
         # --- doors (pending connections) ---
         self.doors: list[dict] = []
@@ -181,7 +182,7 @@ class GameSession:
 
         # --- player ---
         st = player_state or {}
-        self.pid = s.spawn(level.player_room, *level.player_pos,
+        self.pid = s.spawn(s.place(level.player_room, *level.player_pos),
                            PLAYER_RADIUS, PLAYER_MASS, GROUP_PLAYER)
         s.set_props(self.pid, rest_wall=0.0, rest_ent=0.05, max_substep=6.0)
         self.hp = st.get("hp", PLAYER_HP)
@@ -252,7 +253,8 @@ class GameSession:
 
     def spawn_enemy(self, room: int, pos, kind: str) -> int:
         d = ENEMIES[kind]
-        eid = self.sim.spawn(room, pos[0], pos[1], d["radius"], d["mass"], GROUP_ENEMY)
+        eid = self.sim.spawn(self.sim.place(room, pos[0], pos[1]),
+                             d["radius"], d["mass"], GROUP_ENEMY)
         self.sim.set_props(eid, rest_wall=0.0, rest_ent=0.2, max_substep=8.0)
         self.enemies[eid] = dict(kind=kind, hp=d["hp"] * self._hp_mul, state="idle",
                                  touch_cd=0, spit_cd=0, scream_cd=0,
@@ -261,8 +263,9 @@ class GameSession:
 
     def spawn_pickup(self, room: int, pos, kind: str) -> int:
         d = PICKUPS[kind]
-        eid = self.sim.spawn(room, pos[0], pos[1], d["radius"], 100.0, GROUP_PICKUP)
-        self.sim.set_props(eid, transfers=False)
+        eid = self.sim.spawn(self.sim.place(room, pos[0], pos[1]),
+                             d["radius"], 100.0, GROUP_PICKUP)
+        self.sim.set_props(eid, transfers=False, physical=False)
         self.pickups[eid] = dict(kind=kind)
         return eid
 
@@ -287,11 +290,10 @@ class GameSession:
             del lst[0: len(lst) - 250]
 
     def player_pos(self):
-        _, px, py, *_ = self.sim.get(self.pid)
-        return px, py
+        return self.sim.get(self.pid).pos.local()
 
     def player_room(self) -> int:
-        return self.sim.get_room(self.pid)
+        return self.sim.get_polygon(self.pid)
 
     WAKE_TICKS = {"husk": 32, "mite": 18, "spitter": 26, "brute": 45,
                   "shrieker": 12, "warden": 20}
@@ -300,13 +302,13 @@ class GameSession:
         for eid, e in self.enemies.items():
             if e["state"] != "idle":
                 continue  # hunting already, or mid-wake (keep the beat)
-            er = self.sim.get_room(eid)
+            er = self.sim.get_polygon(eid)
             d = self.sim.hop_distance(er, room)
             if 0 <= d <= hops:
                 e["state"] = "waking"
                 e["wake"] = self.WAKE_TICKS[e["kind"]]
                 if d == 0:
-                    _, ex, ey, *_ = self.sim.get(eid)
+                    ex, ey = self.sim.get(eid).pos.local()
                     self._snd(ENEMIES[e["kind"]]["alert_snd"], er, (ex, ey), 0.8)
                     self.fx.append(("alerted", er, ex, ey))
 
@@ -329,9 +331,6 @@ class GameSession:
         s = self.sim
         proom = self.player_room()
         s.set_active_within(proom, ACTIVE_HOPS)
-
-        if self.tick_count % 30 == 0:
-            self._containment_sweep(proom)
 
         self._player_control(inp, proom)
         self._enemy_ai(proom)
@@ -370,11 +369,12 @@ class GameSession:
 
     def _apply_friction(self, eid: int, fric: float):
         try:
-            _, _, _, vx, vy, _, _ = self.sim.get(eid)
+            st = self.sim.get(eid)
         except Exception:
             return
         f = max(0.0, 1.0 - fric * DT)
-        self.sim.set_vel(eid, vx * f, vy * f)
+        vx, vy = st.vel.local()
+        self.sim.set_vel(eid, st.pos.offset(vx * f, vy * f))
 
     def _player_control(self, inp: InputFrame, proom: int):
         s = self.sim
@@ -386,14 +386,16 @@ class GameSession:
         # aim
         inv = necore.mat_inv(self.cam)
         awx, awy = necore.mat_apply(inv, inp.ax, inp.ay)
-        _, px, py, vx, vy, _, _ = s.get(self.pid)
+        st = s.get(self.pid)
+        px, py = st.pos.local()
+        vx, vy = st.vel.local()
         dx, dy = awx - px, awy - py
         dl = math.hypot(dx, dy)
         if dl > 1e-6:
-            s.set_dir(self.pid, dx / dl, dy / dl)
+            s.set_dir(self.pid, st.pos.offset(dx / dl, dy / dl))
             self.aim = (dx / dl, dy / dl)
         else:
-            self.aim = s.get(self.pid)[5:7]
+            self.aim = st.dir.local()
         # move (screen-space -> room-space through inverse camera rotation)
         mlen = math.hypot(inp.mx, inp.my)
         if mlen > 1e-6:
@@ -402,8 +404,8 @@ class GameSession:
             ml = math.hypot(mdx, mdy)
             if ml > 1e-9:
                 ax_, ay_ = mdx / ml * mlen, mdy / ml * mlen
-                s.set_vel(self.pid, vx + ax_ * PLAYER_ACCEL * DT,
-                          vy + ay_ * PLAYER_ACCEL * DT)
+                s.set_vel(self.pid, st.pos.offset(vx + ax_ * PLAYER_ACCEL * DT,
+                                                  vy + ay_ * PLAYER_ACCEL * DT))
         # fire
         if inp.fire and self.cooldown <= 0:
             self._fire(proom, px, py)
@@ -444,11 +446,11 @@ class GameSession:
             self._snd("knife_swing", proom, (px, py))
             self.metrics["shots"] += 1
             hit_any = False
-            for eid in list(self.sim.room_entities(proom)):
+            for eid in list(self.sim.polygon_entities(proom)):
                 e = self.enemies.get(eid)
                 if not e:
                     continue
-                _, ex, ey, *_ = self.sim.get(eid)
+                ex, ey = self.sim.get(eid).pos.local()
                 ddx, ddy = ex - px, ey - py
                 dist = math.hypot(ddx, ddy)
                 reach = w["range"] + self.sim.get_radius(eid)
@@ -479,15 +481,18 @@ class GameSession:
         if self.weapon == "rail":
             self._fire_rail(proom, px, py, adx, ady)
         else:
-            _, _, _, pvx, pvy, _, _ = self.sim.get(self.pid)
+            pvx, pvy = self.sim.get(self.pid).vel.local()
+            psp = self.sim.polygon_space(proom)
             for _ in range(w.get("pellets", 1)):
                 ang = math.atan2(ady, adx) + self.rng.uniform(-w["spread"], w["spread"])
                 spd = w["speed"] * self.rng.uniform(0.95, 1.05)
-                bid = self.sim.spawn(proom, mx_, my_, 1.6, 0.002, GROUP_PBULLET)
+                bid = self.sim.spawn(self.sim.place(proom, mx_, my_),
+                                     1.6, 0.002, GROUP_PBULLET)
                 self.sim.set_props(bid, rest_wall=0.0, rest_ent=0.0, max_substep=3.2)
-                self.sim.set_vel(bid, math.cos(ang) * spd + pvx * 0.4,
-                                 math.sin(ang) * spd + pvy * 0.4)
-                self.sim.set_dir(bid, math.cos(ang), math.sin(ang))
+                self.sim.set_vel(bid, necore.Offset(psp,
+                                                    math.cos(ang) * spd + pvx * 0.4,
+                                                    math.sin(ang) * spd + pvy * 0.4))
+                self.sim.set_dir(bid, necore.Offset(psp, math.cos(ang), math.sin(ang)))
                 self.bullets[bid] = dict(kind="bullet", dmg=w["dmg"], ttl=90)
                 if self.weapon == "tau":
                     self.bullets[bid].update(kind="tau", ttl=140,
@@ -502,24 +507,28 @@ class GameSession:
         ignore = self.pid
         w = WEAPONS["rail"]
         for _ in range(w["pierce"]):
-            hit = self.sim.raycast(room, ox, oy, dx, dy, 8, 2000.0,
+            rsp = self.sim.polygon_space(room)
+            hit = self.sim.raycast(self.sim.place(room, ox, oy),
+                                   necore.Offset(rsp, dx, dy), 8, 2000.0,
                                    1 << GROUP_ENEMY, ignore)
-            kind = hit[0]
-            if kind == "ent":
-                _, eid, hroom, hx, hy, dist, hops, m9 = hit
+            if hit.kind == "ent":
+                eid, hroom = hit.entity_id, hit.polygon
+                hx, hy = hit.pos.local()
                 self._damage_enemy(eid, w["dmg"], (dx, dy), 420.0)
                 r = self.sim.get_radius(eid) if self.sim.exists(eid) else 8.0
                 ox, oy, room, ignore = hx + dx * (2 * r + 1.0), hy + dy * (2 * r + 1.0), hroom, eid
             else:
-                if kind == "wall":
-                    _, hroom, hedge, hx, hy, dist, hops, m9 = hit
-                    self._decal(hroom, "scorch", hx, hy, 4.0)
+                if hit.kind == "wall":
+                    hx, hy = hit.pos.local()
+                    self._decal(hit.polygon, "scorch", hx, hy, 4.0)
                 break
         # visual tracer that flies the same path
-        bid = self.sim.spawn(proom, px + adx * (PLAYER_RADIUS + 3),
-                             py + ady * (PLAYER_RADIUS + 3), 1.2, 0.0005, GROUP_PBULLET)
+        psp = self.sim.polygon_space(proom)
+        bid = self.sim.spawn(self.sim.place(proom, px + adx * (PLAYER_RADIUS + 3),
+                                            py + ady * (PLAYER_RADIUS + 3)),
+                             1.2, 0.0005, GROUP_PBULLET)
         self.sim.set_props(bid, rest_wall=0.0, max_substep=4.0)
-        self.sim.set_vel(bid, adx * 5200.0, ady * 5200.0)
+        self.sim.set_vel(bid, necore.Offset(psp, adx * 5200.0, ady * 5200.0))
         self.bullets[bid] = dict(kind="tracer", dmg=0, ttl=14)
         self._hitstop(2)
 
@@ -527,11 +536,14 @@ class GameSession:
         self.lightning_charge = 0
         adx, ady = self.aim
         w = WEAPONS["lightning"]
-        _, _, _, pvx, pvy, _, _ = self.sim.get(self.pid)
-        bid = self.sim.spawn(proom, px + adx * (PLAYER_RADIUS + 6),
-                             py + ady * (PLAYER_RADIUS + 6), 3.0, 0.02, GROUP_PBULLET)
+        pvx, pvy = self.sim.get(self.pid).vel.local()
+        psp = self.sim.polygon_space(proom)
+        bid = self.sim.spawn(self.sim.place(proom, px + adx * (PLAYER_RADIUS + 6),
+                                            py + ady * (PLAYER_RADIUS + 6)),
+                             3.0, 0.02, GROUP_PBULLET)
         self.sim.set_props(bid, rest_wall=0.0, max_substep=4.0)
-        self.sim.set_vel(bid, adx * w["speed"] + pvx * 0.5, ady * w["speed"] + pvy * 0.5)
+        self.sim.set_vel(bid, necore.Offset(psp, adx * w["speed"] + pvx * 0.5,
+                                            ady * w["speed"] + pvy * 0.5))
         self.bullets[bid] = dict(kind="dart", dmg=w["dmg"], ttl=240)
         self._snd("lightning_fire", proom, (px, py))
         self._shake(4.0)
@@ -547,12 +559,14 @@ class GameSession:
         self.ammo["cell"] -= cost
         power = frac * (0.4 + 0.6 * cost / 5.0)
         dmg = 18 + 46 * power
-        _, _, _, pvx, pvy, _, _ = self.sim.get(self.pid)
-        bid = self.sim.spawn(proom, px + adx * (PLAYER_RADIUS + 5),
-                             py + ady * (PLAYER_RADIUS + 5), 2.2, 0.006,
-                             GROUP_PBULLET)
+        pvx, pvy = self.sim.get(self.pid).vel.local()
+        psp = self.sim.polygon_space(proom)
+        bid = self.sim.spawn(self.sim.place(proom, px + adx * (PLAYER_RADIUS + 5),
+                                            py + ady * (PLAYER_RADIUS + 5)),
+                             2.2, 0.006, GROUP_PBULLET)
         self.sim.set_props(bid, rest_wall=1.0, max_substep=4.0)
-        self.sim.set_vel(bid, adx * 2600.0 + pvx * 0.3, ady * 2600.0 + pvy * 0.3)
+        self.sim.set_vel(bid, necore.Offset(psp, adx * 2600.0 + pvx * 0.3,
+                                            ady * 2600.0 + pvy * 0.3))
         self.bullets[bid] = dict(kind="taucharged", dmg=dmg, ttl=160, bounces=3)
         self.metrics["shots"] += 1
         self._snd("tau_charged_fire", proom, (px, py))
@@ -569,11 +583,15 @@ class GameSession:
         if self.holes <= 0:
             self._snd("dry_click", proom, (px, py))
             return
-        hit = self.sim.raycast(proom, px, py, adx, ady, 0, HOLE_RANGE, 0, self.pid)
-        if hit[0] != "wall":
+        psp = self.sim.polygon_space(proom)
+        hit = self.sim.raycast(self.sim.place(proom, px, py),
+                               necore.Offset(psp, adx, ady),
+                               0, HOLE_RANGE, 0, self.pid)
+        if hit.kind != "wall":
             self._snd("dry_click", proom, (px, py), 0.5)
             return
-        _, room, edge, hx, hy, dist, hops, m9 = hit
+        room, edge = hit.polygon, hit.edge
+        hx, hy = hit.pos.local()
         x1, y1, x2, y2 = self.sim.edge_endpoints(room, edge)
         elen = math.hypot(x2 - x1, y2 - y1)
         along = (hx - x1) * (x2 - x1) / elen + (hy - y1) * (y2 - y1) / elen
@@ -617,7 +635,7 @@ class GameSession:
         if m_room == room and mid_a > edge:
             mid_a += 2  # the second split renumbered the first doorway
         w = HOLE_WIDTH
-        cor = self.sim.add_room([(0.0, 0.0), (0.0, w),
+        cor = self.sim.add_polygon([(0.0, 0.0), (0.0, w),
                                  (HOLE_CORRIDOR_LEN, w), (HOLE_CORRIDOR_LEN, 0.0)])
         self.sim.connect(m_room, mid_a, cor, 0)
         self.sim.connect(room, mid_b, cor, 2)
@@ -632,8 +650,8 @@ class GameSession:
         """Split the wall nearest `near` (room-local) to make a door-width
         sub-edge; returns its index, or None if no wall has the span."""
         best = None
-        for e in range(len(self.sim.room_portals(room))):
-            if self.sim.room_portals(room)[e] is not None:
+        for e in range(len(self.sim.polygon_portals(room))):
+            if self.sim.polygon_portals(room)[e] is not None:
                 continue
             x1, y1, x2, y2 = self.sim.edge_endpoints(room, e)
             elen = math.hypot(x2 - x1, y2 - y1)
@@ -659,9 +677,9 @@ class GameSession:
         """Stream another level's rooms into this live world. Returns the
         room-index offset where the chunk begins. Doors and entities all
         arrive re-indexed."""
-        offset = self.sim.num_rooms()
+        offset = self.sim.num_polygons()
         for verts in level.room_verts:
-            self.sim.add_room(verts)
+            self.sim.add_polygon(verts)
         for a, ea, b, eb in level.connects:
             self.sim.connect(a + offset, ea, b + offset, eb)
         for a, ea, b, eb, m9 in level.connects_x:
@@ -720,7 +738,7 @@ class GameSession:
         budget = 3 + 2 * self.wave
         # spawn away from the player: petal rooms only (never room 0's heart
         # unless the player left it)
-        rooms = [r for r in range(self.sim.num_rooms())
+        rooms = [r for r in range(self.sim.num_polygons())
                  if r != proom and (self.cloister is None or
                  r not in (self.cloister["sanctum"], self.cloister["corridor"]))]
         spawned = 0
@@ -758,19 +776,19 @@ class GameSession:
         for i in range(8):
             a = math.radians(22.5) - i * math.pi / 4.0
             verts.append((85.0 * math.cos(a), 85.0 * math.sin(a)))
-        sanctum = s.add_room(verts)
+        sanctum = s.add_polygon(verts)
         elen = 2 * 85.0 * math.sin(math.pi / 8.0)
         t0 = 0.5 - 7.5 / elen
         t1 = 0.5 + 7.5 / elen
         door = s.split_edge(sanctum, 4, t0, t1)
-        corridor = s.add_room([(0.0, 0.0), (0.0, 15.0), (36.0, 15.0), (36.0, 0.0)])
+        corridor = s.add_polygon([(0.0, 0.0), (0.0, 15.0), (36.0, 15.0), (36.0, 0.0)])
         s.connect(sanctum, door, corridor, 0)
         self.cloister = dict(sanctum=sanctum, corridor=corridor,
                              links=[], attached=None)
         # the anti-looter guardians, re-sworn: invincible, player-loyal
         for tx, ty in ((-30.0, -34.0), (-30.0, 34.0)):
-            tid = s.spawn(sanctum, tx, ty, 6.0, 50.0, GROUP_PICKUP)
-            s.set_props(tid, transfers=False)
+            tid = s.spawn(s.place(sanctum, tx, ty), 6.0, 50.0, GROUP_PICKUP)
+            s.set_props(tid, transfers=False, physical=False)
             self.turrets[tid] = dict(cd=0)
         # the seed keeps the pantry stocked
         self.spawn_pickup(sanctum, (30.0, -20.0), "medkit")
@@ -798,12 +816,12 @@ class GameSession:
             if t["cd"] > 0:
                 t["cd"] -= 1
                 continue
-            room = s.get_room(tid)
-            _, tx, ty, *_ = s.get(tid)
+            room = s.get_polygon(tid)
+            tx, ty = s.get(tid).pos.local()
             best, bd = None, 1e18
-            for eid in s.room_entities(room):
+            for eid in s.polygon_entities(room):
                 if eid in self.enemies:
-                    _, ex, ey, *_ = s.get(eid)
+                    ex, ey = s.get(eid).pos.local()
                     d = (ex - tx) ** 2 + (ey - ty) ** 2
                     if d < bd:
                         best, bd = (ex, ey), d
@@ -813,9 +831,11 @@ class GameSession:
             dx, dy = best[0] - tx, best[1] - ty
             dl = math.hypot(dx, dy) or 1e-6
             nx, ny = dx / dl, dy / dl
-            bid = s.spawn(room, tx + nx * 8, ty + ny * 8, 1.6, 0.002, GROUP_PBULLET)
+            rsp = s.polygon_space(room)
+            bid = s.spawn(s.place(room, tx + nx * 8, ty + ny * 8),
+                          1.6, 0.002, GROUP_PBULLET)
             s.set_props(bid, rest_wall=0.0, max_substep=3.2)
-            s.set_vel(bid, nx * 1200.0, ny * 1200.0)
+            s.set_vel(bid, necore.Offset(rsp, nx * 1200.0, ny * 1200.0))
             self.bullets[bid] = dict(kind="turret", dmg=6, ttl=40)
             self._snd("smg_fire", room, (tx, ty), 0.35)
             self.fx.append(("flash", room, tx + nx * 8, ty + ny * 8, 14.0))
@@ -827,18 +847,20 @@ class GameSession:
         self._shake(9.0)
         self._hitstop(5)
         self._decal(room, "scorch", x, y, 22.0)
-        for eid in list(self.sim.room_entities(room)):
+        for eid in list(self.sim.polygon_entities(room)):
             e = self.enemies.get(eid)
             if not e:
                 continue
-            _, ex, ey, evx, evy, _, _ = self.sim.get(eid)
+            st = self.sim.get(eid)
+            ex, ey = st.pos.local()
+            evx, evy = st.vel.local()
             d = math.hypot(ex - x, ey - y)
             if d > w["radius"]:
                 continue
             fall = 1.0 - d / w["radius"]
             nx, ny = ((ex - x) / d, (ey - y) / d) if d > 1e-6 else (1.0, 0.0)
-            self.sim.set_vel(eid, evx + nx * w["force"] * fall,
-                             evy + ny * w["force"] * fall)
+            self.sim.set_vel(eid, st.pos.offset(evx + nx * w["force"] * fall,
+                                                evy + ny * w["force"] * fall))
             self._damage_enemy(eid, w["dmg"] * (0.4 + 0.6 * fall), (nx, ny), 0.0)
 
     # ------------------------------------------------------------------
@@ -851,11 +873,14 @@ class GameSession:
         e["state"] = "hunt"
         self.metrics["hits"] += 1
         self.metrics["dmg_dealt"] += dmg
-        room = self.sim.get_room(eid)
-        _, ex, ey, evx, evy, _, _ = self.sim.get(eid)
+        room = self.sim.get_polygon(eid)
+        st = self.sim.get(eid)
+        ex, ey = st.pos.local()
+        evx, evy = st.vel.local()
         if knock > 0.0:
             m = ENEMIES[e["kind"]]["mass"]
-            self.sim.set_vel(eid, evx + ndir[0] * knock / m, evy + ndir[1] * knock / m)
+            self.sim.set_vel(eid, st.pos.offset(evx + ndir[0] * knock / m,
+                                                evy + ndir[1] * knock / m))
         self._snd("hit_flesh", room, (ex, ey), 0.8)
         self._decal(room, "blood", ex + self.rng.uniform(-4, 4),
                     ey + self.rng.uniform(-4, 4), self.rng.uniform(3, 7),
@@ -915,15 +940,17 @@ class GameSession:
 
     def _enemy_ai(self, proom: int):
         s = self.sim
-        active = set(s.rooms_within(proom, ACTIVE_HOPS))
+        active = set(s.polygons_within(proom, ACTIVE_HOPS))
         px, py = self.player_pos()
         for eid, e in list(self.enemies.items()):
-            room = s.get_room(eid)
+            room = s.get_polygon(eid)
             if room not in active:
                 continue
             kind = e["kind"]
             d = ENEMIES[kind]
-            _, ex, ey, evx, evy, edx, edy = s.get(eid)
+            st = s.get(eid)
+            ex, ey = st.pos.local()
+            evx, evy = st.vel.local()
             for k in ("touch_cd", "spit_cd", "scream_cd", "wander_cd"):
                 if e.get(k, 0) > 0:
                     e[k] -= 1
@@ -959,7 +986,7 @@ class GameSession:
                     self.fx.append(("alerted", room, ex, ey))
                     ddx, ddy = px - ex, py - ey
                     dl = math.hypot(ddx, ddy) or 1e-6
-                    s.set_dir(eid, ddx / dl, ddy / dl)
+                    s.set_dir(eid, st.pos.offset(ddx / dl, ddy / dl))
                     continue
                 else:
                     # aimless drift
@@ -968,8 +995,8 @@ class GameSession:
                         a = self.rng.uniform(0, 6.28)
                         e["wander"] = (math.cos(a), math.sin(a))
                     wx, wy = e.get("wander", (0.0, 0.0))
-                    s.set_vel(eid, evx + wx * d["accel"] * 0.25 * DT,
-                              evy + wy * d["accel"] * 0.25 * DT)
+                    s.set_vel(eid, st.pos.offset(evx + wx * d["accel"] * 0.25 * DT,
+                                                 evy + wy * d["accel"] * 0.25 * DT))
                     continue
 
             if e["state"] == "waking":
@@ -991,14 +1018,14 @@ class GameSession:
                 ddx, ddy = px - ex, py - ey
                 dist = math.hypot(ddx, ddy) or 1e-6
                 nx, ny = ddx / dist, ddy / dist
-                s.set_dir(eid, nx, ny)
+                s.set_dir(eid, st.pos.offset(nx, ny))
                 # husks lunge: a sudden burst inside close range reads as an
                 # attack, not a shove
                 if kind in ("husk", "brute") and dist < 95.0 \
                         and e.get("lunge_cd", 0) <= 0:
                     e["lunge_cd"] = 120 if kind == "husk" else 150
                     burst = 300.0 if kind == "husk" else 240.0
-                    s.set_vel(eid, evx + nx * burst, evy + ny * burst)
+                    s.set_vel(eid, st.pos.offset(evx + nx * burst, evy + ny * burst))
                     self._snd(d["alert_snd"], room, (ex, ey), 0.55)
                 if e.get("lunge_cd", 0) > 0:
                     e["lunge_cd"] -= 1
@@ -1013,9 +1040,11 @@ class GameSession:
                 if keep_min is not None and d.get("spit_cd") is not None:
                     # ranged: hold the band, spit on cooldown
                     if dist < d["keep_min"]:
-                        s.set_vel(eid, evx - nx * accel * DT, evy - ny * accel * DT)
+                        s.set_vel(eid, st.pos.offset(evx - nx * accel * DT,
+                                                     evy - ny * accel * DT))
                     elif dist > d["keep_max"]:
-                        s.set_vel(eid, evx + nx * accel * DT, evy + ny * accel * DT)
+                        s.set_vel(eid, st.pos.offset(evx + nx * accel * DT,
+                                                     evy + ny * accel * DT))
                     if e["spit_cd"] <= 0:
                         e["spit_cd"] = d["spit_cd"] // 2 if e.get("enraged") \
                             else d["spit_cd"]
@@ -1028,27 +1057,30 @@ class GameSession:
                                            math.cos(a2), math.sin(a2), d)
                     if kind != "warden":
                         continue
-                s.set_vel(eid, evx + nx * accel * DT, evy + ny * accel * DT)
+                s.set_vel(eid, st.pos.offset(evx + nx * accel * DT,
+                                             evy + ny * accel * DT))
             else:
                 if e.get("tether"):
                     continue  # arena guardian: holds its ground
                 edge = s.next_edge(room, proom)
                 if edge < 0:
                     continue
-                mx_, my_ = s.edge_midpoint(room, edge)
+                mx_, my_ = s.edge_midpoint(room, edge).local()
                 ddx, ddy = mx_ - ex, my_ - ey
                 dist = math.hypot(ddx, ddy) or 1e-6
-                s.set_dir(eid, ddx / dist, ddy / dist)
-                s.set_vel(eid, evx + ddx / dist * accel * DT,
-                          evy + ddy / dist * accel * DT)
+                s.set_dir(eid, st.pos.offset(ddx / dist, ddy / dist))
+                s.set_vel(eid, st.pos.offset(evx + ddx / dist * accel * DT,
+                                             evy + ddy / dist * accel * DT))
 
     def _spit(self, eid, room, ex, ey, nx, ny, d):
-        bid = self.sim.spawn(room, ex + nx * (d["radius"] + 4),
-                             ey + ny * (d["radius"] + 4), 2.5, 0.01, GROUP_EBULLET)
+        rsp = self.sim.polygon_space(room)
+        bid = self.sim.spawn(self.sim.place(room, ex + nx * (d["radius"] + 4),
+                                            ey + ny * (d["radius"] + 4)),
+                             2.5, 0.01, GROUP_EBULLET)
         self.sim.set_props(bid, rest_wall=0.0, max_substep=3.0)
         ang = math.atan2(ny, nx) + self.rng.uniform(-0.06, 0.06)
-        self.sim.set_vel(bid, math.cos(ang) * d["spit_speed"],
-                         math.sin(ang) * d["spit_speed"])
+        self.sim.set_vel(bid, necore.Offset(rsp, math.cos(ang) * d["spit_speed"],
+                                            math.sin(ang) * d["spit_speed"]))
         self.bullets[bid] = dict(kind="spit", dmg=d["spit_dmg"], ttl=180)
         self._snd("spitter_shoot", room, (ex, ey), 0.9)
 
@@ -1063,7 +1095,7 @@ class GameSession:
             for oid, oe in self.enemies.items():
                 if oid == eid:
                     continue
-                orr = s.get_room(oid)
+                orr = s.get_polygon(oid)
                 hd = s.hop_distance(orr, room)
                 if 0 <= hd <= 2:
                     oe["state"] = "hunt"
@@ -1071,9 +1103,11 @@ class GameSession:
         if room == proom:
             ddx, ddy = ex - px, ey - py  # away from player
             dist = math.hypot(ddx, ddy) or 1e-6
-            _, _, _, evx, evy, _, _ = s.get(eid)
-            s.set_dir(eid, ddx / dist, ddy / dist)
-            s.set_vel(eid, evx + ddx / dist * accel * DT, evy + ddy / dist * accel * DT)
+            st = s.get(eid)
+            evx, evy = st.vel.local()
+            s.set_dir(eid, st.pos.offset(ddx / dist, ddy / dist))
+            s.set_vel(eid, st.pos.offset(evx + ddx / dist * accel * DT,
+                                         evy + ddy / dist * accel * DT))
 
     # ------------------------------------------------------------------
 
@@ -1090,7 +1124,9 @@ class GameSession:
                     self.metrics["transfers"] += 1
                     self.metrics["rooms_visited"].add(to_room)
             elif tag == "wall":
-                _, ent, room, edge, px_, py_, nx, ny, speed = ev
+                _, ent, room, edge, wpos, wnorm, speed = ev
+                px_, py_ = wpos.local()
+                nx, ny = wnorm.local()
                 b = self.bullets.get(ent)
                 if b is not None and b["kind"] != "spit" \
                         and self.door_edges.get((room, edge)) == "shoot":
@@ -1125,7 +1161,9 @@ class GameSession:
                     self.sim.remove(ent)
                     self.bullets.pop(ent, None)
             elif tag == "contact":
-                _, a, b, cx, cy, nx, ny, rel = ev
+                _, a, b, croom, cpos, cnorm, rel = ev
+                cx, cy = cpos.local()
+                nx, ny = cnorm.local()
                 self._contact(a, b, cx, cy, nx, ny)
 
     def _contact(self, a: int, b: int, cx: float, cy: float, nx: float, ny: float):
@@ -1134,8 +1172,8 @@ class GameSession:
             bx = self.bullets.get(x)
             if bx is not None and y in self.enemies:
                 if bx["kind"] == "dart":
-                    room = self.sim.get_room(x) if self.sim.exists(x) \
-                        else self.sim.get_room(y)
+                    room = self.sim.get_polygon(x) if self.sim.exists(x) \
+                        else self.sim.get_polygon(y)
                     self._detonate_dart(x, room, cx, cy)
                 elif bx["kind"] in ("bullet", "tau", "taucharged", "turret"):
                     self._damage_enemy(y, bx["dmg"], (nx if x == b else -nx, ny if x == b else -ny), 90.0)
@@ -1143,7 +1181,7 @@ class GameSession:
                 self.bullets.pop(x, None)
                 return
             if bx is not None and y == self.pid:
-                room = self.sim.get_room(y)
+                room = self.sim.get_polygon(y)
                 if bx["kind"] == "spit":
                     self._damage_player(bx["dmg"], room)
                 elif bx["kind"] == "dart":
@@ -1165,7 +1203,7 @@ class GameSession:
                 d = ENEMIES[e["kind"]]
                 if d["touch_dmg"] > 0:
                     e["touch_cd"] = d["touch_cd"]
-                    self._damage_player(d["touch_dmg"], self.sim.get_room(self.pid))
+                    self._damage_player(d["touch_dmg"], self.sim.get_polygon(self.pid))
 
     # ------------------------------------------------------------------
 
@@ -1186,62 +1224,13 @@ class GameSession:
             worst = max(worst, -cr)
         return worst
 
-    def _containment_sweep(self, proom: int) -> None:
-        """Entities must never exist outside their room's polygon. The
-        engine's collision guarantees this in normal play, but a crowded
-        shove at a carved door jamb can press an entity through a wall
-        (soak seed 1993: a fleeing shrieker escaped the mirror ward and
-        drifted 14k units out, untargetable, wedging the run). Recover
-        escapees to the room centroid and say so loudly -- this is
-        damage control for an engine bug, not normal flow."""
-        verts_all = self.level.room_verts
-        streaks = getattr(self, "_outside_streaks", None)
-        if streaks is None:
-            streaks = self._outside_streaks = {}
-        for eid in (self.pid, *list(self.enemies)):
-            if not self.sim.exists(eid):
-                streaks.pop(eid, None)
-                continue
-            room, x, y, *_ = self.sim.get(eid)
-            if room >= len(verts_all):
-                continue
-            off = self._outside_by(x, y, verts_all[room])
-            if off <= 25.0:
-                streaks.pop(eid, None)
-                continue
-            # persistence gate: a door-crush can press entities 25-50u out
-            # and physics reclaims them when the crowd shifts — recovering
-            # those mid-fight destabilizes the finale (soak2: 54/985 runs
-            # wedged by recovery churn vs 1/1894 baseline). A true escape
-            # (bad transfer from an out-of-polygon position) stays outside
-            # every sweep forever; only that persistent signature recovers.
-            streaks[eid] = streaks.get(eid, 0) + 1
-            if streaks[eid] >= 6:  # 6 sweeps = 3 seconds continuously out
-                streaks.pop(eid, None)
-                # recovery target MUST come from the same frame as the
-                # verts: level.room_centroids is authored-frame bookkeeping
-                # and teleporting there re-corrupts (that bug ate this
-                # sweep's first version)
-                vs = verts_all[room]
-                cx = sum(v[0] for v in vs) / len(vs)
-                cy = sum(v[1] for v in vs) / len(vs)
-                self.sim.set_pos(eid, cx, cy)
-                self.sim.set_vel(eid, 0.0, 0.0)
-                self.metrics["containment_recoveries"] = \
-                    self.metrics.get("containment_recoveries", 0) + 1
-                import sys as _sys
-                print(f"[sim] CONTAINMENT: entity {eid} "
-                      f"({'player' if eid == self.pid else self.enemies.get(eid, {}).get('kind', '?')}) "
-                      f"was {off:.1f}u outside room {room} at ({x:.0f},{y:.0f}); "
-                      f"recovered to centroid", file=_sys.stderr)
-
     def _pickup_scan(self, proom: int):
         px, py = self.player_pos()
-        for eid in list(self.sim.room_entities(proom)):
+        for eid in list(self.sim.polygon_entities(proom)):
             p = self.pickups.get(eid)
             if p is None:
                 continue
-            _, x, y, *_ = self.sim.get(eid)
+            x, y = self.sim.get(eid).pos.local()
             if math.hypot(x - px, y - py) > PLAYER_RADIUS + PICKUPS[p["kind"]]["radius"] + 2.0:
                 continue
             kind = p["kind"]
@@ -1312,7 +1301,7 @@ class GameSession:
                 self.sim.connect(d["a"], d["ea"], d["b"], d["eb"])
                 self.door_edges.pop((d["a"], d["ea"]), None)
                 self.door_edges.pop((d["b"], d["eb"]), None)
-                mx, my = self.sim.edge_midpoint(d["a"], d["ea"])
+                mx, my = self.sim.edge_midpoint(d["a"], d["ea"]).local()
                 self._snd("door_unlock", d["a"], (mx, my))
 
     def _exit_scan(self, proom: int):
@@ -1333,7 +1322,7 @@ class GameSession:
                 return False
             if gate_rooms is None:
                 return True
-            r = self.sim.get_room(eid)
+            r = self.sim.get_polygon(eid)
             return gate_rooms[0] <= r < gate_rooms[1]
 
         if lvl.exit_gate_kind and any(
@@ -1352,8 +1341,8 @@ class GameSession:
             b["ttl"] -= 1
             if b["ttl"] <= 0:
                 if b["kind"] == "dart" and self.sim.exists(bid):
-                    _, x, y, *_ = self.sim.get(bid)
-                    self._detonate_dart(bid, self.sim.get_room(bid), x, y)
+                    x, y = self.sim.get(bid).pos.local()
+                    self._detonate_dart(bid, self.sim.get_polygon(bid), x, y)
                 self.sim.remove(bid)
                 del self.bullets[bid]
 
@@ -1379,7 +1368,7 @@ class GameSession:
             if e["kind"] != kind:
                 continue
             if rng is not None:
-                r = self.sim.get_room(eid)
+                r = self.sim.get_polygon(eid)
                 if not (rng[0] <= r < rng[1]):
                     continue
             n += 1
@@ -1390,15 +1379,15 @@ class GameSession:
         px, py = self.player_pos()
         enemies = []
         for eid, e in self.enemies.items():
-            r = self.sim.get_room(eid)
-            _, x, y, *_ = self.sim.get(eid)
+            r = self.sim.get_polygon(eid)
+            x, y = self.sim.get(eid).pos.local()
             enemies.append(dict(id=eid, kind=e["kind"], room=r, pos=(x, y),
                                 hp=e["hp"], state=e["state"],
                                 hops=self.sim.hop_distance(r, proom)))
         pickups = []
         for eid, p in self.pickups.items():
-            r = self.sim.get_room(eid)
-            _, x, y, *_ = self.sim.get(eid)
+            r = self.sim.get_polygon(eid)
+            x, y = self.sim.get(eid).pos.local()
             pickups.append(dict(id=eid, kind=p["kind"], room=r, pos=(x, y),
                                 hops=self.sim.hop_distance(r, proom)))
         return dict(

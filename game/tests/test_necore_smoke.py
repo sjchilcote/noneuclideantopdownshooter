@@ -12,8 +12,8 @@ SQUARE = [(0.0, 0.0), (0.0, 100.0), (100.0, 100.0), (100.0, 0.0)]
 
 def two_room_sim():
     sim = necore.Sim()
-    a = sim.add_room(SQUARE)
-    b = sim.add_room(SQUARE)
+    a = sim.add_polygon(SQUARE)
+    b = sim.add_polygon(SQUARE)
     # Canonical square edge order: 0 left, 1 bottom, 2 right, 3 top.
     sim.connect(a, 2, b, 0)
     return sim, a, b
@@ -21,8 +21,8 @@ def two_room_sim():
 
 def test_transfer_preserves_speed_and_changes_room():
     sim, a, b = two_room_sim()
-    eid = sim.spawn(a, 0.0, 0.0, 5.0, 1.0, 0)
-    sim.set_vel(eid, 200.0, 0.0)
+    eid = sim.spawn(sim.place(a, 0.0, 0.0), 5.0, 1.0, 0)
+    sim.set_vel(eid, necore.Offset(sim.polygon_space(a), 200.0, 0.0))
 
     transfer = None
     for _ in range(600):
@@ -38,8 +38,9 @@ def test_transfer_preserves_speed_and_changes_room():
     assert from_room == a
     assert to_room == b
 
-    room, px, py, vx, vy, dx, dy = sim.get(eid)
-    assert room == b
+    st = sim.get(eid)
+    assert st.polygon == b
+    vx, vy = st.vel.local()
     speed = math.hypot(vx, vy)
     assert abs(speed - 200.0) < 1e-6
 
@@ -66,13 +67,14 @@ def test_raycast_crosses_portal_and_hits_far_wall():
     sim, a, b = two_room_sim()
     # From the centroid of room a, straight through the shared edge (edge 2,
     # the +x side) into room b, which should report a wall hit in room b.
-    kind, room, edge, px, py, dist, hops, m9 = sim.raycast(
-        a, 0.0, 0.0, 1.0, 0.0, 4, 1000.0, 0xFFFF, -1
+    hit = sim.raycast(
+        sim.place(a, 0.0, 0.0), necore.Offset(sim.polygon_space(a), 1.0, 0.0),
+        4, 1000.0, 0xFFFF, -1
     )
-    assert kind == "wall"
-    assert room == b
-    assert hops >= 1
-    assert dist > 50.0  # travelled past the shared edge into b
+    assert hit.kind == "wall"
+    assert hit.polygon == b
+    assert hit.hops >= 1
+    assert hit.distance > 50.0  # travelled past the shared edge into b
 
 
 def test_mat_helpers_roundtrip():
@@ -97,7 +99,7 @@ def test_mat_helpers_roundtrip():
 def test_errors_are_value_errors():
     sim = necore.Sim()
     try:
-        sim.add_room([(0.0, 0.0), (1.0, 0.0)])
+        sim.add_polygon([(0.0, 0.0), (1.0, 0.0)])
         assert False, "expected ValueError for too-few verts"
     except ValueError:
         pass

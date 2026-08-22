@@ -247,7 +247,7 @@ def assert_playable(level: Level, seed: int = 0, max_ticks: int = DEFAULT_MAX_TI
         while t < min(max_ticks, containment_ticks) and not session.dead and not session.complete:
             snap = session.snapshot()
             room = snap["room"]
-            radius = session.sim.room_radius(room)
+            radius = session.sim.polygon_radius(room)
             px, py = snap["pos"]
             r = math.hypot(px, py)
             if r > radius + CONTAINMENT_MARGIN:

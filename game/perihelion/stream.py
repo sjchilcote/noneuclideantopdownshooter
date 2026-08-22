@@ -141,7 +141,7 @@ class WorldStreamer:
         while frontier:
             nxt_frontier = []
             for r in frontier:
-                for p in s.sim.room_portals(r):
+                for p in s.sim.polygon_portals(r):
                     if p is None:
                         continue
                     tr = p[0]
@@ -163,9 +163,9 @@ class WorldStreamer:
         lvl: Level = c["level"]
         exit_room, mid = self._carve_in_chunk(
             c, lvl.exit_room + c["offset"], lvl.exit_pos)
-        spine_a = s.sim.add_room([(0.0, 0.0), (0.0, SPINE_W),
+        spine_a = s.sim.add_polygon([(0.0, 0.0), (0.0, SPINE_W),
                                   (SPINE_LEN, SPINE_W), (SPINE_LEN, 0.0)])
-        spine_b = s.sim.add_room([(0.0, 0.0), (0.0, SPINE_W),
+        spine_b = s.sim.add_polygon([(0.0, 0.0), (0.0, SPINE_W),
                                   (SPINE_LEN, SPINE_W), (SPINE_LEN, 0.0)])
         # spine rect edges: 0 = west end (len W), 2 = east end
         s.sim.connect(exit_room, mid, spine_a, 0)
@@ -252,11 +252,11 @@ class WorldStreamer:
             s.sim.remove(eid)
         s.bullets.clear()
         for eid in [e for e, rec in s.enemies.items()
-                    if lo <= s.sim.get_room(e) < hi]:
+                    if lo <= s.sim.get_polygon(e) < hi]:
             s.sim.remove(eid)
             s.enemies.pop(eid, None)
         for eid in [e for e, rec in s.pickups.items()
-                    if lo <= s.sim.get_room(e) < hi]:
+                    if lo <= s.sim.get_polygon(e) < hi]:
             s.sim.remove(eid)
             s.pickups.pop(eid, None)
         lvl: Level = c["level"]
@@ -267,12 +267,12 @@ class WorldStreamer:
         self._restore_state(self.entry_states[self.current])
         entry_room = c["entry_room"] + c["offset"]
         px, py = c["entry_pos"]
-        s.sim.set_pos(s.pid, px, py)
+        s.sim.set_pos(s.pid, s.sim.place(s.sim.get_polygon(s.pid), px, py))
         # engine set_pos does not move room membership; re-seat via a
         # remove/spawn would lose the id, so use the sim's own transfer:
-        if s.sim.get_room(s.pid) != entry_room:
+        if s.sim.get_polygon(s.pid) != entry_room:
             self._reseat_player(entry_room, (px, py))
-        s.sim.set_vel(s.pid, 0.0, 0.0)
+        s.sim.set_vel(s.pid, s.sim.get(s.pid).pos.offset(0.0, 0.0))
         s.dead = False
         s.freeze = 0
         s.metrics["deaths"] += 1
@@ -289,8 +289,8 @@ class WorldStreamer:
         s = self.session
         import necore
         old = s.pid
-        st = s.sim.get(old)
+        dx, dy = s.sim.get(old).dir.local()
         s.sim.remove(old)
-        s.pid = s.sim.spawn(room, pos[0], pos[1], 6.5, 1.2, 0)
+        s.pid = s.sim.spawn(s.sim.place(room, pos[0], pos[1]), 6.5, 1.2, 0)
         s.sim.set_props(s.pid, rest_wall=0.0, rest_ent=0.05, max_substep=6.0)
-        s.sim.set_dir(s.pid, st[5], st[6])
+        s.sim.set_dir(s.pid, necore.Offset(s.sim.polygon_space(room), dx, dy))

@@ -1,0 +1,650 @@
+[
+  {
+    "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00",
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 0.0,
+    "path": "blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk00.wav"
+  },
+  {
+    "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk01",
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 25.0,
+    "path": "blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk01.wav"
+  },
+  {
+    "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk02",
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 50.0,
+    "path": "blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk02.wav"
+  },
+  {
+    "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk03",
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 75.0,
+    "path": "blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk03.wav"
+  },
+  {
+    "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk04",
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 100.0,
+    "path": "blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk04.wav"
+  },
+  {
+    "block": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk05",
+    "track": "01_rejoice__for_we_were_once_blessed__chant_of_remembrance",
+    "title": "Rejoice, For We Were Once Blessed (Chant of Remembrance)",
+    "track_offset_s": 125.0,
+    "block_len_s": 27.0,
+    "absolute_start_s": 125.0,
+    "path": "blocks/01_rejoice__for_we_were_once_blessed__chant_of_remembrance_blk05.wav"
+  },
+  {
+    "block": "02_fleshgrinder_blk00",
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 152.0,
+    "path": "blocks/02_fleshgrinder_blk00.wav"
+  },
+  {
+    "block": "02_fleshgrinder_blk01",
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 177.0,
+    "path": "blocks/02_fleshgrinder_blk01.wav"
+  },
+  {
+    "block": "02_fleshgrinder_blk02",
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 202.0,
+    "path": "blocks/02_fleshgrinder_blk02.wav"
+  },
+  {
+    "block": "02_fleshgrinder_blk03",
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 227.0,
+    "path": "blocks/02_fleshgrinder_blk03.wav"
+  },
+  {
+    "block": "02_fleshgrinder_blk04",
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 252.0,
+    "path": "blocks/02_fleshgrinder_blk04.wav"
+  },
+  {
+    "block": "02_fleshgrinder_blk05",
+    "track": "02_fleshgrinder",
+    "title": "Fleshgrinder",
+    "track_offset_s": 125.0,
+    "block_len_s": 18.0,
+    "absolute_start_s": 277.0,
+    "path": "blocks/02_fleshgrinder_blk05.wav"
+  },
+  {
+    "block": "03_trash_planet_mining_rig_blk00",
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 295.0,
+    "path": "blocks/03_trash_planet_mining_rig_blk00.wav"
+  },
+  {
+    "block": "03_trash_planet_mining_rig_blk01",
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 320.0,
+    "path": "blocks/03_trash_planet_mining_rig_blk01.wav"
+  },
+  {
+    "block": "03_trash_planet_mining_rig_blk02",
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 345.0,
+    "path": "blocks/03_trash_planet_mining_rig_blk02.wav"
+  },
+  {
+    "block": "03_trash_planet_mining_rig_blk03",
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 370.0,
+    "path": "blocks/03_trash_planet_mining_rig_blk03.wav"
+  },
+  {
+    "block": "03_trash_planet_mining_rig_blk04",
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 395.0,
+    "path": "blocks/03_trash_planet_mining_rig_blk04.wav"
+  },
+  {
+    "block": "03_trash_planet_mining_rig_blk05",
+    "track": "03_trash_planet_mining_rig",
+    "title": "Trash Planet Mining Rig",
+    "track_offset_s": 125.0,
+    "block_len_s": 13.0,
+    "absolute_start_s": 420.0,
+    "path": "blocks/03_trash_planet_mining_rig_blk05.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk00",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 433.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk00.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk01",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 458.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk01.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk02",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 483.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk02.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk03",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 508.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk03.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk04",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 533.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk04.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk05",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 125.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 558.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk05.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk06",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 150.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 583.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk06.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk07",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 175.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 608.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk07.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk08",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 200.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 633.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk08.wav"
+  },
+  {
+    "block": "04_not_a_heart__but_an_engine_blk09",
+    "track": "04_not_a_heart__but_an_engine",
+    "title": "Not A Heart, But An Engine",
+    "track_offset_s": 225.0,
+    "block_len_s": 13.0,
+    "absolute_start_s": 658.0,
+    "path": "blocks/04_not_a_heart__but_an_engine_blk09.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk00",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 671.0,
+    "path": "blocks/05_styx_floods_with_souls_blk00.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk01",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 696.0,
+    "path": "blocks/05_styx_floods_with_souls_blk01.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk02",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 721.0,
+    "path": "blocks/05_styx_floods_with_souls_blk02.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk03",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 746.0,
+    "path": "blocks/05_styx_floods_with_souls_blk03.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk04",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 771.0,
+    "path": "blocks/05_styx_floods_with_souls_blk04.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk05",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 125.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 796.0,
+    "path": "blocks/05_styx_floods_with_souls_blk05.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk06",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 150.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 821.0,
+    "path": "blocks/05_styx_floods_with_souls_blk06.wav"
+  },
+  {
+    "block": "05_styx_floods_with_souls_blk07",
+    "track": "05_styx_floods_with_souls",
+    "title": "Styx Floods With Souls",
+    "track_offset_s": 175.0,
+    "block_len_s": 11.0,
+    "absolute_start_s": 846.0,
+    "path": "blocks/05_styx_floods_with_souls_blk07.wav"
+  },
+  {
+    "block": "06_utter_loss_blk00",
+    "track": "06_utter_loss",
+    "title": "Utter Loss",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 857.0,
+    "path": "blocks/06_utter_loss_blk00.wav"
+  },
+  {
+    "block": "06_utter_loss_blk01",
+    "track": "06_utter_loss",
+    "title": "Utter Loss",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 882.0,
+    "path": "blocks/06_utter_loss_blk01.wav"
+  },
+  {
+    "block": "06_utter_loss_blk02",
+    "track": "06_utter_loss",
+    "title": "Utter Loss",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 907.0,
+    "path": "blocks/06_utter_loss_blk02.wav"
+  },
+  {
+    "block": "06_utter_loss_blk03",
+    "track": "06_utter_loss",
+    "title": "Utter Loss",
+    "track_offset_s": 75.0,
+    "block_len_s": 22.0,
+    "absolute_start_s": 932.0,
+    "path": "blocks/06_utter_loss_blk03.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk00",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 954.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk00.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk01",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 979.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk01.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk02",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1004.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk02.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk03",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1029.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk03.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk04",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1054.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk04.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk05",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 125.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1079.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk05.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk06",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 150.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1104.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk06.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk07",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 175.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1129.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk07.wav"
+  },
+  {
+    "block": "07_i_swear_to_protect__chant_of_trust_blk08",
+    "track": "07_i_swear_to_protect__chant_of_trust",
+    "title": "I Swear To Protect (Chant of Trust)",
+    "track_offset_s": 200.0,
+    "block_len_s": 17.0,
+    "absolute_start_s": 1154.0,
+    "path": "blocks/07_i_swear_to_protect__chant_of_trust_blk08.wav"
+  },
+  {
+    "block": "08_populist_blk00",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1171.0,
+    "path": "blocks/08_populist_blk00.wav"
+  },
+  {
+    "block": "08_populist_blk01",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1196.0,
+    "path": "blocks/08_populist_blk01.wav"
+  },
+  {
+    "block": "08_populist_blk02",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1221.0,
+    "path": "blocks/08_populist_blk02.wav"
+  },
+  {
+    "block": "08_populist_blk03",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1246.0,
+    "path": "blocks/08_populist_blk03.wav"
+  },
+  {
+    "block": "08_populist_blk04",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1271.0,
+    "path": "blocks/08_populist_blk04.wav"
+  },
+  {
+    "block": "08_populist_blk05",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 125.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1296.0,
+    "path": "blocks/08_populist_blk05.wav"
+  },
+  {
+    "block": "08_populist_blk06",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 150.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1321.0,
+    "path": "blocks/08_populist_blk06.wav"
+  },
+  {
+    "block": "08_populist_blk07",
+    "track": "08_populist",
+    "title": "Populist",
+    "track_offset_s": 175.0,
+    "block_len_s": 15.0,
+    "absolute_start_s": 1346.0,
+    "path": "blocks/08_populist_blk07.wav"
+  },
+  {
+    "block": "09_humanity_first_blk00",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1361.0,
+    "path": "blocks/09_humanity_first_blk00.wav"
+  },
+  {
+    "block": "09_humanity_first_blk01",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1386.0,
+    "path": "blocks/09_humanity_first_blk01.wav"
+  },
+  {
+    "block": "09_humanity_first_blk02",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1411.0,
+    "path": "blocks/09_humanity_first_blk02.wav"
+  },
+  {
+    "block": "09_humanity_first_blk03",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1436.0,
+    "path": "blocks/09_humanity_first_blk03.wav"
+  },
+  {
+    "block": "09_humanity_first_blk04",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1461.0,
+    "path": "blocks/09_humanity_first_blk04.wav"
+  },
+  {
+    "block": "09_humanity_first_blk05",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 125.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1486.0,
+    "path": "blocks/09_humanity_first_blk05.wav"
+  },
+  {
+    "block": "09_humanity_first_blk06",
+    "track": "09_humanity_first",
+    "title": "Humanity First",
+    "track_offset_s": 150.0,
+    "block_len_s": 14.0,
+    "absolute_start_s": 1511.0,
+    "path": "blocks/09_humanity_first_blk06.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk00",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 0.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1525.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk00.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk01",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 25.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1550.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk01.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk02",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 50.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1575.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk02.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk03",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 75.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1600.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk03.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk04",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 100.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1625.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk04.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk05",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 125.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1650.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk05.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk06",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 150.0,
+    "block_len_s": 30.0,
+    "absolute_start_s": 1675.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk06.wav"
+  },
+  {
+    "block": "10_on_the_edge_of_my_ability__chant_of_focus_blk07",
+    "track": "10_on_the_edge_of_my_ability__chant_of_focus",
+    "title": "On The Edge Of My Ability (Chant of Focus)",
+    "track_offset_s": 175.0,
+    "block_len_s": 11.0,
+    "absolute_start_s": 1700.0,
+    "path": "blocks/10_on_the_edge_of_my_ability__chant_of_focus_blk07.wav"
+  }
+]

@@ -1,0 +1,48 @@
+{
+ "target": [0.45, 0.55],
+ "total_original_enemies": 43,
+ "final_density": 0.232558,
+ "final_enemy_count": 10,
+ "final_per_segment": {"B": 1, "A": 2, "C": 2, "D": 2, "E": 2, "F": 1},
+ "final_clear_rate": 0.496,
+ "final_confirm_n": 250,
+ "method": "Three phases, all with HumanBot + MID_GAME_STATE loadout (run_farm.py). Phase 1: bisection on the continuous --density knob (tools/musiccal/tune_density.py), n=60 probes -- noisy but revealed the plateau. Phase 2: a fine sweep (n=120 each) across density in [0.225,0.240], which turned out to all round() to the SAME 10-enemy level (43*density in [9.675,10.32] all round to 10) -- i.e. phase 2 is really 4 independent n=120 samples of ONE level, pooled below for a tighter estimate. Phase 3: locked density=10/43 exactly and ran a fresh n=250 confirmation batch (disjoint seed block) for the reported number.",
+ "phases": [
+  {
+   "phase": 1,
+   "description": "bisection on --density, n=60 probes per point (uses the FIXED proportional-fair enemy ordering -- see build_gauntlet.py _fair_order; an earlier per-polygon-round() version was discarded, see caveats below)",
+   "iterations": [
+    {"iter": 1, "density": 0.5400, "n_runs": 60, "clear_rate": 0.000, "outcomes": {"died": 60}},
+    {"iter": 2, "density": 0.3100, "n_runs": 60, "clear_rate": 0.217, "outcomes": {"died": 47, "complete": 13}},
+    {"iter": 3, "density": 0.1950, "n_runs": 60, "clear_rate": 0.567, "outcomes": {"died": 26, "complete": 34}},
+    {"iter": 4, "density": 0.2525, "n_runs": 60, "clear_rate": 0.317, "outcomes": {"died": 41, "complete": 19}},
+    {"iter": 5, "density": 0.2238, "n_runs": 60, "clear_rate": 0.650, "outcomes": {"died": 21, "complete": 39}},
+    {"iter": 6, "density": 0.2381, "n_runs": 60, "clear_rate": 0.533, "outcomes": {"died": 28, "complete": 32}},
+    {"iter": "confirm", "density": 0.2381, "n_runs": 150, "clear_rate": 0.420, "outcomes": {"died": 87, "complete": 63}, "note": "out of band on the larger sample -- the n=60 probes in this steep region were too noisy to trust; moved to phase 2"}
+   ]
+  },
+  {
+   "phase": 2,
+   "description": "fine sweep, n=120 each, disjoint seed blocks; all four densities happen to round(43*density) to the same 10-enemy roster",
+   "points": [
+    {"density": 0.225, "n_runs": 120, "clear_rate": 0.475, "outcomes": {"died": 63, "complete": 57}, "enemy_count": 10},
+    {"density": 0.230, "n_runs": 120, "clear_rate": 0.583, "outcomes": {"died": 50, "complete": 70}, "enemy_count": 10},
+    {"density": 0.235, "n_runs": 120, "clear_rate": 0.483, "outcomes": {"died": 62, "complete": 58}, "enemy_count": 10},
+    {"density": 0.240, "n_runs": 120, "clear_rate": 0.525, "outcomes": {"died": 57, "complete": 63}, "enemy_count": 10}
+   ],
+   "pooled": {"n_runs": 480, "died": 232, "complete": 248, "clear_rate": 0.5167, "se_pct": 2.28,
+              "note": "all 4 points are independent samples of the identical 10-enemy level; pooling is valid and tightens the estimate to within +/-2.3pp"}
+  },
+  {
+   "phase": 3,
+   "description": "lock density=10/43 exactly, fresh confirmation batch",
+   "points": [
+    {"density": 0.232558, "n_runs": 250, "clear_rate": 0.496, "outcomes": {"died": 126, "complete": 124}, "seed_block": "900000-900249"}
+   ]
+  }
+ ],
+ "caveats": [
+  "v1 (discarded) density mechanism scaled each polygon's enemy count independently via round(original_count * density). With ~20 polygons holding 1-4 enemies each, most polygons' rounding thresholds coincided at density=0.25 (round(2*x): 0->1 at x=0.25 for every 2-enemy polygon), so total enemy count -- and clear rate -- jumped discontinuously there instead of responding smoothly: measured clear rates at n=60 were density=0.195->1.000, 0.2238->0.983, 0.2381->0.983, 0.2453->0.967, 0.2489->1.000, 0.2507->0.100, 0.2498->0.983 (a 0.7% density change collapsing clear rate from ~100% to 10%). Replaced with a proportional-fair global ordering (_fair_order in build_gauntlet.py) before any of the numbers in this file were collected; all phases above use the fixed mechanism.",
+  "the fixed mechanism is still coarse: only 43 distinct total-enemy-count values exist between empty and the full source roster, and near the 50% band each unit of enemy count moves clear rate several points, so 'tune to exactly 50.0%' is not achievable -- the achieved band (all four phase-2 points landing 47.5-58.3%, pooled 51.7%+/-2.3pp, confirmed 49.6% at n=250) is the practical resolution of a spawn-COUNT-only knob at this scale."
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "level": "levels/gauntlet_cal2.json",
+ "build": {
+  "n": 180,
+  "min_sep": 110,
+  "seed": 1,
+  "mix": {
+   "husk": 54,
+   "mite": 36,
+   "spitter": 27,
+   "shrieker": 18,
+   "brute": 18,
+   "warden": 9,
+   "flicker": 18
+  },
+  "alert_hops": 1,
+  "depth_min": {
+   "warden": 0.55,
+   "brute": 0.4,
+   "shrieker": 0.3
+  }
+ },
+ "loadout": {
+  "all_weapons": true,
+  "ammo": {
+   "9mm": 400,
+   "shell": 80,
+   "cell": 120,
+   "components": 60
+  },
+  "hp": 375,
+  "dmg_taken_mul": 0.25
+ },
+ "measured": {
+  "pass_rate": "10/20 = 50%",
+  "kills_median": 148,
+  "date": "2026-07-16",
+  "method": "director's levers only: spread (min_sep + depth gradient + kind separation + local alerts) and player buffs (arsenal policy, hp, armor); population never thinned"
+ }
+}

@@ -1,5 +1,7 @@
-"""Containment sweep: entities that escape their room's polygon are
-recovered to the room's (verts-frame) centroid, loudly."""
+"""Containment is an engine invariant: step_entity ends by clamping every
+entity into its polygon (necore physics contain_in_polygon), so an entity
+can never persist outside its room. The game-side recovery sweep this file
+once tested was damage control for that escape class and is gone."""
 
 from perihelion.levels import LevelBuilder
 from perihelion.sim import GameSession, InputFrame
@@ -14,21 +16,24 @@ def _level():
     return b.build()
 
 
-def test_escaped_enemy_is_recovered():
+def test_escaped_enemy_is_reclaimed_within_one_tick():
     s = GameSession(_level(), seed=1)
     eid = next(iter(s.enemies))
-    s.sim.set_pos(eid, 4000.0, -4000.0)  # far outside the room polygon
-    # recovery requires 6 consecutive outside sweeps (3s) so door-crush
-    # excursions never trigger it
-    for _ in range(200):
-        s.tick(InputFrame())
-    assert s.metrics.get("containment_recoveries", 0) >= 1
-    _, x, y, *_ = s.sim.get(eid)
+    s.sim.set_pos(eid, s.sim.place(s.sim.get_polygon(eid), 4000.0, -4000.0))
+    s.tick(InputFrame())
+    x, y = s.sim.get(eid).pos.local()
     assert GameSession._outside_by(x, y, s.level.room_verts[0]) <= 0.0
 
 
-def test_normal_play_never_triggers_recovery():
+def test_normal_play_keeps_every_entity_inside():
     s = GameSession(_level(), seed=2)
-    for _ in range(60 * 5):
+    for t in range(60 * 5):
         s.tick(InputFrame(mx=1.0))
-    assert s.metrics.get("containment_recoveries", 0) == 0
+        if t % 30 == 0:
+            for eid in (s.pid, *list(s.enemies)):
+                if not s.sim.exists(eid):
+                    continue
+                st = s.sim.get(eid)
+                x, y = st.pos.local()
+                assert GameSession._outside_by(
+                    x, y, s.level.room_verts[st.polygon]) <= 0.0

@@ -10,3 +10,10 @@ crate-type = ["cdylib"]
 [dependencies]
 necore_core = { package = "necore", path = "../necore" }
 pyo3 = { version = "0.23", features = ["extension-module", "abi3-py311"] }
+# the platform layer (pygame's replacement): window + CPU present,
+# event pump, audio output, capture encode
+winit = "0.30"
+softbuffer = "0.4"
+cpal = "0.15"
+png = "0.17"
+minimp4 = { version = "0.1", features = ["aac"] }

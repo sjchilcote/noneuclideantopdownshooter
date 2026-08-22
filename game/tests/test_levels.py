@@ -33,8 +33,8 @@ def test_level_structure(path):
     for d in s.doors:
         if not d["open"]:
             s.sim.connect(d["a"], d["ea"], d["b"], d["eb"])
-    reach = set(s.sim.rooms_within(lvl.player_room, 99))
-    assert reach == set(range(s.sim.num_rooms())), "unreachable rooms"
+    reach = set(s.sim.polygons_within(lvl.player_room, 99))
+    assert reach == set(range(s.sim.num_polygons())), "unreachable rooms"
     assert lvl.exit_room in reach
 
 
@@ -46,7 +46,7 @@ def test_keys_reachable_before_their_doors(path):
     key_rooms = {}
     for eid, p in s.pickups.items():
         if p["kind"].startswith("key_"):
-            key_rooms[p["kind"][4:]] = s.sim.get_room(eid)
+            key_rooms[p["kind"][4:]] = s.sim.get_polygon(eid)
     for d in s.doors:
         if d["key"] in ("", "shoot"):
             continue

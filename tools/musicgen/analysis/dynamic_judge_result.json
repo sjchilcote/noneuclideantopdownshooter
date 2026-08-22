@@ -1,0 +1,68 @@
+{
+ "timeline": "- FIGHT from ~0s to ~5s\n- FIGHT from ~15s to ~20s\n- FIGHT from ~65s to ~80s\n- FIGHT from ~85s to ~90s",
+ "dynamic": {
+  "p_median": 0.3,
+  "raw": [
+   {
+    "fight_windows_tracked": "2 of 4 windows where music visibly responds",
+    "false_transitions": 0,
+    "musical_transitions": true,
+    "calm_is_calm": true,
+    "p_beta_shippable": 0.3,
+    "biggest_gap": "The music completely ignores the fight windows from ~15s to ~20s and ~65s to ~80s, remaining in the low-intensity ambient state.",
+    "summary": "While the transitions that do occur are musically seamless and land on rhythmic boundaries, the system fails to track half of the gameplay events. The music completely misses the second and third fight windows, making it unready for a beta release."
+   },
+   {
+    "fight_windows_tracked": "2 of 4 windows where music visibly responds",
+    "false_transitions": 0,
+    "musical_transitions": true,
+    "calm_is_calm": true,
+    "p_beta_shippable": 0.4,
+    "biggest_gap": "The music completely ignores the fight windows at 15-20s and 85-90s, remaining in the low-intensity state.",
+    "summary": "While the transitions that do occur are musically clean and land on rhythmic boundaries, the system fails to track half of the gameplay events. The music remains in a calm state during the second and fourth fight windows, making this implementation unready for beta."
+   },
+   {
+    "fight_windows_tracked": "2 of 4 windows where music visibly responds",
+    "false_transitions": 0,
+    "musical_transitions": true,
+    "calm_is_calm": true,
+    "p_beta_shippable": 0.3,
+    "biggest_gap": "The music completely ignores the fight windows from ~15s to ~20s and ~65s to ~80s, remaining in the calm state.",
+    "summary": "While the transitions that do occur are musically sound and land on rhythmic boundaries, the system fails to track half of the gameplay events. The music completely misses the second and third fight windows, making this implementation unready for beta."
+   }
+  ]
+ },
+ "static": {
+  "p_median": 0.0,
+  "raw": [
+   {
+    "fight_windows_tracked": "0 of 4 windows where music visibly responds",
+    "false_transitions": 0,
+    "musical_transitions": false,
+    "calm_is_calm": false,
+    "p_beta_shippable": 0.0,
+    "biggest_gap": "The music remains a completely static, looping synth drone with no variation in intensity, arrangement, or tempo across the entire 90-second clip, ignoring all four fight windows.",
+    "summary": "The dynamic music system is completely non-functional in this build, as the track remains a static, unchanging synth loop throughout the entire session. It fails to respond to any of the four logged fight events, making it entirely unshippable for beta."
+   },
+   {
+    "fight_windows_tracked": "0 of 4 windows where music visibly responds",
+    "false_transitions": 0,
+    "musical_transitions": false,
+    "calm_is_calm": false,
+    "p_beta_shippable": 0.0,
+    "biggest_gap": "The music track is a static, unchanging loop that completely ignores all gameplay events.",
+    "summary": "The dynamic music system is non-functional, as the audio track remains a completely static loop with zero variation in intensity or arrangement across the entire session. It fails to track any of the four fight windows or provide calmer material during the non-combat stretches."
+   },
+   {
+    "fight_windows_tracked": "0 of 4 windows where music visibly responds",
+    "false_transitions": 0,
+    "musical_transitions": false,
+    "calm_is_calm": false,
+    "p_beta_shippable": 0.0,
+    "biggest_gap": "The entire track is a static loop that completely ignores all four fight windows.",
+    "summary": "The dynamic music system is non-functional, as the track remains at a constant, low-intensity level throughout the entire session. It fails to respond to any of the four logged fight windows, making it completely unready for a beta release."
+   }
+  ]
+ },
+ "discriminates": true
+}

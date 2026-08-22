@@ -186,6 +186,7 @@ impl Mat3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     #[test]
     fn inverse_roundtrip() {
@@ -205,5 +206,50 @@ mod tests {
         let d = v(0.0, 1.0);
         let n = d.perp_right().normalized();
         assert!(n.dot(v(1.0, 0.0)) > 0.99);
+    }
+
+    // ------------------------------------------------------------------
+    // ENGINE_INVARIANTS.md M5: Vec2::normalized()'s near-zero fallback is
+    // THE FLICKER's documented root cause (geom.rs DEGENERATE_EDGE comment):
+    // a zero-length polygon edge's "normal" came from this fallback, an
+    // arbitrary (1,0), fabricating a phantom half-plane. Every caller in
+    // geom.rs is now guarded by DEGENERATE_EDGE upstream of normalized(),
+    // but the fallback itself, at the source, had zero direct test
+    // coverage before this. Adversarial dimensions: exact zero, sub-
+    // threshold-but-nonzero, and ordinary-magnitude vectors in every
+    // quadrant/sign combination, plus huge magnitudes (no overflow-to-NaN).
+    //
+    // Verified fail-first: temporarily changed the fallback threshold
+    // check from `l < 1e-12` to `l <= 0.0` (so a nonzero-but-tiny length
+    // like 1e-15 falls through to `x/l, y/l`) and reran — this property
+    // failed with a NaN/inf component (the exact class of corruption
+    // DEGENERATE_EDGE exists to prevent one layer up), confirming this is
+    // real instrumentation, not a tautology. Reverted before committing.
+    proptest! {
+        #[test]
+        fn normalized_fallback_is_unit_and_never_nan(
+            x in prop_oneof![
+                -1e-13f64..1e-13,
+                -1e6f64..1e6,
+                Just(0.0f64),
+            ],
+            y in prop_oneof![
+                -1e-13f64..1e-13,
+                -1e6f64..1e6,
+                Just(0.0f64),
+            ],
+        ) {
+            let n = v(x, y).normalized();
+            prop_assert!(n.x.is_finite() && n.y.is_finite(), "non-finite: {:?}", n);
+            let len = n.len();
+            let orig_len = v(x, y).len();
+            if orig_len < 1e-12 {
+                // Below-threshold input: must hit the defined fallback exactly.
+                prop_assert!((n.x - 1.0).abs() < 1e-15 && n.y.abs() < 1e-15,
+                    "fallback did not return (1,0): {:?}", n);
+            } else {
+                prop_assert!((len - 1.0).abs() < 1e-9, "not unit length: {:?} (len {})", n, len);
+            }
+        }
     }
 }

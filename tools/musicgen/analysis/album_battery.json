@@ -1,0 +1,234 @@
+{
+ "t01_remembrance": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.2,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.575,
+   "machines": 0.5,
+   "sincere": 0.5,
+   "pastiche": 0.5
+  },
+  "artifacts_broken_voices": [
+   "null",
+   "The bass synth voice sounds severely distorted, crackling, and digitally clipping throughout the track, resembling a corrupted render rather than a clean, intentional instrument."
+  ],
+  "finished_music": [
+   false,
+   false
+  ],
+  "biggest_fixes": [
+   "Replace the thin, GM-MIDI-sounding synth brass lead with a rich, textured, and dynamically expressive sound source.",
+   "Replace the lead synthesizer with a high-quality, multi-sampled or analog-modeled instrument that has dynamic articulation and filter movement."
+  ],
+  "melodia_voiced": 0.852
+ },
+ "t02_grinder": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.25,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.1,
+   "machines": 0.2,
+   "sincere": 0.3,
+   "pastiche": 0.8500000000000001
+  },
+  "artifacts_broken_voices": [
+   "null",
+   "null"
+  ],
+  "finished_music": [
+   false,
+   false
+  ],
+  "biggest_fixes": [
+   "Replace the toy-like, GM-MIDI-sounding synthesizer lead with a rich, textured, and professionally designed sound source.",
+   "Replace the stock, thin synthesizer patches with heavy, textured, and distorted sound sources that fit the industrial genre."
+  ],
+  "melodia_voiced": 0.925
+ },
+ "t03_miningrig": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.2,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.8,
+   "machines": 0.9,
+   "sincere": 0.825,
+   "pastiche": 0.15000000000000002
+  },
+  "artifacts_broken_voices": [
+   "null",
+   "null"
+  ],
+  "finished_music": [
+   false,
+   false
+  ],
+  "biggest_fixes": [
+   "Replace the toy-like, GM-MIDI-sounding synthesizer leads with professional, textured, and dynamically expressive sound sources.",
+   "Replace the stock, thin synthesizer patches with custom, harmonically rich sound sources that have movement and grit."
+  ],
+  "melodia_voiced": 0.867
+ },
+ "t04_engine": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.3,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.2,
+   "machines": 0.1,
+   "sincere": 0.3,
+   "pastiche": 0.8500000000000001
+  },
+  "artifacts_broken_voices": [
+   "null",
+   "null"
+  ],
+  "finished_music": [
+   false,
+   true
+  ],
+  "biggest_fixes": [
+   "Replace the toy-like, stock-sounding synthesizer leads and bass with high-quality, textured sound sources that have dynamic articulation.",
+   "Replace the stock, thin GM-MIDI synthesizer leads and bass with high-quality, textured industrial sound sources that have harmonic weight and grit."
+  ],
+  "melodia_voiced": 0.86
+ },
+ "t05_styx": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.2,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.55,
+   "machines": 0.5,
+   "sincere": 0.6000000000000001,
+   "pastiche": 0.5
+  },
+  "artifacts_broken_voices": [
+   "null",
+   "null"
+  ],
+  "finished_music": [
+   false,
+   false
+  ],
+  "biggest_fixes": [
+   "Replace the stock, flat synth lead with a dynamic, textured sound source and introduce humanized velocity and articulation.",
+   "Replace the stock General-MIDI-style synthesizer patches with custom-designed, textured, and modulated industrial synth sounds."
+  ],
+  "melodia_voiced": 0.918
+ },
+ "t07_trust": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.2,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.25,
+   "machines": 0.25,
+   "sincere": 0.4,
+   "pastiche": 0.8
+  },
+  "artifacts_broken_voices": [
+   "null",
+   "null"
+  ],
+  "finished_music": [
+   true,
+   true
+  ],
+  "biggest_fixes": [
+   "Replace the toy-like, GM-MIDI-sounding lead synth and bass with rich, textured, and professionally designed sound sources.",
+   "Replace the stock, dry synthesizer patches with custom-designed, textured, and modulated sound sources that have industrial grit."
+  ],
+  "melodia_voiced": 0.873
+ },
+ "t08_populist": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.2,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.45,
+   "machines": 0.55,
+   "sincere": 0.575,
+   "pastiche": 0.45
+  },
+  "artifacts_broken_voices": [
+   "The lead synth sounds unstable and slightly corrupted, with digital jitter/aliasing artifacts on the high-frequency transients of several notes.",
+   "The high-pitched synth lead sounds unstable and slightly distorted in its upper register, bordering on a corrupted or glitched render."
+  ],
+  "finished_music": [
+   false,
+   false
+  ],
+  "biggest_fixes": [
+   "Replace the lead synthesizer with a high-quality, multi-sampled instrument or a more complex, textured synth patch that has dynamic articulation.",
+   "Replace the toy-like, GM-MIDI-sounding lead synth and brass patches with high-quality, modern wavetable or analog-modeled synthesizers that have dynamic movement and grit."
+  ],
+  "melodia_voiced": 0.758
+ },
+ "t10_focus": {
+  "craft_p_median": 0.1,
+  "originality_median": 0.25,
+  "verdicts": [
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse",
+   "B clearly worse"
+  ],
+  "spec": {
+   "church": 0.8,
+   "machines": 0.9,
+   "sincere": 0.8,
+   "pastiche": 0.15000000000000002
+  },
+  "artifacts_broken_voices": [
+   "The lead synthesizer voice sounds glitchy and unstable, with sudden volume drops and crackling artifacts that suggest a corrupted render or buffer underruns.",
+   "The lower synth bass voice sounds glitchy and unstable, occasionally crackling and sounding like a corrupted render rather than a clean instrument."
+  ],
+  "finished_music": [
+   false,
+   false
+  ],
+  "biggest_fixes": [
+   "Replace the toy-like, GM-MIDI-sounding synthesizer patches with rich, textured, and modern sound sources.",
+   "Replace the stock, unmodulated synthesizer lead with a custom-designed patch that has movement, grit, and dynamic filter control."
+  ],
+  "melodia_voiced": 0.945
+ }
+}

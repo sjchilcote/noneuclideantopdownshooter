@@ -1,0 +1,360 @@
+{
+ "density": 1.0,
+ "total_enemies": 43,
+ "per_segment": {
+  "B": 3,
+  "A": 7,
+  "C": 4,
+  "D": 7,
+  "E": 15,
+  "F": 7
+ },
+ "n_polygons": 46,
+ "player_polygon": 25,
+ "exit_polygon": 45,
+ "level_path": "tools/musiccal/aux/gauntlet_full_density.json",
+ "zones": {
+  "0": {
+   "zone": "combat",
+   "segment": "B",
+   "kinds_present": [
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "1": {
+   "zone": "combat",
+   "segment": "B",
+   "kinds_present": [
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "2": {
+   "zone": "combat",
+   "segment": "B",
+   "kinds_present": [
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "3": {
+   "zone": "combat",
+   "segment": "A",
+   "kinds_present": [
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "4": {
+   "zone": "combat",
+   "segment": "A",
+   "kinds_present": [
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "5": {
+   "zone": "combat",
+   "segment": "A",
+   "kinds_present": [
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "6": {
+   "zone": "combat",
+   "segment": "C",
+   "kinds_present": [
+    "husk",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "7": {
+   "zone": "combat",
+   "segment": "C",
+   "kinds_present": [
+    "husk",
+    "spitter"
+   ],
+   "is_heavy": false
+  },
+  "8": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "9": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "10": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "11": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "12": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "13": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "14": {
+   "zone": "combat",
+   "segment": "D",
+   "kinds_present": [
+    "flicker",
+    "husk",
+    "mite"
+   ],
+   "is_heavy": false
+  },
+  "15": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "16": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "17": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "18": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "19": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "20": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "21": {
+   "zone": "combat",
+   "segment": "E",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "mite",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "22": {
+   "zone": "combat",
+   "segment": "F",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "shrieker",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "23": {
+   "zone": "combat",
+   "segment": "F",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "shrieker",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "24": {
+   "zone": "combat",
+   "segment": "F",
+   "kinds_present": [
+    "brute",
+    "husk",
+    "shrieker",
+    "spitter"
+   ],
+   "is_heavy": true
+  },
+  "25": {
+   "zone": "corridor",
+   "corridor_idx": 0
+  },
+  "26": {
+   "zone": "loot",
+   "corridor_idx": 0
+  },
+  "27": {
+   "zone": "corridor",
+   "corridor_idx": 0
+  },
+  "28": {
+   "zone": "corridor",
+   "corridor_idx": 1
+  },
+  "29": {
+   "zone": "loot",
+   "corridor_idx": 1
+  },
+  "30": {
+   "zone": "corridor",
+   "corridor_idx": 1
+  },
+  "31": {
+   "zone": "corridor",
+   "corridor_idx": 2
+  },
+  "32": {
+   "zone": "loot",
+   "corridor_idx": 2
+  },
+  "33": {
+   "zone": "corridor",
+   "corridor_idx": 2
+  },
+  "34": {
+   "zone": "corridor",
+   "corridor_idx": 3
+  },
+  "35": {
+   "zone": "loot",
+   "corridor_idx": 3
+  },
+  "36": {
+   "zone": "corridor",
+   "corridor_idx": 3
+  },
+  "37": {
+   "zone": "corridor",
+   "corridor_idx": 4
+  },
+  "38": {
+   "zone": "loot",
+   "corridor_idx": 4
+  },
+  "39": {
+   "zone": "corridor",
+   "corridor_idx": 4
+  },
+  "40": {
+   "zone": "corridor",
+   "corridor_idx": 5
+  },
+  "41": {
+   "zone": "loot",
+   "corridor_idx": 5
+  },
+  "42": {
+   "zone": "corridor",
+   "corridor_idx": 5
+  },
+  "43": {
+   "zone": "corridor",
+   "corridor_idx": 6
+  },
+  "44": {
+   "zone": "loot",
+   "corridor_idx": 6
+  },
+  "45": {
+   "zone": "corridor",
+   "corridor_idx": 6
+  }
+ }
+}

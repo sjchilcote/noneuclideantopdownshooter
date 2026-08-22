@@ -1,0 +1,63 @@
+{
+ "good": {
+  "n": 2,
+  "p_median": 0.7749999999999999,
+  "works_as_music": [
+   true,
+   true
+  ],
+  "melody_followable": [
+   true,
+   true
+  ],
+  "brief_median": 0.95,
+  "originality_median": 0.775,
+  "problems": [
+   [
+    "The mix is extremely dense and over-compressed, resulting in a fatiguing 'wall of sound'.",
+    "Drum transients, particularly the rapid kick patterns, get buried beneath the thick mid-range synths and guitars.",
+    "Lacks dynamic contrast, remaining at a constant, maximum intensity level throughout the entire clip."
+   ],
+   [
+    "The mix is heavily compressed, leading to a somewhat fatiguing, brickwalled listening experience.",
+    "Lack of dynamic variation throughout the excerpt; it stays at maximum intensity the entire time.",
+    "The choir/synth patch, while effective, sounds slightly synthetic and could benefit from more organic textural layers."
+   ]
+  ],
+  "verdicts": [
+   "This track brilliantly executes the 'industrial machine church' brief with epic, reverent musicality, though its heavily compressed, wall-of-sound mix could use more dynamic breathing polygon.",
+   "A relentless and highly effective piece of symphonic industrial metal that perfectly captures the juxtaposition of sacred choral melodies with mechanical, posthuman aggression."
+  ]
+ },
+ "bad": {
+  "n": 2,
+  "p_median": 0.22499999999999998,
+  "works_as_music": [
+   true,
+   true
+  ],
+  "melody_followable": [
+   true,
+   true
+  ],
+  "brief_median": 0.425,
+  "originality_median": 0.525,
+  "problems": [
+   [
+    "Completely misses the prompt's requirement for church music or religious symbolism.",
+    "Production is extremely dry and harsh, sounding like raw MIDI or basic tracker output.",
+    "Lacks dynamic variation or spatial depth, resulting in a fatiguing listening experience."
+   ],
+   [
+    "Extremely raw production quality that sounds like an unmixed, rudimentary MIDI soundfont render.",
+    "The distorted kick drum clashes heavily with the organ, causing noticeable masking and harshness in the mid-range.",
+    "A complete lack of spatial effects or reverb makes the 'church' aspect feel dry and claustrophobic rather than grandiose."
+   ]
+  ],
+  "verdicts": [
+   "While it functions well as a high-energy retro chiptune track, it completely fails to deliver the requested posthuman industrial church music.",
+   "While the raw, unmixed production sounds like a rudimentary MIDI sketch, its frantic organ melodies and relentless industrial kicks surprisingly capture the manic, mechanical worship requested by the brief."
+  ]
+ },
+ "pass": true
+}
