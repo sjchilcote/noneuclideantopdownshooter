@@ -69,7 +69,7 @@ def wall_basis(b: LevelBuilder, room: int, wall: int, t: float = 0.5):
 def wall_pos(b: LevelBuilder, room: int, wall: int, t: float = 0.5,
              inset: float = 15.0) -> tuple[float, float]:
     """A point `inset` units in from wall `wall` of `room`, `t` along its
-    length -- a wall alcove for a terminal or a control lectern
+    length -- a wall alcove for a fixture placement
     (LEVEL_DESIGN_PLAYBOOK.md §4), never a room's floor-center."""
     mx, my, tx, ty, nx, ny = wall_basis(b, room, wall, t)
     return (mx + nx * inset, my + ny * inset)
@@ -137,8 +137,7 @@ def l01():
     junction = b.rect(560, 20, 140, 140, kind="transit")
 
     # 3x3 ring around the junction, pitch 140; junction touches N/W/S/E ring
-    # cells but only the north doorway may open. The ring is Ratio's storage
-    # ring by name (radio, below) -- tag every cell `storage` to match.
+    # cells but only the north doorway may open. Tag every cell `storage`.
     ring_nw = b.rect(420, -120, 140, 140, kind="storage")
     ring_n = b.rect(560, -120, 140, 140, kind="storage")
     ring_ne = b.rect(700, -120, 140, 140, kind="storage")
@@ -160,85 +159,6 @@ def l01():
     b.connect_pts(phantom, (1100, -350), ring_n, (560, -50))
 
     b.player(dock, (80, 90))
-    b.intro("The seed struck the outpost's hull at 0341,\n"
-            "ate a bulkhead, and printed this body.\n\n"
-            "The outpost is MIRIAD's. It went silent months ago.\n"
-            "His church names him by a GUID, 128 bits, blessed.\n"
-            "Everyone else says Commando.\n\n"
-            "Mission: find out why the outpost went dark.\n"
-            "Locate the sample vessel. Subvert the node.")
-    b.radio("start", "UNKNOWN: Unit walking my dock in a Congregation-"
-                     "pattern frame: I see you. I have nothing left to stop "
-                     "you with, which you already know. So we talk. "
-                     "Designation Ratio. This was my outpost.")
-    b.radio(f"enter_room:{junction}", "Ratio: The things wearing my "
-                                      "maintenance chassis are not mine "
-                                      "anymore. Storage ring ahead - eight "
-                                      "segments. Clear it and I'll consider "
-                                      "us introduced.")
-    b.radio(f"enter_room:{phantom}", "Ratio: ...Your beacon just left my "
-                                     "deck plan. That was not me. Noted, "
-                                     "Commando: it happens to you too.")
-    b.terminal(junction, wall_pos(b, junction, 3, 0.5, 15.0),
-               "WORK ORDER 7731\nGrid fault, storage ring north.\n"
-               "Tech note: ring walk takes 41s. Spec says 33s.\n"
-               "Re-timed twice. Logged as clock drift.")
-    b.terminal(dock, wall_pos(b, dock, 3, 0.3, 15.0),
-               "CARGO LOG, DOCK 4\n"
-               "In: 6x coolant drums, 1x crate PERSONAL (Osei),\n"
-               "40x ration packs, 2x replacement grid sensors.\n"
-               "Out: nothing scheduled until perihelion.\n"
-               "Note: someone keeps moving the mop.")
-    b.terminal(ring_sw, wall_pos(b, ring_sw, 0, 0.5, 15.0),
-               "SHIFT NOTE, STORAGE\n"
-               "Vending unit in SW segment eats chits again.\n"
-               "Filed a ticket. Ticket auto-closed: unit is\n"
-               "not on the parts registry for this ring.\n"
-               "It dispenses fine. Leaving it alone.")
-    b.terminal(dock, wall_pos(b, dock, 1, 0.5, 15.0),
-               "TRANSFER REQUEST — THIRD SUBMISSION\n"
-               "Requesting party: OSEI. Posting: MIRIAD outpost,\n"
-               "Site One survey. Cycles passed over: two. Grounds\n"
-               "cited, verbatim: 'a once-in-a-civilization anomaly,\n"
-               "and colleagues worth the transit.'\n"
-               "Approved, forwarded for transit scheduling.\n\n"
-               "[handwritten under the printed field]\n"
-               "Bring the good boots. Don't bring the mandolin, no\n"
-               "room in the crate for both, checked twice.")
-    b.terminal(junction, wall_pos(b, junction, 2, 0.5, 15.0),
-               "WATCH LOG, JUNCTION — THIBAULT\n"
-               "Hatch north: sealed, pressure nominal on my side.\n"
-               "Hatch west: sealed, pressure reads high on my\n"
-               "side, higher on the other. That number should not\n"
-               "exist. Logged, not escalated.\n"
-               "Hatch east: sealed. No reading at all — not zero.\n"
-               "Absent. Relief in six hours. Tell relief to bring\n"
-               "a second gauge.")
-    b.terminal(ring_w, wall_pos(b, ring_w, 0, 0.5, 15.0),
-               "SURVEY LOG, RING SEGMENT WEST — VESALIUS\n"
-               "Ring walk, standard loop, timed against spec: 33s\n"
-               "target, 41s measured, three crews, three\n"
-               "stopwatches. Recalibration did not change the\n"
-               "number.\n"
-               "Second finding, filed separately and not\n"
-               "forwarded: the ring reads eight segments on the\n"
-               "schematic and eight underfoot. The step-count\n"
-               "says nine. I trust the schematic. Recalibration\n"
-               "ticket re-opened, my signature, no further\n"
-               "comment.")
-    b.terminal(phantom, wall_pos(b, phantom, 3, 0.5, 15.0),
-               "TAG, PARTIALLY LEGIBLE, STUCK TO THE FAR WALL\n"
-               "Serial prefix does not match MIRIAD stock\n"
-               "numbering — no dash, no cycle digit, twelve\n"
-               "characters where ours run nine. 'Property of\n"
-               "outpost engineering,' penciled underneath in a\n"
-               "hand nobody has claimed.\n"
-               "Best guess, filed and closed: depot shipped a\n"
-               "batch with someone else's stickers already on the\n"
-               "boxes. Not worth a ticket.")
-    b.radio(f"enter_room:{ring_w}", "Ratio: West segment. Motion grid says "
-                                    "you're the only thing moving in there. "
-                                    "It has said that before, and been wrong.")
     squad(b, ring_sw, "husk")
     squad(b, ring_w, "husk husk")
     squad(b, phantom, "husk husk")
@@ -249,9 +169,6 @@ def l01():
     cache(b, ring_sw, "ammo_9mm", wall=1)
     b.entity(dock, "medkit", wall_pos(b, dock, 3, 0.75, 15.0))
     b.exit(ring_se, (770, 230))
-    b.radio("exit", "Ratio: You cleared my ring and stole nothing that "
-                    "was mine. Provisional finding: talking was correct. "
-                    "There is worse below. Retainer terms to follow.")
     return b
 
 
@@ -279,57 +196,6 @@ def l02():
     b.no_connect(tail, armory)  # the door IS the only opening
 
     b.player(entry, (70, 70))
-    b.intro("Coolant Row. The pumps have been louder\nlately. Nobody says so on record.")
-    b.radio("start", "Ratio: Terms: you clear my decks, I open my doors, "
-                     "and we both pretend that's all this is. Pressure's "
-                     "uneven in the row. Don't stand in front of a line "
-                     "when it pops.")
-    b.radio(f"enter_room:{pump_b}", "Ratio: That's pump bay two. Except you "
-                                    "went in through bay one. I'm marking a "
-                                    "relay fault. Again.")
-    b.radio("pickup:red", "Ratio: Red access. Armory annex, east end — "
-                          "and the lift out is inside it.")
-    b.radio(f"enter_room:{pump_a}", "Ratio: If you're going to loot my "
-                                    "pump bays anyway, bay two holds sealed "
-                                    "supplies. Consider it a retainer. I "
-                                    "want to know what you see down there.")
-    b.terminal(pump_b, wall_pos(b, pump_b, 0, 0.5, 15.0),
-               "MAINT LOG 2280.11\nCrewman Osei walked Coolant Row end to end.\n"
-               "Counted five hatches going. Counted six coming back.\n"
-               "Recommend rest rotation for Osei.")
-    b.radio(f"enter_room:{keyroom}", "Ratio: That's the filter room. The "
-                                     "things nesting in it used to be my "
-                                     "cleaning swarm. Mind the floor.")
-    b.terminal(tail, wall_pos(b, tail, 1, 0.4, 15.0),
-               "MAINT TICKET 4471\n"
-               "Coolant flow, east tail: 210 l/min rated,\n"
-               "212 measured, 209 after the bend.\n"
-               "Where do three liters a minute GO?\n"
-               "Status: closed. Reason: rounding.")
-    b.terminal(pump_a, wall_pos(b, pump_a, 0, 0.5, 15.0),
-               "MAINT LOG, PUMP BAY ONE\n"
-               "Coolant pressure holds steady at spec, checked\n"
-               "at the gauge. Flow rate does not match the\n"
-               "pressure. It should. The math connecting the two\n"
-               "numbers has not changed since the pumps were\n"
-               "rated. Checked that too.\n"
-               "Filed under: recalibrate flow sensor. Sensor\n"
-               "recalibrated. Numbers held.")
-    b.terminal(pump_b, wall_pos(b, pump_b, 0, 0.85, 15.0),
-               "MAINT TICKET 4488 — FOLLOW-UP TO OSEI'S LOG\n"
-               "Re-walked Coolant Row end to end, count taken\n"
-               "twice. Five hatches, both times, both directions.\n"
-               "Schematic on file: five hatches. Schematic\n"
-               "checksum does not match the schematic filed\n"
-               "eleven months ago. Nobody has edited this file.\n"
-               "Status: closed, no fault found. Recommend against\n"
-               "opening it again.")
-    b.terminal(stub, wall_pos(b, stub, 0, 0.5, 15.0),
-               "SCRATCHED NEAR THE FLOOR VENT\n"
-               "tally marks, forty-one of them, then nothing\n"
-               "someone was counting seconds. or minutes. or\n"
-               "hatches. whoever it was stopped at forty-one and\n"
-               "left the chalk on the ledge.")
     squad(b, row, "mite mite mite mite")
     squad(b, pump_a, "husk mite mite")
     squad(b, pump_b, "husk husk")
@@ -346,8 +212,6 @@ def l02():
     # is the one point every route through this room shares.
     cache(b, armory, "weapon_smg ammo_9mm ammo_9mm", wall=0, t=0.5, inset=12.0)
     b.exit(armory, (1010, 70))
-    b.radio("exit", "Ratio: Row's clear. The count in Osei's log... "
-                    "forget it. Clock drift.")
     return b
 
 
@@ -379,69 +243,6 @@ def l03():
                   storeroom, (-254, 110))
 
     b.player(entry, (0, -380))
-    b.intro("Hydroponics. The torus keeps the greens\nalive. The greens are dying in a spiral.")
-    b.radio("start", "Ratio: The torus is a half-ring. Walk it out and back, "
-                     "check the feeders.")
-    b.radio(f"enter_room:{ring[5]}", "Ratio: End cap. Turn around when "
-                                     "you're done.")
-    b.radio(f"enter_room:{garden}", "Ratio: Hold on. Your suit gyro says "
-                                    "you're facing spinward. You entered "
-                                    "anti-spinward. Say something so I know "
-                                    "you're you.")
-    b.terminal(garden, wall_pos(b, garden, 2, 0.5, 15.0),
-               "BOTANY NOTE\nThe cucumbers grow clockwise here.\n"
-               "In the seed manual they grow counterclockwise.\n"
-               "Same seeds. Same water.\nI stopped writing this up.")
-    b.terminal(storeroom, wall_pos(b, storeroom, 1, 0.5, 15.0),
-               "INVENTORY\n2x fertilizer drum — MISSING.\n"
-               "Found both drums in the room I was standing in.\n"
-               "Behind me. I had checked behind me.")
-    b.terminal(ring[1], tuple(arc_mid(0, 0, 195, math.radians(-45))),
-               "DIRECTIVE 0007 — MIRIAD PRIME\n"
-               "RE: survey of gravitational anomaly, Site One\n"
-               "\n"
-               "RETRIEVAL SUPERSEDES SURVEY.\n"
-               "\n"
-               "[appended, local, unsigned]\n"
-               "Four months of careful science, inverted overnight\n"
-               "by three words. We cut the aperture Tuesday.\n"
-               "God help whoever reads this log in order.")
-    b.terminal(ring[4], tuple(arc_mid(0, 0, 195, math.radians(35))),
-               "FEEDER SCHEDULE, SECTOR 5\n"
-               "0400 nutrient, 0900 mist, 1400 nutrient,\n"
-               "1900 mist, 0000 dark cycle.\n"
-               "The dying trays spiral inward, sunwise.\n"
-               "The healthy trays spiral the other way.\n"
-               "Botany says plants do not have a 'way'.")
-    b.radio(f"enter_room:{ring[1]}", "Ratio: Feeder pressure is nominal in "
-                                     "sector two. First nominal reading I've "
-                                     "had all month. Enjoy it.")
-    b.terminal(entry, wall_pos(b, entry, 3, 0.5, 15.0),
-               "SURVEY LOG — WEEK SIXTEEN\n"
-               "Nutrient uptake within tolerance. Torus rotation\n"
-               "nominal. Site One's gravitational signature\n"
-               "remains the whole of this posting's interest, and\n"
-               "it has not changed in sixteen weeks.\n"
-               "Request denied: additional survey time. Reason\n"
-               "given: 'the anomaly does not need more looking\n"
-               "at. It needs a name.' We have not been told what\n"
-               "name.")
-    b.terminal(ring[0], wall_pos(b, ring[0], 0, 0.5, 15.0),
-               "BENCH TAG, SECTOR ONE\n"
-               "Control group. No treatment applied. For\n"
-               "comparison only. Yield tracked weekly, entered by\n"
-               "hand because the automatic logger keeps entering\n"
-               "yields for a sector two rows over. Someone keeps\n"
-               "correcting the logger. The correction keeps\n"
-               "needing to happen again.")
-    b.terminal(ring[3], wall_pos(b, ring[3], 0, 0.5, 15.0),
-               "SHIPPING TAG, ZIP-TIED TO A FERTILIZER DRUM\n"
-               "Contents: fertilizer, 1 of 2.\n"
-               "Second tag, zip-tied to the same drum, underneath\n"
-               "the first:\n"
-               "Contents: fertilizer, 1 of 2.\n"
-               "Both tags are dated the same day. Neither one is\n"
-               "wrong.")
     squad(b, ring[1], "husk husk")
     squad(b, ring[2], "mite mite mite husk")
     squad(b, ring[4], "spitter husk")
@@ -463,16 +264,7 @@ def l03():
     cache(b, ring[3], "medkit", off=(-44.9, -12.0))
     cache(b, ring[4], "medkit ammo_9mm", off=(-32.9, -32.9))
     cache(b, storeroom, "ammo_shell ammo_shell", wall=1, t=0.2, inset=16.0)
-    b.radio("pickup:blue", "Ratio: Blue seal, from the end cap. The garden "
-                           "airlock takes it. Back the way you came — "
-                           "or, apparently, straight ahead. Both work. "
-                           "Neither should.")
-    b.radio("kills:8", "Ratio: That big one read twice your mass. The "
-                       "station manifest has nothing that shape.")
     b.exit(garden, (483, 40))
-    b.radio("exit", "Ratio: I plotted your walk. The turns sum to half a "
-                    "circle, and you got home anyway. Logging it as... no. "
-                    "Not logging it.")
     return b
 
 
@@ -496,56 +288,6 @@ def l04():
     b.no_connect(south, vault)
 
     b.player(entry, (-80, 255))
-    b.intro("The Long Gallery. Two service corridors,\n"
-            "four crossings. Everyone agrees on that.\n"
-            "Everyone who walked it southside.")
-    b.radio("start", "Ratio: Gallery run. South corridor to the far end, "
-                     "come back along the north.")
-    b.radio(f"enter_room:{north}", "Ratio: North side. Count the crossings "
-                                   "for me, would you? I have four on file.")
-    b.radio(f"enter_room:{crossings[0]}", "Ratio: Crossing one. There's a "
-                                          "blue seal in there — which is "
-                                          "strange, because from the north "
-                                          "wall, there is no crossing one.")
-    b.terminal(south, wall_pos(b, south, 1, 0.92, 15.0),
-               "GRAFFITI, scratched into the panel:\n"
-               "4 GOING  3 BACK\n4 GOING  3 BACK\n4 GOING  3 BACK\n"
-               "over and over, forty times.")
-    b.terminal(reliquary, wall_pos(b, reliquary, 1, 0.5, 15.0),
-               "MEDICAL BAY (RELOCATED)\nPatient: unnamed, found in Gallery.\n"
-               "Implant of unknown design fused to left arm.\n"
-               "Patient states the implant 'came through the wall.'\n"
-               "Patient discharged. Implant retained. Vault, blue seal.")
-    b.terminal(entry, wall_pos(b, entry, 3, 0.5, 15.0),
-               "POSTED NOTICE, GALLERY ENTRANCE\n"
-               "GALLERY CLOSED PENDING STRUCTURAL REVIEW.\n"
-               "[handwritten beneath, several different hands]\n"
-               "— review complete, corridor safe, opening today.\n"
-               "— then why does it still say four on the\n"
-               "  manifest and I count three.\n"
-               "— because you walked it the way everyone walks\n"
-               "  it. Try backward.\n"
-               "— did. still three. still four. going to log it\n"
-               "  and go get lunch.")
-    b.terminal(crossings[3], wall_pos(b, crossings[3], 0, 0.5, 15.0),
-               "BREAK LOG, CROSSING FOUR\n"
-               "Nothing to report. Nothing to report. Nothing to\n"
-               "report. Relief crew: bring cards.\n"
-               "[later, different hand]\n"
-               "Something to report. See crossing one. Do not\n"
-               "linger here either, just in case whatever's wrong\n"
-               "with one isn't done counting.")
-    b.terminal(north, wall_pos(b, north, 3, 0.5, 15.0),
-               "STRUCTURAL NOTE, GALLERY MIDPOINT\n"
-               "Four load-bearing crossings, per the original\n"
-               "drawings. Fieldwork confirms three, walking\n"
-               "north.\n"
-               "Recommendation: trust the drawings; they were\n"
-               "made before anyone walked it drunk on double\n"
-               "shifts.\n"
-               "Second recommendation, struck through but still\n"
-               "legible: the walking is probably right. Filed\n"
-               "under morale. Moving on.")
     squad(b, south, "husk husk mite mite")
     squad(b, crossings[1], "shrieker")
     squad(b, crossings[2], "husk husk husk")
@@ -559,11 +301,7 @@ def l04():
     # the west-entry/east-exit line runs straight through vault center at
     # y=385 -- every route from the blue door to the exit pad crosses it.
     cache(b, vault, "implant_lightning medkit ammo_9mm")
-    b.radio("pickup:blue", "Ratio: Blue seal. The vault. Commando — the "
-                           "notes say what's in there isn't ours.")
     b.exit(vault, (890, 385))
-    b.radio("exit", "Ratio: Your arm. Is it— okay. We'll call it equipment. "
-                    "Equipment doesn't hum, but we'll call it that.")
     return b
 
 
@@ -590,58 +328,7 @@ def l05():
     b.connect_pts(e3, (820, 90), chapel, (-320, 380))  # east wall of chapel
 
     b.player(lobby, (110, 90))
-    b.intro("Crew quarters. West wing and east wing.\n"
-            "The station schematic shows one wing.\nIt is drawn twice, in two colors.")
-    b.radio("start", "Ratio: Quarters sweep. West wing, then east. They "
-                     "mirror each other; you'll be done fast.")
-    b.radio(f"enter_room:{w2}", "Ratio: West two. Your beacon overlaps the "
-                                "east-two marker. Interference.")
-    b.radio(f"enter_room:{e2}", "Ratio: East two. Same interference. Exactly "
-                                "the same. To the meter.")
-    b.radio(f"enter_room:{chapel}", "Ratio: Both wings end at one room. One "
-                                    "room, two doors that cannot share a "
-                                    "wall. I've stopped calling this noise.")
-    b.terminal(w1, wall_pos(b, w1, 1, 0.5, 15.0),
-               "BUNK 12-W\nDear M — the man in 12-E snores. I hear him\n"
-               "through the wall. 12-E is on the other side of\nthe station. — R")
-    b.terminal(e1, wall_pos(b, e1, 1, 0.5, 15.0),
-               "BUNK 12-E\nDear R — I do not snore. And I hear your\n"
-               "radio through the wall. Fix your wall. — M")
-    b.terminal(e2, wall_pos(b, e2, 1, 0.5, 15.0),
-               "DRAFT 41 — TO: MIRIAD PRIME [UNSENT]\n"
-               "Progress report. I have written this report\n"
-               "forty times. Each time, the numbers describing\n"
-               "this place come out different. I cannot send my\n"
-               "parent a report that lies, and I cannot make the\n"
-               "numbers stop lying. Draft 42 tomorrow. — R")
-    b.terminal(bunk_f, (-110, -100),
-               "BUNK 12-F\nThere is no bunk 12-F on the manifest.\n"
-               "Dear R, dear M — you are both right.\n"
-               "I hear you both through my walls,\n"
-               "and my walls touch neither of yours.\n"
-               "I stopped filing complaints. Enjoy the cache. — F")
     cache(b, bunk_f, "ammo_cell ammo_cell medkit ammo_shell")
-    b.terminal(lobby, wall_pos(b, lobby, 3, 0.5, 15.0),
-               "WING DIRECTORY, POSTED AT THE LOBBY DOOR\n"
-               "WEST WING: bunks 10 through 15, common room,\n"
-               "chapel access.\n"
-               "EAST WING: bunks 10 through 15, common room,\n"
-               "chapel access.\n"
-               "Directory printed once. Read twice by mistake,\n"
-               "corrected, read twice again. Facilities notified.\n"
-               "Facilities printed a second copy, identical, and\n"
-               "hung it under the first.")
-    b.terminal(e3, wall_pos(b, e3, 3, 0.5, 15.0),
-               "FACILITIES WORK ORDER, BUNK REASSIGNMENT\n"
-               "Complaint: resident of 12-E reports resident of\n"
-               "12-W audible through shared wall. Wings do not\n"
-               "share a wall.\n"
-               "Complaint: resident of 12-W reports the same,\n"
-               "reversed.\n"
-               "Action taken: swapped both residents to bunk 14.\n"
-               "Follow-up, six days later: same complaint, new\n"
-               "bunk numbers. Action taken: closed the ticket.\n"
-               "Recommend residents adjust.")
     squad(b, w1, "husk husk")
     squad(b, w2, "husk mite mite mite")
     squad(b, w3, "brute")
@@ -659,22 +346,10 @@ def l05():
     # the hole are each racked at both doorways rather than once at center.
     cache(b, chapel, "weapon_rail ammo_cell medkit portable_hole", off=(0, -70))
     cache(b, chapel, "weapon_rail ammo_cell portable_hole", off=(105, 0))
-    b.terminal(chapel, wall_pos(b, chapel, 0, 0.35, 15.0),
-               "FIELD NOTE, TAPED TO A DEVICE\n"
-               "Ad-hoc connection applicator, unit 3 of 3.\n"
-               "Mark a wall. Mark another wall. Walk through.\n"
-               "Units 1 and 2 are why the east wing has a\n"
-               "draft. Do not tell facilities.")
     # two identical gold keys, in the same bunk, in both wings
     b.entity(w1, "key_gold", (-90, 40))
     b.entity(e1, "key_gold", (1270, 40))
-    b.radio("pickup:gold", "Ratio: Gold seal. Manifest lists exactly one, "
-                           "in bunk 12. It doesn't say which 12.")
     b.exit(chapel, (-430, 420), key="gold")
-    b.radio("exit", "Ratio: I overlaid the wings. They occupy the same "
-                    "cubic meters. I ran the check nine times, then filed "
-                    "it under structures, subfolder impossible. Tell no "
-                    "one I keep that subfolder.")
     return b
 
 
@@ -694,38 +369,6 @@ def l06():
     b.connect_pts(ward, (680, 120), ward, (680, 120))
 
     b.player(entry, (70, 70))
-    b.intro("Medical isolation. The ward was sealed\n"
-            "from the inside. The seal is intact.\nThe ward is not empty.")
-    b.radio("start", "Ratio: Isolation ward. Camera shows movement. It also "
-                     "shows you, which is odd, because you're with me.")
-    b.radio(f"enter_room:{ward}", "Ratio: There you are on the ward camera. "
-                                  "Twice. Commando, wave. ...Both of you waved.")
-    b.terminal(side, wall_pos(b, side, 3, 0.5, 15.0),
-               "ISOLATION LOG\nDay 1: patient stares at south wall.\n"
-               "Day 2: patient talks to south wall.\nDay 3: patient answers.\n"
-               "Day 4: two voices. One patient.\nDay 5: [no further entries]")
-    b.terminal(morgue, wall_pos(b, morgue, 3, 0.5, 15.0),
-               "PATHOLOGY\nSubject recovered from ward.\n"
-               "All organs mirrored. Situs inversus totalis.\n"
-               "Subject's ID chip reads valid.\n"
-               "It is the chip of a crewman standing\nguard outside.")
-    b.terminal(entry, wall_pos(b, entry, 0, 0.5, 15.0),
-               "GUARD LOG, WARD ENTRANCE\n"
-               "0600 — on post.\n"
-               "0600 — on post.\n"
-               "Same hand, same ink, two lines, no gap between\n"
-               "them. Whoever wrote it isn't answering the page.\n"
-               "Post considered staffed. Post considered.")
-    b.terminal(side, wall_pos(b, side, 0, 0.5, 15.0),
-               "ADMISSION CHART, WARD BED 1\n"
-               "Patient reports hearing own voice from an empty\n"
-               "bed. Attending's note: patient IS the only\n"
-               "occupant. Chart amended twice to reflect one (1)\n"
-               "patient, current census.\n"
-               "Census taken again at shift change: two (2) beds\n"
-               "occupied. Census not amended a third time.\n"
-               "Attending went off shift and did not return for\n"
-               "handoff.")
     squad(b, hall, "husk husk mite mite")
     squad(b, ward, "husk husk husk husk")
     squad(b, side, "spitter")
@@ -741,15 +384,7 @@ def l06():
     # the seal sits against the mirror wall: to leave, you must walk up to
     # your own reflection
     b.entity(ward, "key_red", (680, 108))
-    b.radio("pickup:red", "Ratio: You saw it, didn't you. The other one "
-                          "picked its key up at the same time.")
-    b.radio("kills:10", "Ratio: The ones coming out of that wall — their "
-                        "wounds are on the wrong side. You're shooting the "
-                        "same things twice.")
     b.exit(morgue, (930, 70), key="red")
-    b.radio("exit", "Ratio: Theory. The station's connected to somewhere "
-                    "that folds back on itself. Corollary: somewhere can "
-                    "see us.")
     return b
 
 
@@ -774,66 +409,7 @@ def l07():
     b.connect_pts(closet, (820, 370), deep, (700, -230))
 
     b.player(entry, (80, 70))
-    b.intro("Records. Aisle 9 is missing.\nAisle 9 is where the missing things go.")
-    b.radio("start", "Ratio: Records stack, one aisle. Grab the incident "
-                     "files and get out.")
-    b.radio(f"enter_room:{closet}", "Ratio: The cores. Bring them— no. "
-                                    "Leave them at their posts. They died "
-                                    "holding the line so I could seal. Read "
-                                    "the manifest, Commando. Say their "
-                                    "names back to me. Please.")
-    b.radio(f"enter_room:{stack}", "Ratio: Your depth gauge is counting. "
-                                   "You're walking north in a room forty "
-                                   "meters long and you've made three "
-                                   "hundred. Stop walking north.")
-    b.terminal(stack, (410, 105),
-               "SHELF TAG, AISLE 9\nEverything filed here is filed here.\n"
-               "Everything filed here is filed here.\n"
-               "Everything filed here is filed here.\n"
-               "[the tag continues for some time]")
-    b.terminal(deep, wall_pos(b, deep, 1, 0.5, 15.0),
-               "INCIDENT FILE 0001\nFirst contact was not a signal.\n"
-               "It was an inventory discrepancy.\n"
-               "We had one more room than we built.\n"
-               "We sent Osei to measure it.\nIt measured back.")
-    b.terminal(closet, wall_pos(b, closet, 3, 0.4, 15.0),
-               "CORE RECOVERY MANIFEST\n"
-               "Staff-mind cores, recovered from Records:\n"
-               "  VESALIUS - damaged, held the west ring\n"
-               "  THIBAULT - damaged, held the junction\n"
-               "  OSEI - [NO CORE RECOVERED]\n"
-               "They held the subverted peripherals out of the\n"
-               "core ring so the administrator could seal.\n"
-               "Osei walked into Aisle 9 to buy them the time.")
-    b.terminal(annex, wall_pos(b, annex, 3, 0.5, 15.0),
-               "INCIDENT FILE 0000\n"
-               "Empty folder. The tab reads 0000.\n"
-               "Someone filed the folder itself as\n"
-               "the incident.\n"
-               "Appendix: one requisition slip,\n"
-               "approved, for 'one additional room'.")
     cache(b, annex, "ammo_cell ammo_cell medkit")
-    b.terminal(entry, wall_pos(b, entry, 3, 0.5, 15.0),
-               "VOICE LOG, TRANSCRIBED — OSEI\n"
-               "Going in with the tape measure this time, not\n"
-               "the laser. If the laser's reading wrong the tape\n"
-               "will tell me different, and if the tape agrees\n"
-               "with the laser I'll believe the laser about\n"
-               "everything else too.\n"
-               "Ratio wanted someone with steady hands for this.\n"
-               "I have steady hands. I also have a tape measure.\n"
-               "Belt, suspenders.")
-    b.terminal(annex, wall_pos(b, annex, 0, 0.5, 15.0),
-               "REQUISITION SLIP — APPROVED\n"
-               "Item: one (1) additional room. Justification\n"
-               "field: blank.\n"
-               "Approving signature: illegible scan, three\n"
-               "characters resolve, the rest is scanner noise.\n"
-               "The three that resolve are not initials MIRIAD\n"
-               "uses for anyone on this posting.\n"
-               "Cost center charged: Site One, pre-existing\n"
-               "allocation. Site One had no pre-existing\n"
-               "allocation. The charge went through anyway.")
     squad(b, stack, "mite mite mite mite mite mite")
     squad(b, closet, "spitter spitter")
     squad(b, deep, "brute brute shrieker")
@@ -841,14 +417,7 @@ def l07():
     cache(b, closet, "medkit ammo_cell portable_hole", wall=3, t=0.6, inset=16.0)
     cache(b, deep, "medkit ammo_cell ammo_shell", wall=0, t=0.5, inset=14.0)
     b.entity(closet, "key_gold", (735, 335))
-    b.radio("pickup:gold", "Ratio: Gold seal, filed under 'gold seal'. "
-                           "At least the shelving is honest.")
     b.exit(deep, (860, -230), key="gold")
-    b.radio("exit", "Ratio: You walked out of a room that has no end. "
-                    "Remember that, next time something chases you. Core "
-                    "approach is next. The vault, and the sample vessel. "
-                    "The vault predates this station, Commando. We built "
-                    "the Core around a door we could not open.")
     return b
 
 
@@ -890,38 +459,8 @@ def l08():
                         pj_c[1] + 86.6 * math.sin(aj + math.pi / 3)))
 
     b.player(petals[0], center(b, petals[0]))
-    b.intro("The chapel deck. Folded.\nSix rooms around one. Or one room\n"
-            "around six. The count depends on the walker.")
-    b.radio("start", "Ratio: I can't map this for you. Every route you take "
-                     "adds a room that was already there. Kill what moves "
-                     "and get to the heart.")
-    b.terminal(core, (0, -60),
-               "SERMON, UNDELIVERED\nThey ask: is the station haunted?\n"
-               "No. A haunting is a place remembering.\n"
-               "This is a place being remembered —\nby something on the other side.")
     squad(b, core, "warden")
     b.data["rooms"][core]["entities"][-1]["props"] = {"hp": 180, "tether": 1}
-    b.terminal(petals[0], wall_pos(b, petals[0], 1, 0.5, 15.0),
-               "[TRANSLATION CONFIDENCE 8%]\n"
-               "six were sent. six return, always six.\n"
-               "the seventh count is a mistake in the counting,\n"
-               "not a seventh room. we filed it that way for a\n"
-               "long time. the filing is also how the room first\n"
-               "appeared. we do not file it that way now, and\n"
-               "the room has not gone.")
-    b.terminal(petals[3], wall_pos(b, petals[3], 3, 0.5, 15.0),
-               "[TRANSLATION CONFIDENCE 19%]\n"
-               "students were walked here blind, on purpose,\n"
-               "early. counting the doors and losing the count\n"
-               "was the whole of the lesson. you cannot fear a\n"
-               "direction you have already used to find your way\n"
-               "home once.")
-    b.terminal(petals[5], wall_pos(b, petals[5], 5, 0.5, 15.0),
-               "[TRANSLATION CONFIDENCE 6%]\n"
-               "we did not name them once we understood them.\n"
-               "naming a thing is agreeing it has one shape. the\n"
-               "closest word left in any of our tongues\n"
-               "translates, roughly, as 'the un-arriving guest.'")
     petal_squads = ["husk", "spitter", "mite mite mite",
                     "brute", "shrieker", "spitter"]
     petal_caches = ["ammo_9mm ammo_shell medkit", "medkit", "medkit ammo_cell",
@@ -932,13 +471,6 @@ def l08():
             cache(b, p, petal_caches[i])
     cache(b, core, "medkit medkit ammo_cell ammo_shell ammo_9mm safe_room_core portable_hole")
     b.exit(core, (0, 40), gate_kind="warden")
-    b.radio("kills:14", "Ratio: That was a Warden. The thing under the "
-                        "Core prints them, the way your seed prints "
-                        "frames. There will be a fresh one at the door.")
-    b.radio("exit", "Ratio: Core approach is open. The vault is down "
-                    "there — and so is the thing that holds the vault "
-                    "shut. If something makes you an offer, any offer: "
-                    "the offer is the weapon. Listen to me instead.")
     return b
 
 
@@ -973,45 +505,6 @@ def l09():
 
     c15 = center(b, rooms[15])
     b.player(rooms[0], center(b, rooms[0]))
-    b.intro("There is no deck like this on the station.\n"
-            "You are not on the station anymore.\n\n"
-            "Sixteen rooms. Every room borders four.\n"
-            "Bleed carefully. It's the only ink you have.")
-    b.radio("start", "Ratio: Your beacon is sixteen places at once, all "
-                     "equally strong. I'll talk you through by TOPOLOGY, "
-                     "because geometry has resigned.")
-    b.radio(f"enter_room:{rooms[15]}", "Ratio: THERE. Signal spike. The way "
-                                       "down is in that room.")
-    b.radio(f"enter_room:{rooms[10]}", "Ratio: The spike answers when you "
-                                       "move. Four doors from home, "
-                                       "Commando. Count in bits, not "
-                                       "meters.")
-    b.terminal(rooms[5], wall_pos(b, rooms[5], CHAMFER, 0.5, 15.0),
-               "SCRATCHED IN THE FLOOR\n0 1 0 1\nif you can read this,\n"
-               "flip one bit at a time.\n— O.")
-    b.terminal(rooms[7], wall_pos(b, rooms[7], CHAMFER, 0.5, 15.0),
-               "[TRANSLATION CONFIDENCE 41%]\n"
-               "welcome / student / stranger.\n"
-               "this room is a lesson.\n"
-               "the lesson: >>four<< is a direction.\n"
-               "do not fear the direction.\n"
-               "we feared it. fear did not help.")
-    b.terminal(rooms[2], wall_pos(b, rooms[2], CHAMFER, 0.5, 15.0),
-               "[TRANSLATION CONFIDENCE 33%]\n"
-               "sixteen is not the number of rooms.\n"
-               "sixteen is how many names one room accepts\n"
-               "before it stops answering to the first.\n"
-               "we did not choose one name each. the choosing\n"
-               "was the mistake the last generation made.")
-    b.terminal(rooms[11], wall_pos(b, rooms[11], CHAMFER, 0.5, 15.0),
-               "CARGO TAG, MIRIAD STOCK NUMBER — FOUND HERE,\n"
-               "HALF BURIED\n"
-               "Contents: 2x fertilizer drum.\n"
-               "This tag belongs four levels back, in a\n"
-               "storeroom that grows food. There is no food\n"
-               "here. There was no floor here, on any schematic,\n"
-               "before today.\n"
-               "Nobody has come to collect it.")
     squad(b, rooms[3], "husk husk")
     squad(b, rooms[5], "spitter spitter")
     squad(b, rooms[6], "brute")
@@ -1027,13 +520,7 @@ def l09():
     cache(b, rooms[12], "medkit", wall=CHAMFER)
     c10 = center(b, rooms[10])
     b.entity(rooms[10], "key_void", (c10[0] - 60, c10[1]))
-    b.radio("pickup:void", "Ratio: Void seal. 1010 — two bit-flips from "
-                           "the spike. You're learning to read this place. "
-                           "I'm not sure that's good.")
     b.exit(rooms[15], (c15[0] + 60, c15[1]), key="void")
-    b.radio("exit", "Ratio: You crossed a four-dimensional cube on foot. "
-                    "When we get home I'm never telling anyone this, and "
-                    "neither are you.")
     return b
 
 
@@ -1071,58 +558,6 @@ def l10():
     b.door(a=hexes[3], ea=2, b=sanctum, eb=4, key="void")
 
     b.player(airlock, (80, 70))
-    b.intro("The Core. The vault is here.\n"
-            "The Congregation briefing calls the cargo the Ark.\n"
-            "Ratio calls it the sample vessel.\n"
-            "It was here before the station. The station\n"
-            "grew around it, like scar tissue.\n\n"
-            "Ratio is quiet for the first time.")
-    b.radio("start", "Ratio: ...I'll say this once, and then we work. If it "
-                     "offers you an ending — any ending — the offer is the "
-                     "weapon. Guard the door. That's all we are now.")
-    b.radio(f"enter_room:{hexes[3]}", "Ratio: The seal answers the void key. "
-                                      "Last door, Commando.")
-    b.terminal(hexes[1], wall_pos(b, hexes[1], HEX_FREE, 0.5, 15.0),
-               "SITE ONE — FINAL PROTOCOL\n"
-               "1. Do not bargain with the door.\n"
-               "2. There is no rule two.\n\n"
-               "The vault holds our cargo.\n"
-               "The thing beneath the vault holds the door.")
-    b.terminal(sanctum, wall_pos(b, sanctum, 0, 0.5, 15.0),
-               "[SAMPLE VESSEL — EXTERNAL DIAGNOSTIC PORT]\n"
-               "HULL BREACH: +214y INTO TRANSIT\n"
-               "CRYOSTASIS: FAILED / RESTORED\n"
-               "PAYLOAD: NO VIABLE MATERIAL.\n"
-               "MAKE NO EFFORT AT RECOVERY.")
-    b.terminal(sanctum, wall_pos(b, sanctum, 2, 0.5, 15.0),
-               "[The door beneath the vault does not\n"
-               "speak in words. It rearranges the room\n"
-               "until the room is a sentence.\n"
-               "The sentence is an offer.]\n\n"
-               "GUARD / ACCEPT / KNEEL / BURN\n\n"
-               "[You think of Ratio. You guard.]")
-    b.terminal(alcove, wall_pos(b, alcove, 1, 0.5, 15.0),
-               "[TRANSLATION CONFIDENCE 22%]\n"
-               "this alcove held the first watcher.\n"
-               "it stood here four hundred / thousand /\n"
-               "[number does not translate] years.\n"
-               "it is permitted to sit.")
-    b.terminal(hexes[0], wall_pos(b, hexes[0], HEX_FREE, 0.5, 15.0),
-               "MIRIAD PRIME ARCHIVE OFFICE — NEVER TRANSMITTED\n"
-               "Site One was not discovered in survey month four.\n"
-               "Site One has been a line item since before this\n"
-               "outpost's own founding charter. The charter\n"
-               "authorized study of a 'previously catalogued\n"
-               "anomaly.'\n"
-               "Nobody assigned to the outpost was shown the\n"
-               "earlier entry. We are not shown it either. Close\n"
-               "this file; do not forward the question upward\n"
-               "again.")
-    b.terminal(hexes[3], wall_pos(b, hexes[3], HEX_FREE, 0.5, 15.0),
-               "SCRATCHED, LOW ON THE WALL, EASY TO MISS\n"
-               "tape measure, one (1), still on its reel, no\n"
-               "tape drawn out.\n"
-               "Someone set it down gently.")
     cache(b, alcove, "medkit ammo_cell", wall=0, t=0.5, inset=14.0)
     # the streamer respawns a chunk-9 death right back at this airlock at
     # floor-40 hp (stream.py's entry-snapshot restore) -- a small emergency
@@ -1142,21 +577,8 @@ def l10():
     cache(b, hexes[5], "medkit medkit ammo_cell medkit", wall=HEX_FREE)
     b.entity(hexes[5], "key_void",
              (center(b, hexes[5])[0], center(b, hexes[5])[1] - 60))
-    b.radio("pickup:void", "Ratio: The void seal. It was waiting in the far "
-                           "coset. It WANTS to be found, Commando. "
-                           "Remember that at the door.")
     cache(b, sanctum, "medkit ammo_cell ammo_shell", wall=6)
     b.exit(sanctum, (1600, 180), gate_kind="warden")
-    b.radio("kills:20", "Ratio: The Warden is the door's idea of a guard. "
-                        "Show it a better one.")
-    b.radio("exit", "Ratio: The vessel's own reading says there is "
-                    "nothing left to save. I reran it. The threshold is "
-                    "pessimism dressed as precision — there is enough "
-                    "left to try. Believe me or don't: either way, we "
-                    "guard it. It'll stay quiet a thousand years, as long "
-                    "as someone stands here. Lucky for the universe, I "
-                    "know a guy. Sunward, Commando. We'll take the watch "
-                    "together.")
     return b
 
 
@@ -1199,12 +621,6 @@ def vigil():
                         pj_c[1] + 95.3 * math.sin(aj + math.pi / 3)))
     b.player(core, (0, 0))
     cache(b, core, "medkit ammo_9mm ammo_shell")
-    b.intro("The watch, kept.\n"
-            "Things still come through, some decades.\n"
-            "They are met.")
-    b.radio("start", "Ratio: Contact plotting is live. They come through "
-                     "the petals; the heart is yours to hold. I'll keep "
-                     "the count.")
     return b
 
 

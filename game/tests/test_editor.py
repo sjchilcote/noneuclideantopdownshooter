@@ -120,26 +120,6 @@ def test_delete_room_clears_player_when_its_room_is_deleted():
     assert any("no player" in e for e in errs)
 
 
-def test_delete_room_reindexes_terminals_and_radio_triggers():
-    model = M.EditorModel()
-    model.load(L01)
-    # l01 has a terminal in room 2 and a radio line triggered by
-    # "enter_room:2" and another by "enter_room:11".
-    assert any(t["room"] == 2 for t in model.data["lore"]["terminals"])
-    assert any(r["trigger"] == "enter_room:11" for r in model.data["lore"]["radio"])
-
-    # Room 0 also happens to hold the player spawn in l01.json, so deleting
-    # it correctly invalidates the level (checked separately elsewhere);
-    # what this test cares about is that the *other* room-index references
-    # scattered through lore still shift down by one correctly.
-    model.delete_room(0)  # rooms >0 shift down by one; room 2 -> 1, room 11 -> 10
-
-    assert any(t["room"] == 1 for t in model.data["lore"]["terminals"])
-    assert any(r["trigger"] == "enter_room:10" for r in model.data["lore"]["radio"])
-    errs = model.validate()
-    assert errs == ["no player spawn"]
-
-
 def test_add_room_connect_save_loads_and_runs(tmp_path):
     model = M.EditorModel()
     model.load(L01)
@@ -236,20 +216,15 @@ def test_self_mirror_connect_is_not_a_double_use_conflict(m):
 
 def test_add_entity_rejects_unspawnable_type(m):
     with pytest.raises(ValueError):
-        m.add_entity(0, "terminal", 10, 10)  # terminals go through add_terminal
+        m.add_entity(0, "player", 10, 10)  # singleton marker, not a room entity
 
 
-def test_delete_entity_and_terminal():
+def test_delete_entity():
     model = M.EditorModel()
     model.load(L01)
     n_before = len(model.data["rooms"][0]["entities"])
     model.delete_entity(0, 0)
     assert len(model.data["rooms"][0]["entities"]) == n_before - 1
-
-    ti = model.add_terminal(1, 300, 100, "hello")
-    assert model.data["lore"]["terminals"][ti]["text"] == "hello"
-    model.delete_terminal(ti)
-    assert all(t["text"] != "hello" for t in model.data["lore"]["terminals"])
 
 
 def test_delete_vertex_drops_bound_connections_not_others():

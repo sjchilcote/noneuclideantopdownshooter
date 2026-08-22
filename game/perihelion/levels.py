@@ -34,19 +34,6 @@ class DoorSpec:
 
 
 @dataclass
-class TerminalSpec:
-    room: int
-    pos: tuple[float, float]
-    text: str
-
-
-@dataclass
-class RadioLine:
-    trigger: str  # "start" | "enter_room:<idx>" | "kills:<n>" | "pickup:<key>" | "exit"
-    text: str
-
-
-@dataclass
 class Level:
     name: str
     tier: int
@@ -66,9 +53,6 @@ class Level:
     alert_hops: int  # gunshot alert radius in room-hops
     vigil: bool  # endless holdout mode: the wave director runs
     exit_gate_kind: str  # "" = none; else all enemies of this kind must die
-    intro: str
-    radio: list[RadioLine]
-    terminals: list[TerminalSpec]
     ambience: str
 
 
@@ -147,12 +131,6 @@ def level_from_dict(data: dict) -> Level:
     player = data["player"]
     exit_ = data.get("exit")
     doors = [DoorSpec(**d) for d in data.get("doors", [])]
-    lore = data.get("lore", {})
-    radio = [RadioLine(**r) for r in lore.get("radio", [])]
-    terminals = [
-        TerminalSpec(t["room"], local(t["room"], t["pos"]), t["text"])
-        for t in lore.get("terminals", [])
-    ]
     return Level(
         name=data.get("name", "?"),
         tier=int(data.get("tier", 1)),
@@ -174,9 +152,6 @@ def level_from_dict(data: dict) -> Level:
         exit_gate_kind=(exit_ or {}).get("gate_kind", ""),
         alert_hops=int(data.get("alert_hops", 2)),
         vigil=bool(data.get("vigil", False)),
-        intro=lore.get("intro", ""),
-        radio=radio,
-        terminals=terminals,
         ambience=data.get("ambience", "amb_drone_early"),
     )
 
@@ -209,7 +184,6 @@ class LevelBuilder:
             "doors": [],
             "player": None,
             "exit": None,
-            "lore": {"intro": "", "radio": [], "terminals": []},
         }
 
     def room(self, verts, detail_seed: int | None = None,
@@ -424,17 +398,6 @@ class LevelBuilder:
             self.data["exit"]["key"] = key
         if gate_kind:
             self.data["exit"]["gate_kind"] = gate_kind
-
-    def intro(self, text: str):
-        self.data["lore"]["intro"] = text
-
-    def radio(self, trigger: str, text: str):
-        self.data["lore"]["radio"].append({"trigger": trigger, "text": text})
-
-    def terminal(self, room: int, pos, text: str):
-        self.data["lore"]["terminals"].append(
-            {"room": room, "pos": list(pos), "text": text}
-        )
 
     def build(self) -> Level:
         if self.data["player"] is None:

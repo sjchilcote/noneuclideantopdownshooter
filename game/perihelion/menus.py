@@ -1,5 +1,4 @@
-"""Scene stack widgets: title/menu screens, intro cards, pause/death/win, and
-the two overlay widgets (RadioBar, TerminalOverlay) that GameScene drives.
+"""Scene stack widgets: title/menu screens, intro cards, pause/death/win.
 
 `Scene` is the interface `App` drives: only the top of the stack receives
 input/update/draw, which is also how pausing works for free -- GameScene
@@ -10,15 +9,11 @@ from __future__ import annotations
 
 import math
 import random
-from collections import deque
 from pathlib import Path
 
 import pygame
 
 from .render import INTERNAL_W, INTERNAL_H
-
-PHOSPHOR_GREEN = (90, 240, 140)
-DIM_GREEN = (40, 110, 70)
 
 _FONT_CACHE: dict[int, "pygame.font.Font"] = {}
 
@@ -314,14 +309,11 @@ class SettingsScene(Scene):
 
 
 class IntroCard(Scene):
-    CHARS_PER_SEC = 28.0
+    """Level-name title card shown at the start of a sortie."""
 
-    def __init__(self, name: str, text: str, tier: int = 1):
+    def __init__(self, name: str, tier: int = 1):
         self.name = name
-        self.text = text
         self.tier = tier
-        self.t = 0.0
-        self.shown_chars = 0
         self._overlay: "pygame.Surface | None" = None
 
     def _ensure_overlay(self, size):
@@ -330,18 +322,9 @@ class IntroCard(Scene):
             self._overlay.fill((0, 0, 0, 100))
         return self._overlay
 
-    def update(self, app, dt: float) -> None:
-        self.t += dt
-        self.shown_chars = min(len(self.text), int(self.t * self.CHARS_PER_SEC))
-
     def handle_event(self, app, event) -> None:
         if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
-            if self.shown_chars < len(self.text):
-                self.shown_chars = len(self.text)
-                # keep in sync so the next update() doesn't rewind the reveal
-                self.t = len(self.text) / self.CHARS_PER_SEC
-            else:
-                app.pop()
+            app.pop()
 
     def draw(self, app, surf) -> None:
         w, h = surf.get_size()
@@ -354,14 +337,8 @@ class IntroCard(Scene):
             surf.fill((4, 4, 6))
         img = get_font(20).render(self.name, True, (220, 220, 225))
         surf.blit(img, (w // 2 - img.get_width() // 2, 50))
-        bf = get_font(11)
-        y = 90
-        for line in _wrap(self.text[: self.shown_chars], 58):
-            surf.blit(bf.render(line, True, (172, 172, 178)), (30, y))
-            y += 14
-        if self.shown_chars >= len(self.text):
-            hint = get_font(10).render("press any key", True, (110, 110, 115))
-            surf.blit(hint, (w // 2 - hint.get_width() // 2, h - 22))
+        hint = get_font(10).render("press any key", True, (110, 110, 115))
+        surf.blit(hint, (w // 2 - hint.get_width() // 2, h - 22))
 
 
 class PauseScene(Scene):
@@ -413,24 +390,6 @@ class PauseScene(Scene):
             surf.blit(img, (w // 2 - 60, 120 + i * 20))
 
 
-# The cheapest characterization channel in the game: one line of the
-# Commando's log per death, in his own register.
-COMMANDO_LOGS = [
-    "LOG: Stripped the old frame for parts. Prayed the De Profundis "
-    "over it first. It is not a body, whatever it feels like. It is not a body.",
-    "LOG: Death count rising. The rite does not say how often a man "
-    "may be buried. I have started abbreviating.",
-    "LOG: I no longer look at the old frames' faces. This is either "
-    "mercy or discipline. The hours continue on schedule.",
-    "LOG: Lauds, on the internal clock. The clock does not know what "
-    "deck I died on. Neither, anymore, do I.",
-    "LOG: The seed prints the frames faster now. It has learned my "
-    "sizes. I try not to think about what else it is learning.",
-    "LOG: Ratio asked if dying hurts. I said the rules require me "
-    "not to check. She did not laugh. Neither did I.",
-]
-
-
 class DeathScene(Scene):
     def __init__(self, deaths: int, wave: int = 0, best_wave: int = 0):
         self.deaths = deaths
@@ -472,27 +431,11 @@ class DeathScene(Scene):
         mf = get_font(12)
         deaths_text = f"deaths: {self.deaths}"
         if self.wave:
-            deaths_text = (f"the watch held for {self.wave} waves"
-                           f"   (best: {self.best_wave})")
+            deaths_text = f"waves: {self.wave}   (best: {self.best_wave})"
         img2 = mf.render(deaths_text, True, (190, 150, 150))
         surf.blit(img2, (w // 2 - img2.get_width() // 2, 140))
         img3 = mf.render("SPACE: rise again    ESC: title", True, (170, 130, 130))
         surf.blit(img3, (w // 2 - img3.get_width() // 2, 160))
-        log = COMMANDO_LOGS[min(self.deaths - 1, len(COMMANDO_LOGS) - 1)] \
-            if self.deaths >= 1 else COMMANDO_LOGS[0]
-        y = 196
-        words = log.split()
-        line = ""
-        for word in words + [""]:
-            trial = (line + " " + word).strip()
-            if word and mf.size(trial)[0] < w - 80:
-                line = trial
-                continue
-            if line:
-                img4 = mf.render(line, True, (150, 140, 120))
-                surf.blit(img4, (w // 2 - img4.get_width() // 2, y))
-                y += 16
-            line = word
 
 
 class WinScene(Scene):
@@ -533,125 +476,3 @@ class WinScene(Scene):
         if self.scroll_y > len(lines) * 16 + h:
             hint = get_font(10).render("ESC: title", True, (120, 120, 120))
             surf.blit(hint, (w // 2 - hint.get_width() // 2, h - 16))
-
-
-class TerminalOverlay(Scene):
-    def __init__(self, text: str):
-        self.text = text
-        self.scroll = 0
-        self._overlay: "pygame.Surface | None" = None
-
-    def _ensure_overlay(self, size):
-        if self._overlay is None or self._overlay.get_size() != size:
-            self._overlay = pygame.Surface(size, pygame.SRCALPHA)
-            self._overlay.fill((0, 10, 4, 225))
-        return self._overlay
-
-    def handle_event(self, app, event) -> None:
-        if event.type != pygame.KEYDOWN:
-            return
-        if event.key in (pygame.K_e, pygame.K_ESCAPE, pygame.K_RETURN):
-            app.pop()
-        elif event.key == pygame.K_DOWN:
-            self.scroll += 1
-        elif event.key == pygame.K_UP:
-            self.scroll = max(0, self.scroll - 1)
-
-    def draw(self, app, surf) -> None:
-        if app.game is not None:
-            app.game.draw(app, surf)
-        w, h = surf.get_size()
-        surf.blit(self._ensure_overlay(surf.get_size()), (0, 0))
-        pygame.draw.rect(surf, DIM_GREEN, (16, 16, w - 32, h - 32), 1)
-        f = get_font(11)
-        y = 26
-        for line in _wrap(self.text, 62)[self.scroll:]:
-            surf.blit(f.render(line, True, PHOSPHOR_GREEN), (26, y))
-            y += 14
-            if y > h - 30:
-                break
-        hint = get_font(9).render("E/ESC: close", True, DIM_GREEN)
-        surf.blit(hint, (w - hint.get_width() - 20, h - 26))
-
-
-# ---------------------------------------------------------------------------
-
-
-class RadioBar:
-    """Bottom-strip typewriter for ("radio", text) fx. A widget, not a Scene
-    -- GameScene owns and drives it every sim tick so it decays in ticks
-    like everything else, and draws it itself after the world."""
-
-    HOLD_TICKS = 110
-    CHARS_PER_TICK = 1.1
-    # Fixedsys 16px is 8px/char: 56 chars fit 448px with margins
-    WRAP_CHARS = 56
-    STRIP_H = 40
-
-    def __init__(self):
-        self.queue: deque[str] = deque()
-        self.current = ""
-        self.lines: list[str] = []
-        self.shown = 0
-        self.hold = 0
-        self._accum = 0.0
-        self._strip = pygame.Surface((INTERNAL_W, self.STRIP_H), pygame.SRCALPHA)
-        self._strip.fill((0, 15, 6, 210))
-
-    def push(self, text: str) -> None:
-        self.queue.append(text)
-
-    def clear(self) -> None:
-        """Drop everything mid-air — a respawn should not inherit the
-        previous life's half-read transmission."""
-        self.queue.clear()
-        self.current = ""
-        self.lines = []
-        self.shown = 0
-        self.hold = 0
-        self._accum = 0.0
-
-    def update(self, app) -> None:
-        if not self.current:
-            if not self.queue:
-                return
-            self.current = self.queue.popleft()
-            # long transmissions arrive in two-line pages; overflow requeues
-            wrapped = _wrap(self.current, self.WRAP_CHARS)
-            if len(wrapped) > 2:
-                self.lines = wrapped[:2]
-                rest = " ".join(wrapped[2:])
-                self.queue.appendleft("..." + rest)
-                # mark the break, or the page reads as an abandoned sentence
-                self.lines[-1] += " ..."
-                self.current = " ".join(self.lines)
-            else:
-                self.lines = wrapped
-            self.shown = 0
-            self._accum = 0.0
-        if self.shown < len(self.current):
-            self._accum += self.CHARS_PER_TICK
-            new_shown = min(len(self.current), int(self._accum))
-            if new_shown > self.shown and (new_shown // 3) != (self.shown // 3):
-                app.audio.play("radio_blip", 0.5)
-            self.shown = new_shown
-        else:
-            self.hold += 1
-            # hold scales with how much there is to read
-            if self.hold > self.HOLD_TICKS + 2 * len(self.current):
-                self.current = ""
-                self.hold = 0
-
-    def draw(self, app, surf) -> None:
-        if not self.current:
-            return
-        w, h = surf.get_size()
-        top = h - self.STRIP_H
-        surf.blit(self._strip, (0, top))
-        pygame.draw.line(surf, PHOSPHOR_GREEN, (0, top), (w, top), 1)
-        remaining = self.current[: self.shown]
-        f = get_font(12)
-        y = top + 3
-        for line in _wrap(remaining, self.WRAP_CHARS)[:2]:
-            surf.blit(f.render(line, True, PHOSPHOR_GREEN), (8, y))
-            y += 17

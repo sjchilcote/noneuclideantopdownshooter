@@ -327,16 +327,6 @@
   ]
  },
  "exit": null,
- "lore": {
-  "intro": "The watch, kept.\nThings still come through, some decades.\nThey are met.",
-  "radio": [
-   {
-    "trigger": "start",
-    "text": "Ratio: Contact plotting is live. They come through the petals; the heart is yours to hold. I'll keep the count."
-   }
-  ],
-  "terminals": []
- },
  "vigil": true,
  "alert_hops": 1
 }

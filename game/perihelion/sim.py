@@ -47,7 +47,7 @@ WEAPONS: dict[str, dict] = {
                       radius=110.0, force=1500.0),
     "tau": dict(dmg=9, cd=7, speed=1900.0, spread=math.radians(2.0), pellets=1,
                 ammo="cell", per=1, sound="tau_fire", kick=2.6, bounces=2),
-    "hole": dict(cd=18, sound="terminal_open"),
+    "hole": dict(cd=18),
 }
 WEAPON_ORDER = ["knife", "pistol", "smg", "shotgun", "rail", "lightning",
                 "tau", "hole"]
@@ -120,18 +120,17 @@ class InputFrame:
     ay: float = 135.0
     fire: bool = False
     alt: bool = False
-    interact: bool = False
     weapon: int = 0  # 0 = keep, 1..6 select WEAPON_ORDER[i-1]
 
     def pack(self) -> list:
         return [round(self.mx, 4), round(self.my, 4), round(self.ax, 2),
                 round(self.ay, 2), int(self.fire), int(self.alt),
-                int(self.interact), self.weapon]
+                self.weapon]
 
     @staticmethod
     def unpack(row: list) -> "InputFrame":
         return InputFrame(row[0], row[1], row[2], row[3],
-                          bool(row[4]), bool(row[5]), bool(row[6]), row[7])
+                          bool(row[4]), bool(row[5]), row[6])
 
 
 class GameSession:
@@ -213,10 +212,6 @@ class GameSession:
         self.enemies: dict[int, dict] = {}
         self.bullets: dict[int, dict] = {}
         self.pickups: dict[int, dict] = {}
-        self.terminals: list[dict] = [
-            dict(room=t.room, pos=t.pos, text=t.text, read=False)
-            for t in level.terminals
-        ]
         for room, spec in level.entities:
             self._spawn_from_spec(room, spec)
 
@@ -230,8 +225,6 @@ class GameSession:
         # --- output channels ---
         self.fx: list[tuple] = []  # drained by app each tick
         self.decals: dict[int, list] = {}  # room -> [(kind,x,y,size,angle)]
-        self.radio_queue: list[str] = []
-        self._radio_fired: set[str] = set()
         self.metrics = dict(ticks=0, shots=0, hits=0, kills=0, dmg_dealt=0.0,
                             wave=0,
                             dmg_taken=0.0, pickups=0, transfers=0, deaths=0,
@@ -293,13 +286,6 @@ class GameSession:
         if len(lst) > 250:
             del lst[0: len(lst) - 250]
 
-    def _maybe_radio(self, trigger: str):
-        for line in self.level.radio:
-            if line.trigger == trigger and trigger + "|" + line.text not in self._radio_fired:
-                self._radio_fired.add(trigger + "|" + line.text)
-                self.radio_queue.append(line.text)
-                self.fx.append(("radio", line.text))
-
     def player_pos(self):
         _, px, py, *_ = self.sim.get(self.pid)
         return px, py
@@ -332,10 +318,6 @@ class GameSession:
         self.fx = []
         self.tick_count += 1
         self.metrics["ticks"] = self.tick_count
-        if self.tick_count == 1:
-            # fired here, not in __init__: fx is cleared per tick, so an
-            # init-time line would vanish before any consumer sees it
-            self._maybe_radio("start")
         if self.tick_count % 60 == 0:
             self.metrics["hp_series"].append(self.hp)
         if self.dead or self.complete:
@@ -365,7 +347,6 @@ class GameSession:
 
         self._turret_tick()
         self._pickup_scan(proom)
-        self._terminal_scan(proom, inp)
         self._exit_scan(proom)
 
         if self.level.vigil:
@@ -618,7 +599,7 @@ class GameSession:
         if self.hole_mark is None:
             self.hole_mark = (room, edge, t0, t1, hx, hy)
             self._decal(room, "scorch", hx, hy, 5.0)
-            self._snd("terminal_type", room, (hx, hy))
+            self._snd("hit_wall", room, (hx, hy), 0.8)
             self.fx.append(("holemark", room, hx, hy))
             return
         m_room, m_edge, m_t0, m_t1, mx, my = self.hole_mark
@@ -676,8 +657,8 @@ class GameSession:
 
     def append_chunk(self, level) -> int:
         """Stream another level's rooms into this live world. Returns the
-        room-index offset where the chunk begins. Radio triggers, doors,
-        terminals, and entities all arrive re-indexed."""
+        room-index offset where the chunk begins. Doors and entities all
+        arrive re-indexed."""
         offset = self.sim.num_rooms()
         for verts in level.room_verts:
             self.sim.add_room(verts)
@@ -691,20 +672,8 @@ class GameSession:
             self.doors.append(rec)
             self.door_edges[(rec["a"], rec["ea"])] = d.key
             self.door_edges[(rec["b"], rec["eb"])] = d.key
-        for t in level.terminals:
-            self.terminals.append(dict(room=t.room + offset, pos=t.pos,
-                                       text=t.text, read=False))
         for room, spec in level.entities:
             self._spawn_from_spec(room + offset, spec)
-        for line in level.radio:
-            trig = line.trigger
-            if trig.startswith("enter_room:"):
-                trig = f"enter_room:{int(trig.split(':')[1]) + offset}"
-            elif trig in ("start", "exit") or trig.startswith("kills:"):
-                # chunk-relative triggers get a namespace so chunk N's
-                # 'start' doesn't collide with chunk 0's
-                trig = f"chunk{offset}:{trig}"
-            self.level.radio.append(type(line)(trig, line.text))
         self.level.room_seeds.extend(level.room_seeds)
         self.level.room_kinds.extend(level.room_kinds)
         self.level.room_verts.extend(level.room_verts)
@@ -734,13 +703,6 @@ class GameSession:
 
     # no shriekers: a thing that flees forever stalls a holdout
     VIGIL_COSTS = (("mite", 1), ("husk", 2), ("spitter", 4), ("brute", 7))
-    VIGIL_LINES = (
-        "Ratio: Contacts. Petal breach, multiple.",
-        "Ratio: Another push. The count holds.",
-        "Ratio: They are learning the doors. So are you.",
-        "Ratio: Wave logged. The heart is still yours.",
-        "Ratio: More of them. I have stopped counting individuals.",
-    )
 
     def _vigil_tick(self, proom: int):
         if self.wave_timer > 0:
@@ -776,10 +738,6 @@ class GameSession:
             spawned += 1
         self.wave_timer = 60 * 8
         self._snd("stinger_wrongness", proom, self.player_pos(), 0.5)
-        if self.wave % 3 == 1:
-            line = self.VIGIL_LINES[(self.wave // 3) % len(self.VIGIL_LINES)]
-            self.radio_queue.append(line)
-            self.fx.append(("radio", line))
         # the seed keeps the pantry stocked between pushes
         if self.wave % 2 == 0:
             kind = "medkit" if self.wave % 4 == 0 else                 ("ammo_shell" if self.wave % 3 == 0 else "ammo_9mm")
@@ -932,7 +890,6 @@ class GameSession:
                 break
         # nearby enemies hear the death
         self.alert_enemies(room, 1)
-        self._maybe_radio(f"kills:{self.metrics['kills']}")
 
     def _damage_player(self, dmg: float, room: int):
         if self.hurt_cd > 0 or self.dead:
@@ -1132,7 +1089,6 @@ class GameSession:
                     self.cam = necore.mat_mul(self.cam, necore.mat_inv(m9))
                     self.metrics["transfers"] += 1
                     self.metrics["rooms_visited"].add(to_room)
-                    self._maybe_radio(f"enter_room:{to_room}")
             elif tag == "wall":
                 _, ent, room, edge, px_, py_, nx, ny, speed = ev
                 b = self.bullets.get(ent)
@@ -1309,19 +1265,14 @@ class GameSession:
                     self.weapon = w
                 self.ammo_bonus_for(w)
                 self._snd("pickup_ammo", proom, (x, y))
-                self.fx.append(("weapon", w))
+                self.fx.append(("pickup_text", proom, (x, y), w.upper()))
             elif kind == "safe_room_core":
                 self._build_cloister()
                 if "hole" not in self.weapons:
                     self.weapons.append("hole")
                 self.holes += 2
                 self._snd("pickup_key", proom, (x, y))
-                self.fx.append(("weapon", "cloister"))
-                text = ("Ratio: Testator work. A detached subgraph — a room "
-                        "with no address. Your seed has already shaken hands "
-                        "with it. You have a cloister now. It follows you.")
-                self.radio_queue.append(text)
-                self.fx.append(("radio", text))
+                self.fx.append(("pickup_text", proom, (x, y), "THE CLOISTER"))
             elif kind == "turret":
                 continue  # not a pickup; the guardians are furniture
             elif kind == "portable_hole":
@@ -1329,19 +1280,19 @@ class GameSession:
                 if "hole" not in self.weapons:
                     self.weapons.append("hole")
                 self._snd("pickup_key", proom, (x, y))
-                self.fx.append(("weapon", "hole"))
+                self.fx.append(("pickup_text", proom, (x, y), "PORTABLE HOLE"))
             elif kind == "implant_lightning":
                 if "lightning" not in self.weapons:
                     self.weapons.append("lightning")
                 self._snd("pickup_key", proom, (x, y))
-                self.fx.append(("weapon", "lightning"))
+                self.fx.append(("pickup_text", proom, (x, y),
+                                "LIGHTNING IMPLANT"))
             elif kind.startswith("key_"):
                 key = kind[4:]
                 self.keys.add(key)
                 self._snd("pickup_key", proom, (x, y))
                 self.fx.append(("pickup_text", proom, (x, y),
                                 f"{key.upper()} SEAL"))
-                self._maybe_radio(f"pickup:{key}")
                 self._unlock_doors(key)
             self.metrics["pickups"] += 1
             self.sim.remove(eid)
@@ -1364,18 +1315,6 @@ class GameSession:
                 mx, my = self.sim.edge_midpoint(d["a"], d["ea"])
                 self._snd("door_unlock", d["a"], (mx, my))
 
-    def _terminal_scan(self, proom: int, inp: InputFrame):
-        if not inp.interact:
-            return
-        px, py = self.player_pos()
-        for t in self.terminals:
-            if t["room"] != proom or t["read"]:
-                continue
-            if math.hypot(t["pos"][0] - px, t["pos"][1] - py) < 26.0:
-                t["read"] = True
-                self.fx.append(("terminal", t["text"]))
-                self._snd("terminal_open", proom, t["pos"])
-
     def _exit_scan(self, proom: int):
         if not getattr(self, "exit_enabled", True):
             return
@@ -1386,12 +1325,6 @@ class GameSession:
             return
         lvl = self.level
         if lvl.exit_key and lvl.exit_key not in self.keys:
-            if "exit_locked" not in self._radio_fired:
-                self._radio_fired.add("exit_locked")
-                text = ("Ratio: The way out doesn't answer. It wants the "
-                        f"{lvl.exit_key} seal.")
-                self.radio_queue.append(text)
-                self.fx.append(("radio", text))
             return
         gate_rooms = getattr(self, "exit_gate_rooms", None)
 
@@ -1405,16 +1338,9 @@ class GameSession:
 
         if lvl.exit_gate_kind and any(
                 _gates(eid, e) for eid, e in self.enemies.items()):
-            if "exit_gated" not in self._radio_fired:
-                self._radio_fired.add("exit_gated")
-                text = ("Ratio: The way out doesn't answer. Something in "
-                        "here is holding it shut. Something big.")
-                self.radio_queue.append(text)
-                self.fx.append(("radio", text))
             return
         self.complete = True
         self.metrics["completed"] = True
-        self._maybe_radio("exit")
 
     # ------------------------------------------------------------------
     # bullets ttl (called from tick loop indirectly, cheap sweep)

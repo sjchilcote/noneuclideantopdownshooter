@@ -45,8 +45,6 @@ CONNECT_SEL = (255, 255, 255)
 WARN_COLOR = (255, 205, 40)
 PLAYER_COLOR = (140, 230, 255)
 EXIT_COLOR = (120, 255, 172)
-TERMINAL_COLOR = (150, 210, 255)
-LORE_ROOM_TINT = (60, 90, 60)
 STATUS_BG = (10, 11, 13)
 STATUS_OK = (120, 230, 140)
 STATUS_ERR = (255, 110, 110)
@@ -67,7 +65,7 @@ GLYPH = {
     "weapon_smg": "g", "weapon_shotgun": "G", "weapon_rail": "R",
     "implant_lightning": "L",
     "key_red": "k", "key_blue": "k", "key_gold": "k", "key_void": "k",
-    "terminal": "T", "player": "P", "exit": "X",
+    "player": "P", "exit": "X",
 }
 
 KEYBIND_HELP = (
@@ -91,40 +89,6 @@ def _quad_bezier_pts(p0, p1, p2, n=10):
         y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]
         pts.append((x, y))
     return pts
-
-
-class TextPrompt:
-    """Single-line text entry overlay (terminal text)."""
-
-    def __init__(self, label: str, initial: str, on_submit):
-        self.label = label
-        self.text = initial
-        self.on_submit = on_submit
-
-    def handle_key(self, event) -> bool:
-        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
-            self.on_submit(self.text)
-            return True
-        if event.key == pygame.K_ESCAPE:
-            self.on_submit(None)
-            return True
-        if event.key == pygame.K_BACKSPACE:
-            self.text = self.text[:-1]
-            return True
-        if event.unicode and event.unicode.isprintable():
-            self.text += event.unicode
-            return True
-        return True  # swallow everything else while active
-
-    def draw(self, surf: "pygame.Surface") -> None:
-        w, h = surf.get_size()
-        box = pygame.Rect(w // 2 - 320, h // 2 - 40, 640, 80)
-        pygame.draw.rect(surf, (20, 22, 26), box)
-        pygame.draw.rect(surf, (120, 160, 200), box, 1)
-        f = get_font(14)
-        surf.blit(f.render(self.label, True, (180, 200, 220)), (box.x + 10, box.y + 8))
-        surf.blit(f.render(self.text + "_", True, (255, 255, 255)), (box.x + 10, box.y + 34))
-        surf.blit(f.render("Enter=ok  Esc=cancel", True, (120, 130, 140)), (box.x + 10, box.y + 58))
 
 
 class KeyPrompt:
@@ -188,7 +152,7 @@ class EditorApp:
         self.entity_idx = 0
 
         self.drag = None  # dict describing an in-progress gesture
-        self.overlay = None  # TextPrompt | KeyPrompt | None
+        self.overlay = None  # KeyPrompt | None
 
         self.play_proc: subprocess.Popen | None = None
 
@@ -272,7 +236,7 @@ class EditorApp:
             return
 
         if self.overlay is not None:
-            # TextPrompt/KeyPrompt on_submit callbacks clear self.overlay
+            # KeyPrompt on_submit callbacks clear self.overlay
             # themselves once the user commits or cancels.
             if event.type == pygame.KEYDOWN:
                 self.overlay.handle_key(event)
@@ -454,10 +418,6 @@ class EditorApp:
             ri, ei = sel[1], sel[2]
             orig = tuple(self.model.data["rooms"][ri]["entities"][ei]["pos"])
             self.drag = {"kind": "entity", "ri": ri, "ei": ei, "orig": orig, "live": orig}
-        elif sel[0] == "terminal":
-            ti = sel[1]
-            orig = tuple(self.model.data["lore"]["terminals"][ti]["pos"])
-            self.drag = {"kind": "terminal", "ti": ti, "orig": orig, "live": orig}
 
     def _place_entity(self, x: float, y: float) -> None:
         t = M.ENTITY_PALETTE[self.entity_idx]
@@ -474,16 +434,6 @@ class EditorApp:
                 return
             self.model.set_exit(ri, x, y)
             self._set_status(f"exit -> room {ri}")
-        elif t == "terminal":
-            if ri is None:
-                self._set_status("place terminal inside a room", True)
-                return
-            def submit(text):
-                if text is not None:
-                    self.model.add_terminal(ri, x, y, text)
-                    self._set_status("terminal placed")
-                self.overlay = None
-            self.overlay = TextPrompt("terminal text:", "", submit)
         else:
             if ri is None:
                 self._set_status(f"place {t} inside a room", True)
@@ -520,12 +470,6 @@ class EditorApp:
             if (lx, ly) != d["orig"]:
                 self.model.move_entity(d["ri"], d["ei"], lx, ly)
             return
-        if d["kind"] == "terminal" and event.button == 1:
-            self.drag = None
-            lx, ly = d["live"]
-            if (lx, ly) != d["orig"]:
-                self.model.move_terminal(d["ti"], lx, ly)
-            return
         if d["kind"] == "room" and event.button == 3:
             self.drag = None
             if d["dx"] or d["dy"]:
@@ -549,7 +493,7 @@ class EditorApp:
         wx, wy = self.screen_to_world(*event.pos)
         if d["kind"] == "rect_draw":
             d["x1"], d["y1"] = self.snap_pt(wx, wy)
-        elif d["kind"] in ("vertex", "entity", "terminal"):
+        elif d["kind"] in ("vertex", "entity"):
             d["live"] = self.snap_pt(wx, wy)
         elif d["kind"] == "room":
             ax, ay = d["anchor"]
@@ -594,7 +538,6 @@ class EditorApp:
         surf = self.screen
         surf.fill(BG)
         self._draw_grid(surf)
-        self._draw_lore_highlights(surf)
         self._draw_connections(surf)
         self._draw_rooms(surf)
         self._draw_entities(surf)
@@ -630,32 +573,6 @@ class EditorApp:
             color = GRID_AXIS if abs(gy) < 1e-6 else GRID_COLOR
             pygame.draw.line(surf, color, (0, sy), (sw, sy))
             gy += g
-
-    def _room_lore_flags(self):
-        """rooms containing a terminal or referenced by an enter_room radio
-        trigger -> highlighted (spec item 1: 'terminals/radio room highlights')."""
-        flagged = set()
-        for t in self.model.data.get("lore", {}).get("terminals", []):
-            flagged.add(t.get("room"))
-        for r in self.model.data.get("lore", {}).get("radio", []):
-            m = M._ENTER_ROOM_RE.match(r.get("trigger", ""))
-            if m:
-                flagged.add(int(m.group(1)))
-        return flagged
-
-    def _draw_lore_highlights(self, surf) -> None:
-        flagged = self._room_lore_flags()
-        rooms = self.model.data.get("rooms", [])
-        for ri in flagged:
-            if not (isinstance(ri, int) and 0 <= ri < len(rooms)):
-                continue
-            verts = rooms[ri].get("verts", [])
-            if len(verts) < 3:
-                continue
-            pts = [self.world_to_screen(*v) for v in verts]
-            glow = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
-            pygame.draw.polygon(glow, (*LORE_ROOM_TINT, 70), pts)
-            surf.blit(glow, (0, 0))
 
     def _draw_rooms(self, surf) -> None:
         rooms = self.model.data.get("rooms", [])
@@ -794,19 +711,6 @@ class EditorApp:
                     pygame.draw.circle(surf, VERTEX_SEL, (sx, sy), r + 2, 1)
                 img = f.render(GLYPH.get(t, "?"), True, (10, 10, 12))
                 surf.blit(img, (sx - img.get_width() / 2, sy - img.get_height() / 2))
-
-        for ti, t in enumerate(self.model.data.get("lore", {}).get("terminals", [])):
-            if self.drag and self.drag.get("kind") == "terminal" and self.drag["ti"] == ti:
-                pos = self.drag["live"]
-            else:
-                pos = t["pos"]
-            sx, sy = self.world_to_screen(*pos)
-            selected = sel and sel[0] == "terminal" and sel[1] == ti
-            r = 8 if selected else 6
-            pygame.draw.rect(surf, TERMINAL_COLOR, (sx - r, sy - r, r * 2, r * 2),
-                              0 if selected else 1)
-            img = f.render("T", True, (10, 10, 12) if selected else TERMINAL_COLOR)
-            surf.blit(img, (sx - img.get_width() / 2, sy - img.get_height() / 2))
 
     def _draw_player_exit(self, surf) -> None:
         sel = self.model.selection

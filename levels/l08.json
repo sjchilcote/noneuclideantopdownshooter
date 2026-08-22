@@ -506,56 +506,5 @@
   ],
   "gate_kind": "warden"
  },
- "lore": {
-  "intro": "The chapel deck. Folded.\nSix rooms around one. Or one room\naround six. The count depends on the walker.",
-  "radio": [
-   {
-    "trigger": "start",
-    "text": "Ratio: I can't map this for you. Every route you take adds a room that was already there. Kill what moves and get to the heart."
-   },
-   {
-    "trigger": "kills:14",
-    "text": "Ratio: That was a Warden. The thing under the Core prints them, the way your seed prints frames. There will be a fresh one at the door."
-   },
-   {
-    "trigger": "exit",
-    "text": "Ratio: Core approach is open. The vault is down there \u2014 and so is the thing that holds the vault shut. If something makes you an offer, any offer: the offer is the weapon. Listen to me instead."
-   }
-  ],
-  "terminals": [
-   {
-    "room": 0,
-    "pos": [
-     0,
-     -60
-    ],
-    "text": "SERMON, UNDELIVERED\nThey ask: is the station haunted?\nNo. A haunting is a place remembering.\nThis is a place being remembered \u2014\nby something on the other side."
-   },
-   {
-    "room": 1,
-    "pos": [
-     165.8012701892219,
-     287.1762239271875
-    ],
-    "text": "[TRANSLATION CONFIDENCE 8%]\nsix were sent. six return, always six.\nthe seventh count is a mistake in the counting,\nnot a seventh room. we filed it that way for a\nlong time. the filing is also how the room first\nappeared. we do not file it that way now, and\nthe room has not gone."
-   },
-   {
-    "room": 4,
-    "pos": [
-     -165.8012701892219,
-     -163.15698604072065
-    ],
-    "text": "[TRANSLATION CONFIDENCE 19%]\nstudents were walked here blind, on purpose,\nearly. counting the doors and losing the count\nwas the whole of the lesson. you cannot fear a\ndirection you have already used to find your way\nhome once."
-   },
-   {
-    "room": 6,
-    "pos": [
-     -165.801270189222,
-     163.15698604072054
-    ],
-    "text": "[TRANSLATION CONFIDENCE 6%]\nwe did not name them once we understood them.\nnaming a thing is agreeing it has one shape. the\nclosest word left in any of our tongues\ntranslates, roughly, as 'the un-arriving guest.'"
-   }
-  ]
- },
  "alert_hops": 1
 }

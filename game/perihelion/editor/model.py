@@ -15,7 +15,6 @@ from __future__ import annotations
 import copy
 import json
 import math
-import re
 from pathlib import Path
 
 LEVEL_VERSION = 2
@@ -29,15 +28,13 @@ PICKUP_TYPES = [
 # Types that live in a room's own `entities` list (spawnable by GameSession).
 ROOM_ENTITY_TYPES = set(ENEMY_TYPES) | set(PICKUP_TYPES)
 # Full palette order for the E-tool cycle (player/exit move the singleton
-# markers instead of creating a room entity; terminal appends to lore).
-ENTITY_PALETTE = ["player", "exit"] + ENEMY_TYPES + PICKUP_TYPES + ["terminal"]
+# markers instead of creating a room entity).
+ENTITY_PALETTE = ["player", "exit"] + ENEMY_TYPES + PICKUP_TYPES
 
 KEY_PRESETS = ["red", "blue", "gold", "void"]
 GATE_KIND_PRESETS = ["", *ENEMY_TYPES]
 
 UNDO_CAP = 100
-
-_ENTER_ROOM_RE = re.compile(r"^enter_room:(\d+)$")
 
 
 # ---------------------------------------------------------------------------
@@ -142,7 +139,6 @@ def _blank_level() -> dict:
         "doors": [],
         "player": None,
         "exit": None,
-        "lore": {"intro": "", "radio": [], "terminals": []},
     }
 
 
@@ -164,11 +160,6 @@ def _normalize(d: dict) -> dict:
     d["doors"] = list(d.get("doors") or [])
     d.setdefault("player", None)
     d.setdefault("exit", None)
-    lore = dict(d.get("lore") or {})
-    lore.setdefault("intro", "")
-    lore["radio"] = list(lore.get("radio") or [])
-    lore["terminals"] = list(lore.get("terminals") or [])
-    d["lore"] = lore
     return d
 
 
@@ -183,7 +174,7 @@ class EditorModel:
     `self.data` is the literal level dict (same shape as the JSON on disk).
     Selection is a tuple:
         ("room", ri) ("vertex", ri, vi) ("entity", ri, ei)
-        ("player",) ("exit",) ("terminal", ti)
+        ("player",) ("exit",)
         ("connect", kind, idx)   kind in {"connect", "connect_x", "door"}
     """
 
@@ -430,9 +421,6 @@ class EditorModel:
         exit_ = self.data.get("exit")
         if exit_ and exit_.get("room") == ri:
             exit_["pos"] = [exit_["pos"][0] + dx, exit_["pos"][1] + dy]
-        for t in self.data.get("lore", {}).get("terminals", []):
-            if t.get("room") == ri:
-                t["pos"] = [t["pos"][0] + dx, t["pos"][1] + dy]
 
     def set_vertex(self, ri: int, vi: int, x: float, y: float) -> None:
         self.snapshot()
@@ -551,27 +539,6 @@ class EditorModel:
             nr = remap(exit_.get("room"))
             self.data["exit"] = None if nr is None else dict(exit_, room=nr)
 
-        lore = self.data.setdefault("lore", {"intro": "", "radio": [], "terminals": []})
-        new_terms = []
-        for t in lore.get("terminals", []):
-            nr = remap(t.get("room"))
-            if nr is None:
-                continue
-            new_terms.append(dict(t, room=nr))
-        lore["terminals"] = new_terms
-
-        new_radio = []
-        for r in lore.get("radio", []):
-            trig = r.get("trigger", "")
-            m = _ENTER_ROOM_RE.match(trig)
-            if m:
-                nr = remap(int(m.group(1)))
-                if nr is None:
-                    continue
-                r = dict(r, trigger=f"enter_room:{nr}")
-            new_radio.append(r)
-        lore["radio"] = new_radio
-
         self.selection = None
 
     # -- entity ops -----------------------------------------------------
@@ -627,24 +594,6 @@ class EditorModel:
             ex["gate_kind"] = kind
         else:
             ex.pop("gate_kind", None)
-
-    def add_terminal(self, ri: int, x: float, y: float, text: str) -> int:
-        self.snapshot()
-        lore = self.data.setdefault("lore", {"intro": "", "radio": [], "terminals": []})
-        lore.setdefault("terminals", []).append({"room": ri, "pos": [x, y], "text": text})
-        return len(lore["terminals"]) - 1
-
-    def move_terminal(self, ti: int, x: float, y: float) -> None:
-        self.snapshot()
-        self.data["lore"]["terminals"][ti]["pos"] = [x, y]
-
-    def delete_terminal(self, ti: int) -> None:
-        self.snapshot()
-        del self.data["lore"]["terminals"][ti]
-
-    def set_terminal_text(self, ti: int, text: str) -> None:
-        self.snapshot()
-        self.data["lore"]["terminals"][ti]["text"] = text
 
     # -- connection ops -----------------------------------------------------
 
@@ -728,12 +677,6 @@ class EditorModel:
             if d <= bd:
                 bd = d
                 best = ("exit",)
-        for ti, t in enumerate(self.data.get("lore", {}).get("terminals", [])):
-            p = t.get("pos", [0, 0])
-            d = (p[0] - x) ** 2 + (p[1] - y) ** 2
-            if d <= bd:
-                bd = d
-                best = ("terminal", ti)
         return best
 
     def nearest_connection(self, x: float, y: float, tol: float):
@@ -799,8 +742,6 @@ class EditorModel:
         elif kind == "exit":
             self.snapshot()
             self.data["exit"] = None
-        elif kind == "terminal":
-            self.delete_terminal(sel[1])
         elif kind == "connect":
             self.delete_connection(sel[1], sel[2])
         else:

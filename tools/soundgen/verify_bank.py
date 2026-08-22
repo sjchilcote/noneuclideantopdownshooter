@@ -36,9 +36,9 @@ _ANCHOR_BY_CATEGORY = {
     "impact": "player_hurt",
     "enemy": "player_hurt",
     "player": "player_hurt",
-    "pickup": "terminal_open",
-    "ui": "terminal_open",
-    "door": "terminal_open",
+    "pickup": "pickup_key",
+    "ui": "pickup_key",
+    "door": "pickup_key",
     "drone": "amb_drone_mid",
     "stinger": "amb_drone_mid",
 }

@@ -7,11 +7,8 @@ themselves, two wings occupy the same volume, a ward's south wall reflects
 more than light. The game never tells you. You find out.
 
 One seamless station: the campaign's ten decks stream in as you approach —
-no loading screens, no level select, one continuous space from Dock 4 to the
-Perihelion Core. Between decks, tight-beam relays carry a two-hander with
-Ratio, the station's surviving mind — with choices, and a memory. Terminals
-hold the crew's paper trail; some of what they logged was never explained.
-Every shot counts.
+no loading screens, one continuous space from Dock 4 to the Perihelion
+Core. Every shot counts.
 
 A showcase run: [media/showcase_2026-07-09.mp4](media/showcase_2026-07-09.mp4)
 
@@ -31,7 +28,7 @@ uv run python -m perihelion            # campaign (The Vigil is on the title men
 uv run python -m perihelion --level levels/l06.json   # single level
 ```
 
-Controls: WASD move, mouse aim, LMB fire, E interact/read, 1-8 or wheel to
+Controls: WASD move, mouse aim, LMB fire, 1-8 or wheel to
 switch weapons, ESC pause. RMB fires the lightning implant (when found) —
 or, with the tau cannon in hand, holds a charge: release to discharge,
 hold too long at your peril. The portable hole (slot 8) marks a wall per
@@ -87,20 +84,14 @@ corridor is usually the last one you make. The portable hole cuts a doorway
 through any wall on command; the Cloister, a safe room folded into the
 station's blind spots, is where you go when the hole isn't enough.
 
-Ratio, the station's remaining rational mind, talks you deck to deck over a
-tight-beam relay — and remembers how you answer. Trust her or needle her;
-by the end, what she's willing to say depends on it. The crew is gone, but
-their terminals aren't: work orders, watch logs, and transfer appeals that
-add up to more than anyone logged on purpose. The tau cannon fires bolts
-that bounce off portals the same way they bounce off walls, so the room
-layout is part of the loadout. Hard mode makes everything tougher and
-meaner; New Game+ starts the fall over with the arsenal you finished with.
+The tau cannon fires bolts that bounce off portals the same way they bounce
+off walls, so the room layout is part of the loadout. Hard mode makes
+everything tougher and meaner; New Game+ starts the fall over with the
+arsenal you finished with.
 
 - One seamless non-Euclidean station: mirror wards, infinite corridors, a
   tesseract deck — no loading screens, ever
 - Teleglitch-style scarce-ammo survival combat
-- Dialogue with memory: your answers move Ratio's trust, and her endgame
-- A crew's worth of terminal lore with mysteries that don't resolve
 - Portable hole: cut a doorway through any wall; retreat to the Cloister
 - Tau cannon: bolts ricochet off portals
 - THE VIGIL: an endless holdout mode on a fold arena

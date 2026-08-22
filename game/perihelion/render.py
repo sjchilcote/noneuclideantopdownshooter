@@ -58,7 +58,7 @@ HAZARD_COLOR = (150, 112, 40)      # dull amber hazard stripe
 HAZARD_COLOR_DIM = (98, 76, 34)
 PIPE_COLOR = (70, 80, 92)
 PUDDLE_COLOR = (32, 40, 48)
-SCREEN_COLOR = (110, 235, 165)     # lit phosphor screen (lab consoles, terminals)
+SCREEN_COLOR = (110, 235, 165)     # lit phosphor screen (lab consoles)
 SCREEN_DIM = (46, 96, 78)          # unlit / already-read screen
 
 PLAYER_SHAPE = [(1.3, 0.0), (-0.8, 0.85), (-0.35, 0.0), (-0.8, -0.85)]
@@ -721,9 +721,9 @@ class Renderer:
             self._glow_cache[r] = s
 
         # A second, smaller, green-phosphor-tinted glow for lit instruments
-        # (lab consoles, wall terminals) -- a separate palette from the warm
-        # muzzle/lightning glow above so a screen reads as its own light
-        # source, not a gunshot afterimage.
+        # (lab consoles) -- a separate palette from the warm muzzle/
+        # lightning glow above so a screen reads as its own light source,
+        # not a gunshot afterimage.
         screen_sizes = [6, 10, 16]
         self._screen_glow_sizes = screen_sizes
         self._screen_glow_cache = {}
@@ -862,8 +862,8 @@ class Renderer:
                 self._hurt_ticks = 2
             elif tag == "playerdie":
                 self._dying = True
-            # "sound" / "radio" / "terminal" / "weapon" are consumed by
-            # audio.py / menus.py, not the renderer.
+            # "sound" / "pickup_text" / "locname" / "ambience" are consumed
+            # by audio.py / app.py, not the renderer.
 
         if self._dying:
             self._death_fade = min(40, self._death_fade + 1)
@@ -885,7 +885,7 @@ class Renderer:
             self._draw_floor(surf, room, depth, clip_screen)
             self._draw_detail(surf, room, xform, clip_screen, depth)
             self._draw_decals(surf, room, xform, clip_screen)
-            self._draw_exit_and_terminals(surf, room, xform, clip_screen)
+            self._draw_exit_pad(surf, room, xform, clip_screen)
             self._draw_walls(surf, walls, depth)
             self._draw_doors(surf, room, xform, clip_screen)
             self._draw_entities(surf, ents, clip_screen)
@@ -894,8 +894,8 @@ class Renderer:
         # light sources punch through the dark: muzzle glows and bolts
         for sx, sy, radius, clip_screen in self._deferred_glows:
             self._blit_glow(surf, sx, sy, radius, clip_screen)
-        # lit instruments (lab consoles, wall terminals) punch through too —
-        # a screen glowing in the dark is exactly what makes a room read as
+        # lit instruments (lab consoles) punch through too — a screen
+        # glowing in the dark is exactly what makes a room read as
         # inhabited/functional rather than merely lit for the player's sake
         for sx, sy, radius, clip_screen in self._deferred_screen_glows:
             self._blit_screen_glow(surf, sx, sy, radius, clip_screen)
@@ -1092,9 +1092,9 @@ class Renderer:
                 lx, ly = _xform_pts([(off, 0.2)], sx, sy, s * 0.9, angle, squash=0.55)[0]
                 pygame.draw.line(surf, color, _pt((sx, sy)), _pt((lx, ly)), 1)
 
-    # -- (4) exit pad + terminals ------------------------------------------
+    # -- (4) exit pad ------------------------------------------------------
 
-    def _draw_exit_and_terminals(self, surf, room, xform, clip_screen):
+    def _draw_exit_pad(self, surf, room, xform, clip_screen):
         session = self.session
         if session.exit_room == room:
             sx, sy = necore.mat_apply(xform, *session.exit_pos)
@@ -1105,84 +1105,6 @@ class Renderer:
                 cx, cy = _pt((sx, sy))
                 pygame.draw.polygon(surf, EXIT_COLOR,
                                      [(cx, cy - 5), (cx - 4, cy + 3), (cx + 4, cy + 3)])
-        for t in session.terminals:
-            if t["room"] != room:
-                continue
-            self._draw_terminal(surf, room, xform, clip_screen, t)
-
-    def _nearest_wall_point(self, room: int, pos):
-        """Nearest point on a room's wall to `pos` (room-local), for
-        flush-mounting a fixture. Strongly prefers non-portal edges (a
-        console can't hang in a doorway) but falls back to any edge rather
-        than returning nothing, since a level always has *some* wall."""
-        level = self.session.level
-        if room >= len(level.room_verts):
-            return None
-        verts = level.room_verts[room]
-        portals = self._portal_edges_for(room)
-        n = len(verts)
-        px, py = pos
-        best = None
-        best_score = 1e18
-        for i in range(n):
-            x0, y0 = verts[i]
-            x1, y1 = verts[(i + 1) % n]
-            dx, dy = x1 - x0, y1 - y0
-            length2 = dx * dx + dy * dy
-            if length2 < 1e-6:
-                continue
-            t = max(0.08, min(0.92, ((px - x0) * dx + (py - y0) * dy) / length2))
-            cx, cy = x0 + dx * t, y0 + dy * t
-            d = (cx - px) ** 2 + (cy - py) ** 2
-            score = d * (6.0 if i in portals else 1.0)
-            if score < best_score:
-                best_score = score
-                length = math.sqrt(length2)
-                nx, ny = _edge_inward_normal(x0, y0, x1, y1)
-                best = dict(cx=cx, cy=cy, nx=nx, ny=ny, tx=dx / length, ty=dy / length)
-        return best
-
-    def _draw_terminal(self, surf, room, xform, clip_screen, t):
-        """A wall-mounted console slab with an inset phosphor screen
-        (Marathon-style wall terminal), flush against the nearest wall
-        edge -- not a free-standing glyph."""
-        bright = not t["read"]
-        screen_color = (100, 255, 140) if bright else (55, 110, 75)
-        wall = self._nearest_wall_point(room, t["pos"])
-        if wall is None:
-            # degenerate room (no usable edge) -- keep the old free-standing
-            # glyph rather than dropping the terminal entirely
-            sx, sy = necore.mat_apply(xform, *t["pos"])
-            if not _point_in_poly(sx, sy, clip_screen):
-                return
-            rect = pygame.Rect(0, 0, 6, 8)
-            rect.center = _pt((sx, sy))
-            pygame.draw.rect(surf, (20, 30, 24), rect)
-            pygame.draw.rect(surf, screen_color, rect, 1)
-            return
-        cx, cy, nx, ny = wall["cx"], wall["cy"], wall["nx"], wall["ny"]
-        ang = math.atan2(wall["ty"], wall["tx"])
-        slab_w, slab_d = 13.0, 6.0
-        slab_pts = _rect_local(cx + nx * slab_d * 0.5, cy + ny * slab_d * 0.5,
-                                slab_w, slab_d, ang)
-        spoly = [necore.mat_apply(xform, x, y) for x, y in slab_pts]
-        clipped = necore.clip_polygon(spoly, clip_screen)
-        if len(clipped) < 3:
-            return
-        cpts = _pts(clipped)
-        pygame.draw.polygon(surf, PROP_DARK, cpts)
-        pygame.draw.polygon(surf, PROP_RIM, cpts, 1)
-        scr_cx, scr_cy = cx + nx * slab_d * 0.62, cy + ny * slab_d * 0.62
-        scr_pts = _rect_local(scr_cx, scr_cy, slab_w * 0.5, slab_d * 0.55, ang)
-        sspoly = [necore.mat_apply(xform, x, y) for x, y in scr_pts]
-        sclipped = necore.clip_polygon(sspoly, clip_screen)
-        if len(sclipped) >= 3:
-            pygame.draw.polygon(surf, screen_color, _pts(sclipped))
-        if bright:
-            ssx, ssy = necore.mat_apply(xform, scr_cx, scr_cy)
-            if _point_in_poly(ssx, ssy, clip_screen):
-                self._deferred_screen_glows.append(
-                    (ssx, ssy, 6.0 * _xform_scale(xform), clip_screen))
 
     # -- (5) walls + doors --------------------------------------------------
 

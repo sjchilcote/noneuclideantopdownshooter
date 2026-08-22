@@ -28,7 +28,7 @@ sys.path.insert(0, str(REPO_ROOT / "game"))
 import pygame  # noqa: E402
 
 from perihelion import menus  # noqa: E402
-from perihelion.app import EPILOGUE_TEXT  # noqa: E402
+from perihelion.app import WIN_TEXT  # noqa: E402
 from perihelion.render import INTERNAL_H, INTERNAL_W  # noqa: E402
 
 SCRATCH = Path(
@@ -39,12 +39,6 @@ SCRATCH = Path(
 # Scenes only touch app.game (DeathScene's no-art fallback path); everything
 # else they need comes from their own state, so a bare stub is enough.
 DUMMY_APP = SimpleNamespace(game=None, audio=None, settings={}, save_data={})
-
-SAMPLE_INTRO_TEXT = (
-    "Deck fourteen has held pressure for three centuries; the schedule says "
-    "it will hold for one more shift. Ratio says the schedule is optimistic. "
-    "Proceed to the transfer node and do not linger near the grating."
-)
 
 LEVEL_NAMES = {1: "DECK FOURTEEN", 2: "THE AUDIT", 3: "THE FOLD", 4: "THE CORE"}
 
@@ -73,14 +67,14 @@ def main() -> None:
     death = menus.DeathScene(deaths=3)
     shots.append(_shot(death, "death_scene", ticks=10))
 
-    win_early = menus.WinScene(EPILOGUE_TEXT)
+    win_early = menus.WinScene(WIN_TEXT)
     shots.append(_shot(win_early, "win_scene_early", ticks=1))
 
-    win_scrolled = menus.WinScene(EPILOGUE_TEXT)
+    win_scrolled = menus.WinScene(WIN_TEXT)
     shots.append(_shot(win_scrolled, "win_scene_scrolled", ticks=180))
 
     for tier in (1, 2, 3, 4):
-        card = menus.IntroCard(LEVEL_NAMES[tier], SAMPLE_INTRO_TEXT, tier)
+        card = menus.IntroCard(LEVEL_NAMES[tier], tier)
         shots.append(_shot(card, f"intro_t{tier}_card", ticks=90))
 
     pygame.quit()

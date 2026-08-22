@@ -176,10 +176,6 @@ class WorldStreamer:
         s.level.room_verts.extend([[(-130.0, -35.0), (-130.0, 35.0),
                                     (130.0, 35.0), (130.0, -35.0)]] * 2)
         s.level.room_centroids.extend([(0.0, 0.0), (0.0, 0.0)])
-        # the tight-beam relay: reading it plays the between-chunk exchange
-        conv_idx = self.start_chunk + chunk_idx
-        s.terminals.append(dict(room=spine_a, pos=(0.0, 0.0),
-                                text=f"__CONV__{conv_idx}", read=False))
 
     def _load_next(self, chunk_idx: int) -> None:
         """The player entered chunk k's spine: stream chunk k+1 and join."""

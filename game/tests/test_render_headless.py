@@ -44,7 +44,7 @@ def _scripted_input(tick: int) -> InputFrame:
     return InputFrame(
         mx=1.0, my=0.15 * ((tick // 40) % 2 * 2 - 1),
         ax=INTERNAL_W * 0.62, ay=INTERNAL_H * 0.5,
-        fire=fire, alt=False, interact=(tick % 97 == 0), weapon=0,
+        fire=fire, alt=False, weapon=0,
     )
 
 

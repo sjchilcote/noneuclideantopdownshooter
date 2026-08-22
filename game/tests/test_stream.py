@@ -53,7 +53,6 @@ def test_stream_lazy_load_arrival_and_completion():
     spine_a = ws.chunks[0]["spine_rooms"][0]
     assert _go(s, ws, spine_a, (0, 0), fire=True)
     assert ws.chunks[0]["loaded_next"]
-    assert any(t["text"].startswith("__CONV__") for t in s.terminals)
     s.keys.add("red")
     c1 = ws.chunks[1]
     assert _go(s, ws, c1["entry_room"] + c1["offset"], c1["entry_pos"],

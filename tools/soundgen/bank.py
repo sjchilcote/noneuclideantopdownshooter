@@ -311,7 +311,7 @@ def grit(x: np.ndarray, drive: float = 1.7, floor_db: float = -40.0,
 
 def telegraph_gate(dur_s: float, rate_hz: float = 300.0, floor: float = 0.35,
                    seed=None) -> np.ndarray:
-    """Random on/off gating signal -- radio squelch / chaotic arc dynamics."""
+    """Random on/off gating signal -- squelch / chaotic arc dynamics."""
     g = sy.white_noise(dur_s, seed=seed).astype(np.float64)
     g = sy.one_pole_lowpass(g.astype(np.float32), rate_hz).astype(np.float64)
     return (floor + (1.0 - floor) * (g > 0.0)).astype(np.float64)
@@ -1037,78 +1037,7 @@ def gen_pickup_key() -> np.ndarray:
     return finish(x, fade_s=0.06, pad_s=0.02)
 
 
-def gen_terminal_open() -> np.ndarray:
-    seed = _seed("termopen")
-    dur = 0.24
-    # degauss thunk + mains hum + static crackle + faint high whine
-    thunk = gun_thump(f0=130, f1=55, pitch_s=0.015, dur_s=0.06, drive=2.0)
-    hum = sy.square(50.0, dur)
-    hum = sy.lowpass(hum, 260)
-    hum = sy.apply_env(hum, sy.env_adsr(dur, attack=0.02, decay=0.03,
-                                        sustain_level=0.7, release=0.09))
-    static = squelch_grains(dur, 6, 1500, 5000, grain_s=0.004, spread=0.5,
-                            seed=seed + 1, gain=0.35)
-    whine = sy.sine(sy.pitch_env(dur, 9000, 11500), dur)
-    whine = sy.apply_env(whine, sy.env_adsr(dur, 0.04, 0.03, 0.5, 0.1))
-    x = place(dur,
-              (0.0, hot_transient(0.005, seed=seed + 2, gain=0.6), 0.7),
-              (0.0, thunk, 0.8),
-              (0.005, hum, 0.55),
-              (0.0, static, 1.0),
-              (0.01, whine, 0.08))
-    x = sy.soft_clip(x, 1.8)
-    return finish(x, fade_s=0.04, pad_s=0.02)
 
-
-def gen_terminal_type() -> np.ndarray:
-    seed = _seed("termtype")
-    # heavy mechanical key: low-mid thock dominates, dark tick on top
-    thud = gun_thump(f0=200, f1=105, pitch_s=0.008, dur_s=0.045, drive=2.2)
-    knock = body_knock(0.04, 300, q=1.3, seed=seed + 2)
-    case = sy.white_noise(0.025, seed=seed)
-    case = sy.bandpass(case, 800, q=1.1)
-    case = sy.apply_env(case, sy.env_exp_decay(0.025, tau=0.007))
-    tick = sy.white_noise(0.008, seed=seed + 3)
-    tick = sy.bandpass(tick, 2000, q=2.0)
-    tick = sy.apply_env(tick, sy.env_exp_decay(0.008, tau=0.0025))
-    x = place(0.065,
-              (0.0, hot_transient(0.003, seed=seed + 1, gain=0.35, lp_hz=2500), 0.85),
-              (0.0, thud, 1.2),
-              (0.0, knock, 0.9),
-              (0.001, case, 0.6),
-              (0.0, tick, 0.25))
-    x = sy.soft_clip(x, 1.8)
-    x = sy.lowpass(x, 3600)
-    return finish(x, fade_s=0.015, pad_s=0.02)
-
-
-def gen_radio_blip() -> np.ndarray:
-    seed = _seed("radioblip")
-    dur = 0.24
-    # squelch burst -> voice-band burble -> squelch tail: reads as a radio
-    # keying up, not a UI beep
-    static = sy.white_noise(dur, seed=seed)
-    static = (static.astype(np.float64) *
-              telegraph_gate(dur, 300, 0.45, seed=seed + 1)).astype(np.float32)
-    static = sy.bandpass(static, 1100, q=0.8)
-    static = sy.apply_env(static, sy.env_adsr(dur, 0.01, 0.05, 0.6, 0.08))
-    # burble: two alternating low square tones through the voice band,
-    # like a compressed voice fragment
-    t1 = sy.square(340, 0.05)
-    t2 = sy.square(470, 0.05)
-    t3 = sy.square(290, 0.06)
-    burble = sy.concat(
-        sy.apply_env(t1, sy.env_adsr(0.05, 0.008, 0.01, 0.7, 0.02)),
-        sy.apply_env(t2, sy.env_adsr(0.05, 0.008, 0.01, 0.7, 0.02)),
-        sy.apply_env(t3, sy.env_adsr(0.06, 0.008, 0.015, 0.6, 0.03)),
-    )
-    burble = sy.soft_clip(burble, 2.5)
-    x = place(dur, (0.0, static, 1.2), (0.05, burble, 0.65))
-    # radio voice-band filter + grit
-    x = sy.bandpass(x, 900, q=0.55)
-    x = sy.soft_clip(x, 2.4)
-    x = sy.bitcrush(x, bits=8, rate_divisor=2)
-    return finish(x, fade_s=0.05, pad_s=0.02)
 
 
 def gen_door_unlock() -> np.ndarray:
@@ -1565,9 +1494,6 @@ _ENTRIES = [
     ("pickup_ammo", "metallic clink-slide of picking up ammo", 0.10, 0.20, "pickup", gen_pickup_ammo, ("peak", PEAK_UI)),
     ("pickup_medkit", "soft latch click plus a hiss", 0.18, 0.32, "pickup", gen_pickup_medkit, ("peak", PEAK_UI)),
     ("pickup_key", "small chime, but dark and detuned", 0.15, 0.28, "pickup", gen_pickup_key, ("peak", PEAK_UI)),
-    ("terminal_open", "CRT power hum blip", 0.15, 0.28, "ui", gen_terminal_open, ("peak", PEAK_UI)),
-    ("terminal_type", "single keyboard key tick", 0.015, 0.05, "ui", gen_terminal_type, ("peak", PEAK_UI)),
-    ("radio_blip", "short filtered static burst plus tone, radio voice cue", 0.10, 0.20, "ui", gen_radio_blip, ("peak", PEAK_UI)),
     ("door_unlock", "heavy mechanical servo clunk unlocking a door", 0.25, 0.40, "door", gen_door_unlock, ("peak", PEAK_IMPACT)),
     ("tau_fire", "sharp electric snap-crack with a metallic ring-down, zappy experimental energy weapon shot, brighter than a railgun", 0.15, 0.22, "gun", gen_tau_fire, ("peak", PEAK_GUN)),
     ("tau_charge", "rising capacitor whine, swept tone with growing tremolo and electrical crackle, charging energy weapon; intentionally ends hot mid-charge because it hands off to the shot", 1.2, 1.8, "gun", gen_tau_charge, ("peak", -3.5)),
