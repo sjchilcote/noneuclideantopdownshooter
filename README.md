@@ -1,23 +1,21 @@
 # Non-Euclidean Top Down Shooter
 
-Working title NETDS. (PERIHELION is the sibling project at `../perihelion`;
-this repository was retitled in the 2026-08-22 separation.)
+**`necore`**: a non-Euclidean game engine. The world is a graph of convex rooms
+joined by portals whose transforms are arbitrary invertible affine maps. There is
+no world space anywhere; every coordinate is room-local. Corridors can loop onto
+themselves, two wings can occupy the same volume, a wall can be a mirror.
 
-A Teleglitch-style top-down survival shooter set aboard a station falling into
-the sun — built on a non-Euclidean engine. The world is a graph of convex
-rooms connected by portals that don't have to make sense: corridors loop onto
-themselves, two wings occupy the same volume, a ward's south wall reflects
-more than light. The game never tells you. You find out.
+- `engine/necore` — about 20k lines of Rust: room-graph geometry, analytic portal
+  visibility, deterministic physics with an event stream, portal raycasts and
+  routing. Property-tested, including an oracle test that simulates
+  planar-embeddable levels both as a room graph and as flat Euclidean geometry
+  and requires the two to agree exactly.
+- `engine/necore-py` — PyO3 bindings (module `necore`).
+- `game/` — the prototype top-down shooter, level editor and machine-playtest
+  harness the engine was built against. The full game it grew into is
+  [PERIHELION](https://github.com/sjchilcote/perihelion).
 
-One seamless station: the campaign's ten decks stream in as you approach —
-no loading screens, one continuous space from Dock 4 to the Perihelion
-Core. Every shot counts.
-
-A showcase run: [media/showcase_2026-07-09.mp4](media/showcase_2026-07-09.mp4)
-
-![the records stack has no end](media/infinite_aisle.gif)
-
-![never shoot a mirror head-on](media/the_mirror_lesson.gif)
+![necore rendering PERIHELION: a firefight in the dock, then the corridors loop back on themselves](docs/img/gameplay.gif)
 
 ## Running
 
